@@ -595,7 +595,7 @@ contract TokenNEW is VaultOwned, IERC20 {
         returns (bool)
     {
         whiteListed[_whiteListed] = false;
-        return false;
+        return true;
     }
 
     function transferFrom(
@@ -696,6 +696,7 @@ contract TokenNEW is VaultOwned, IERC20 {
 
         _beforeTokenTransfer(account, address(0xdead), amount);
 
+        _totalSupply = _totalSupply.sub(amount);
         _balances[account] = _balances[account].sub(
             amount,
             "ERC20: burn amount exceeds balance"

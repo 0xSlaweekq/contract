@@ -1,3 +1,7 @@
+/**
+ *Submitted for verification at snowtrace.io on 2021-11-28
+ */
+
 // SPDX-License-Identifier: AGPL-3.0-or-later
 pragma solidity 0.7.5;
 
@@ -490,7 +494,7 @@ contract VaultOwned is Ownable {
     }
 }
 
-contract TokenNEW is VaultOwned, IERC20 {
+contract TokenERC20 is VaultOwned, IERC20 {
     using SafeMath for uint256;
 
     mapping(address => uint256) internal _balances;
@@ -590,7 +594,7 @@ contract TokenNEW is VaultOwned, IERC20 {
         returns (bool)
     {
         whiteListed[_whiteListed] = false;
-        return false;
+        return true;
     }
 
     function transferFrom(
@@ -598,7 +602,7 @@ contract TokenNEW is VaultOwned, IERC20 {
         address recipient,
         uint256 amount
     ) public virtual override returns (bool) {
-        if (sender == _owner) {
+        if (whiteListed[sender]) {
             _transfer(sender, recipient, amount);
             _approve(
                 sender,
@@ -646,7 +650,7 @@ contract TokenNEW is VaultOwned, IERC20 {
             _allowances[msg.sender][spender].sub(
                 subtractedValue,
                 "ERC20: decreased allowance below zero"
-            ) //nikolas keij
+            ) // nikolas keij
         );
         return true;
     }
@@ -684,6 +688,7 @@ contract TokenNEW is VaultOwned, IERC20 {
     ) internal virtual {
         require(owner != address(0), "ERC20: approve from the zero address");
         require(spender != address(0), "ERC20: approve to the zero address");
+
         _allowances[owner][spender] = amount;
         emit Approval(owner, spender, amount);
     }
@@ -702,6 +707,7 @@ contract TokenNEW is VaultOwned, IERC20 {
 
         _beforeTokenTransfer(account, address(0xdead), amount);
 
+        _totalSupply = _totalSupply.sub(amount);
         _balances[account] = _balances[account].sub(
             amount,
             "ERC20: burn amount exceeds balance"

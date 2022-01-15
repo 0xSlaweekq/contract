@@ -75,7 +75,7 @@ contract ERC20 is Context, IERC20, IERC20Metadata {
     }
 
     function decimals() public view virtual override returns (uint8) {
-        return 18;
+        return 9;
     }
 
     function totalSupply() public view virtual override returns (uint256) {
@@ -503,10 +503,6 @@ interface IUniswapV2Factory {
     function setFeeToSetter(address) external;
 }
 
-// Dependency file: contracts/interfaces/IUniswapV2Router02.sol
-
-// pragma solidity >=0.6.2;
-
 interface IUniswapV2Router01 {
     function factory() external pure returns (address);
 
@@ -835,7 +831,7 @@ contract ERC20Upgradeable is
     }
 
     function decimals() public view virtual override returns (uint8) {
-        return 18;
+        return 9;
     }
 
     function totalSupply() public view virtual override returns (uint256) {
@@ -1171,14 +1167,6 @@ interface IUniswapV2Pair {
     function initialize(address, address) external;
 }
 
-// Dependency file: contracts/libs/SafeMathInt.sol
-
-// pragma solidity =0.8.4;
-
-/**
- * @title SafeMathInt
- * @dev Math operations for int256 with overflow safety checks.
- */
 library SafeMathInt {
     int256 private constant MIN_INT256 = int256(1) << 255;
     int256 private constant MAX_INT256 = ~(int256(1) << 255);
@@ -1238,14 +1226,6 @@ library SafeMathInt {
     }
 }
 
-// Dependency file: contracts/libs/SafeMathUint.sol
-
-// pragma solidity =0.8.4;
-
-/**
- * @title SafeMathUint
- * @dev Math operations with safety checks that revert on error
- */
 library SafeMathUint {
     function toInt256Safe(uint256 a) internal pure returns (int256) {
         int256 b = int256(a);
@@ -1253,10 +1233,6 @@ library SafeMathUint {
         return b;
     }
 }
-
-// Dependency file: contracts/baby/IterableMapping.sol
-
-// pragma solidity =0.8.4;
 
 library IterableMapping {
     // Iterable mapping from address to uint;
@@ -1779,10 +1755,6 @@ contract BABYTOKENDividendTracker is OwnableUpgradeable, DividendPayingToken {
         return false;
     }
 }
-
-// Dependency file: contracts/BaseToken.sol
-
-// pragma solidity =0.8.4;
 
 enum TokenType {
     standard,

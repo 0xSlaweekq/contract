@@ -696,7 +696,7 @@ interface IForceNFT {
     function getNFTRarity(uint256 tokenID) external view returns (uint8);
     function getNFTGen(uint256 tokenID) external view returns (uint8);
     function getNFTMetadata(uint256 tokenID) external view returns (uint8, uint8);
-    function retrieveStolenNFTs() external returns (bool, uint256[] memory);
+    function retrieveStolenNFTs() external;
 }
 
 contract ForceNFT is ERC165, IERC721, IERC721Metadata, Ownable {
@@ -727,28 +727,19 @@ contract ForceNFT is ERC165, IERC721, IERC721Metadata, Ownable {
     uint256[] private stolenNFTs;
     uint256[] private pendingStolenNFTs;
 
-    // Token name
     string private _name = "Force NFT";
-
-    // Token symbol
     string private _symbol = "FNFT";
-
-    // Mapping from token ID to owner address
     mapping(uint256 => address) private _owners;
-
-    // Mapping owner address to token count
     mapping(address => uint256) private _balances;
-
-    // Mapping from token ID to approved address
     mapping(uint256 => address) private _tokenApprovals;
 
-    // Mapping from owner to operator approvals
     mapping(address => mapping(address => bool)) private _operatorApprovals;
 
     uint256 private _totalSupply = 20000;
     uint256 private _circulatingSupply;
 
     mapping (uint256 => NFTMetadata) private _nftMetadata;
+    mapping (uint256 => string) private _tokenURIs;
 
     mapping (address => bool) private whitelist;
     bool public whitelistOnly;
@@ -763,8 +754,7 @@ contract ForceNFT is ERC165, IERC721, IERC721Metadata, Ownable {
     uint256 private gen0Price = 1 * 10**18;
     uint256 private gen1Price = 3000 * 10**18;
     uint256 private gen2Price = 5000 * 10**18;
-    // Address of $Force Token
-    IERC20 public Token;
+    IERC20 public Token = IERC20(0x471032D8965d6194Ea18758BC9582C529b17d21c);
 
     event NFTStolen(uint256 tokenId);
 
@@ -773,18 +763,10 @@ contract ForceNFT is ERC165, IERC721, IERC721Metadata, Ownable {
         _;
     }
 
-    constructor(IERC20 _token) {
-        Token = _token;
+    constructor() {
     }
 
     /// @dev Public Functions
-
-    function testMint(uint256 amount) public {
-        for (uint256 i = 0; i < amount; i++) {
-            _circulatingSupply ++;
-            _mint(owner(), _circulatingSupply);
-        }
-    }
 
     function getNFTRarity(uint256 tokenID) external view virtual returns (uint8) {
         require(_revealed, "Tokens were not yet revealed");
@@ -869,21 +851,18 @@ contract ForceNFT is ERC165, IERC721, IERC721Metadata, Ownable {
         baseURI = _newBaseURI;
     }
 
-    function setNotRevealedURI(string memory _newNotRevealedURI) external onlyOwner {
-        notRevealedURI = _newNotRevealedURI;
+    function setTokenURI(uint256 tokenId, string memory _tokenURI) internal virtual {
+        require(_exists(tokenId), "ERC721Metadata: URI set of nonexistent token");
+        _tokenURIs[tokenId] = _tokenURI;
     }
 
-    function setStakingContract(address _address) external onlyOwner {
-        stakingContract = _address;
+    function setNotRevealedURI(string memory _newNotRevealedURI) external onlyOwner {
+        notRevealedURI = _newNotRevealedURI;
     }
 
     function withdrawFunds() external onlyOwner {
         payable(owner()).transfer(address(this).balance);
         Token.safeTransfer(owner(), Token.balanceOf(address(this)));
-    }
-
-    function withdrawAnyToken(IERC20 asset) external onlyOwner {
-        asset.safeTransfer(owner(), asset.balanceOf(address(this)));
     }
 
     function setWhitelistStatus(bool value) external onlyOwner {
@@ -904,18 +883,12 @@ contract ForceNFT is ERC165, IERC721, IERC721Metadata, Ownable {
         whitelist[_address] = true;
     }
 
-    function retrieveStolenNFTs() external onlyStaking returns (bool returned, uint256[] memory transferredNFTs){
-        if (pendingStolenNFTs.length > 0) {
-            for (uint256 i = 0; i < pendingStolenNFTs.length; i++) {
-                _transfer(address(this), stakingContract, pendingStolenNFTs[i]);
-            }
-            returned = true;
-            transferredNFTs = pendingStolenNFTs;
-            delete pendingStolenNFTs;
-        } else {
-            returned = false;
+    function retrieveStolenNFTs() external onlyStaking returns (uint256[] memory transferredNFTs){
+        for (uint256 i = 0; i < pendingStolenNFTs.length; i++) {
+            _transfer(address(this), stakingContract, pendingStolenNFTs[i]);
         }
-        
+        transferredNFTs = pendingStolenNFTs;
+        delete pendingStolenNFTs;
     }
 
     /// @dev ERC721 Functions
@@ -956,15 +929,32 @@ contract ForceNFT is ERC165, IERC721, IERC721Metadata, Ownable {
 
     function tokenURI(uint256 tokenId) public view virtual override returns (string memory) {
         require(_exists(tokenId), "ERC721Metadata: URI query for nonexistent token");
+        
+        string memory _tokenURI = _tokenURIs[tokenId];
+        string memory baseURI_ = _baseURI();
+
+        // If there is no base URI, return the token URI.
+        if (bytes(baseURI_).length == 0) {
+            return _tokenURI;
+        }
+
+        // If both are set, concatenate the baseURI and tokenURI (via abi.encodePacked).
+        if (bytes(_tokenURI).length > 0) {
+            return string(abi.encodePacked(baseURI, _tokenURI));
+        }
 
         if (_revealed) {
-            string memory baseURI_ = _baseURI();
             return bytes(baseURI_).length > 0 ? string(abi.encodePacked(baseURI_, tokenId.toString())) : "";
-        } else {
-            return string(abi.encodePacked(notRevealedURI));
         }
-    
+
+        return string(abi.encodePacked(baseURI_, tokenId.toString()));
     }
+
+    /**
+    * @dev Returns the base URI set via {_setBaseURI}. This will be
+    * automatically added as a prefix in {tokenURI} to each token's URI, or
+    * to the token ID if no specific URI is set for that token ID.
+    */
 
     function _baseURI() internal view virtual returns (string memory) {
         return baseURI;

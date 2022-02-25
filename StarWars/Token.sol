@@ -210,7 +210,7 @@ interface IERC20 {
 
 contract ForceToken is Context, IERC20, Ownable {
 
-    uint256 private _totalSupply = 5000000 * (10 ** 18);
+    uint256 private _totalSupply = 1 * 10 ** 8 * (10 ** 18);
     string private _name = "Force";
     string private _symbol = "FORCE";
     uint8 private _decimals = 18;

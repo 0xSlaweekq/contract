@@ -692,217 +692,6 @@ library SafeERC20 {
     }
 }
 
-library SafeMath {
-    /**
-     * @dev Returns the addition of two unsigned integers, reverting on
-     * overflow.
-     *
-     * Counterpart to Solidity's `+` operator.
-     *
-     * Requirements:
-     *
-     * - Addition cannot overflow.
-     */
-    function add(uint256 a, uint256 b) internal pure returns (uint256) {
-        uint256 c = a + b;
-        require(c >= a, "SafeMath: addition overflow");
-
-        return c;
-    }
-
-    /**
-     * @dev Returns the subtraction of two unsigned integers, reverting on
-     * overflow (when the result is negative).
-     *
-     * Counterpart to Solidity's `-` operator.
-     *
-     * Requirements:
-     *
-     * - Subtraction cannot overflow.
-     */
-    function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        return sub(a, b, "SafeMath: subtraction overflow");
-    }
-
-    /**
-     * @dev Returns the subtraction of two unsigned integers, reverting with custom message on
-     * overflow (when the result is negative).
-     *
-     * Counterpart to Solidity's `-` operator.
-     *
-     * Requirements:
-     *
-     * - Subtraction cannot overflow.
-     */
-    function sub(uint256 a, uint256 b, string memory errorMessage) internal pure returns (uint256) {
-        require(b <= a, errorMessage);
-        uint256 c = a - b;
-
-        return c;
-    }
-
-    /**
-     * @dev Returns the multiplication of two unsigned integers, reverting on
-     * overflow.
-     *
-     * Counterpart to Solidity's `*` operator.
-     *
-     * Requirements:
-     *
-     * - Multiplication cannot overflow.
-     */
-    function mul(uint256 a, uint256 b) internal pure returns (uint256) {
-        // Gas optimization: this is cheaper than requiring 'a' not being zero, but the
-        // benefit is lost if 'b' is also tested.
-        // See: https://github.com/OpenZeppelin/openzeppelin-contracts/pull/522
-        if (a == 0) {
-            return 0;
-        }
-
-        uint256 c = a * b;
-        require(c / a == b, "SafeMath: multiplication overflow");
-
-        return c;
-    }
-
-    /**
-     * @dev Returns the integer division of two unsigned integers. Reverts on
-     * division by zero. The result is rounded towards zero.
-     *
-     * Counterpart to Solidity's `/` operator. Note: this function uses a
-     * `revert` opcode (which leaves remaining gas untouched) while Solidity
-     * uses an invalid opcode to revert (consuming all remaining gas).
-     *
-     * Requirements:
-     *
-     * - The divisor cannot be zero.
-     */
-    function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        return div(a, b, "SafeMath: division by zero");
-    }
-
-    /**
-     * @dev Returns the integer division of two unsigned integers. Reverts with custom message on
-     * division by zero. The result is rounded towards zero.
-     *
-     * Counterpart to Solidity's `/` operator. Note: this function uses a
-     * `revert` opcode (which leaves remaining gas untouched) while Solidity
-     * uses an invalid opcode to revert (consuming all remaining gas).
-     *
-     * Requirements:
-     *
-     * - The divisor cannot be zero.
-     */
-    function div(uint256 a, uint256 b, string memory errorMessage) internal pure returns (uint256) {
-        require(b > 0, errorMessage);
-        uint256 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
-
-        return c;
-    }
-
-    /**
-     * @dev Returns the remainder of dividing two unsigned integers. (unsigned integer modulo),
-     * Reverts when dividing by zero.
-     *
-     * Counterpart to Solidity's `%` operator. This function uses a `revert`
-     * opcode (which leaves remaining gas untouched) while Solidity uses an
-     * invalid opcode to revert (consuming all remaining gas).
-     *
-     * Requirements:
-     *
-     * - The divisor cannot be zero.
-     */
-    function mod(uint256 a, uint256 b) internal pure returns (uint256) {
-        return mod(a, b, "SafeMath: modulo by zero");
-    }
-
-    /**
-     * @dev Returns the remainder of dividing two unsigned integers. (unsigned integer modulo),
-     * Reverts with custom message when dividing by zero.
-     *
-     * Counterpart to Solidity's `%` operator. This function uses a `revert`
-     * opcode (which leaves remaining gas untouched) while Solidity uses an
-     * invalid opcode to revert (consuming all remaining gas).
-     *
-     * Requirements:
-     *
-     * - The divisor cannot be zero.
-     */
-    function mod(uint256 a, uint256 b, string memory errorMessage) internal pure returns (uint256) {
-        require(b != 0, errorMessage);
-        return a % b;
-    }
-}
-
-library SafeMathInt {
-    int256 private constant MIN_INT256 = int256(1) << 255;
-    int256 private constant MAX_INT256 = ~(int256(1) << 255);
-
-    /**
-     * @dev Multiplies two int256 variables and fails on overflow.
-     */
-    function mul(int256 a, int256 b) internal pure returns (int256) {
-        int256 c = a * b;
-
-        // Detect overflow when multiplying MIN_INT256 with -1
-        require(c != MIN_INT256 || (a & MIN_INT256) != (b & MIN_INT256));
-        require((b == 0) || (c / b == a));
-        return c;
-    }
-
-    /**
-     * @dev Division of two int256 variables and fails on overflow.
-     */
-    function div(int256 a, int256 b) internal pure returns (int256) {
-        // Prevent overflow when dividing MIN_INT256 by -1
-        require(b != -1 || a != MIN_INT256);
-
-        // Solidity already throws when dividing by 0.
-        return a / b;
-    }
-
-    /**
-     * @dev Subtracts two int256 variables and fails on overflow.
-     */
-    function sub(int256 a, int256 b) internal pure returns (int256) {
-        int256 c = a - b;
-        require((b >= 0 && c <= a) || (b < 0 && c > a));
-        return c;
-    }
-
-    /**
-     * @dev Adds two int256 variables and fails on overflow.
-     */
-    function add(int256 a, int256 b) internal pure returns (int256) {
-        int256 c = a + b;
-        require((b >= 0 && c >= a) || (b < 0 && c < a));
-        return c;
-    }
-
-    /**
-     * @dev Converts to absolute value, and fails on overflow.
-     */
-    function abs(int256 a) internal pure returns (int256) {
-        require(a != MIN_INT256);
-        return a < 0 ? -a : a;
-    }
-
-
-    function toUint256Safe(int256 a) internal pure returns (uint256) {
-        require(a >= 0);
-        return uint256(a);
-    }
-}
-
-library SafeMathUint {
-  function toInt256Safe(uint256 a) internal pure returns (int256) {
-    int256 b = int256(a);
-    require(b >= 0);
-    return b;
-  }
-}
-
 interface IForceNFT {
     function getNFTRarity(uint256 tokenID) external view returns (uint8);
     function getNFTGen(uint256 tokenID) external view returns (uint8);
@@ -910,433 +699,525 @@ interface IForceNFT {
     function retrieveStolenNFTs() external returns (bool, uint256[] memory);
 }
 
-contract Staking is Ownable, IERC721Receiver {
+contract ForceNFT is ERC165, IERC721, IERC721Metadata, Ownable {
+    using Address for address;
+    using Strings for uint256;
     using SafeERC20 for IERC20;
-    using SafeMath for uint256;
-    using SafeMathUint for uint256;
-    using SafeMathInt for int256;
 
-    IForceNFT nftContract;
-    IERC20 token;
-    IERC20 stableCoin;
-    address private marketing;
-
-    struct UserInfo {
-        uint256[] stakedSoldiers;
-        uint256[] stakedOfficers;
-        uint256[] stakedGenerals;
-
-        uint256 numberOfSteals; // resets after block.timestamp > lastSteal + 24h
-        uint256 lastSteal; // timestamp
+    struct NFTMetadata {
+        /**
+        _nftType:
+        0 - Soldier
+        1 - Officer
+        2 - General
+         */
+        uint8 _nftType;
+        /**
+        gen:
+        Gen 0 - from 1 to 5000
+        Gen 1 - from 5001 to 10000
+        Gen 2 - from 10001 to 20000
+         */
+        uint8 gen;
     }
 
-    struct NFTInfo {
-        address owner;
-        uint8 nftType;
-        uint256 depositTime;
-        uint256 lastHarvest;
-        uint256 amountStolen;
+    uint256[] private mintedSoldiers;
+    uint256[] private mintedOfficers;
+    uint256[] private mintedGenerals;
+    uint256[] private stolenNFTs;
+    uint256[] private pendingStolenNFTs;
+
+    // Token name
+    string private _name = "Force NFT";
+
+    // Token symbol
+    string private _symbol = "FNFT";
+
+    // Mapping from token ID to owner address
+    mapping(uint256 => address) private _owners;
+
+    // Mapping owner address to token count
+    mapping(address => uint256) private _balances;
+
+    // Mapping from token ID to approved address
+    mapping(uint256 => address) private _tokenApprovals;
+
+    // Mapping from owner to operator approvals
+    mapping(address => mapping(address => bool)) private _operatorApprovals;
+
+    uint256 private _totalSupply = 20000;
+    uint256 private _circulatingSupply;
+
+    uint256 private _startSteal;
+
+    mapping (uint256 => NFTMetadata) private _nftMetadata;
+
+    mapping (address => bool) private whitelist;
+    bool public whitelistOnly;
+
+    address stakingContract;
+
+    bool public _revealed;
+
+    string private baseURI;
+    string private notRevealedURI;
+
+    uint256 private gen0Price = 1 * 10**18;
+    uint256 private gen1Price = 3000 * 10**18;
+    uint256 private gen2Price = 5000 * 10**18;
+    // Address of $Force Token
+    IERC20 public Token;
+
+    event NFTStolen(uint256 tokenId);
+
+    modifier onlyStaking() {
+        require(_msgSender() == stakingContract);
+        _;
     }
 
-    mapping (address => UserInfo) public userInfo;
-    mapping (uint256 => NFTInfo) public nftInfo;
-
-    uint256[] private stakedSoldiers;
-    uint256[] private stakedOfficers; // array of staked officers TokenIDs
-    uint256[] private stakedGenerals;
-
-    uint256 private soldierReward = 1000 * 10**18;
-    uint256 private generalReward = 5000 * 10**18;
-    uint256 private stealPrice = 5 * 10**18;
-    uint256 private DAY = 60*60*24;
-
-    constructor(address _token, address _nftContract, address _stableCoin, address _marketing) {
-        nftContract = IForceNFT(_nftContract);
-        token = IERC20(_token);
-        stableCoin = IERC20(_stableCoin);
-        marketing = _marketing;
+    constructor(IERC20 _token) {
+        Token = _token;
     }
 
-    receive() external payable {
-        revert();
-    }
+    /// @dev Public Functions
 
-    function stake(uint256 tokenId) external {
-        _retrieveStolenNFTs();
-        _stake(tokenId);
-    }
-
-    function stakeMultiple(uint256[] calldata tokenIds) external {
-        _retrieveStolenNFTs();
-        for (uint256 i = 0; i < tokenIds.length; i++) {
-            _stake(tokenIds[i]);
+    function testMint(uint256 amount) public onlyOwner {
+        for (uint256 i = 0; i < amount; i++) {
+            _circulatingSupply ++;
+            _mint(owner(), _circulatingSupply);
         }
     }
 
-    function getStakedTokens(address owner) external view returns(uint256[] memory, uint256[] memory, uint256[] memory){
-        UserInfo storage user = userInfo[owner];
-        return (user.stakedSoldiers, user.stakedOfficers, user.stakedGenerals);
+    function skip(uint256 i) public onlyOwner {
+        _circulatingSupply += i;
     }
 
-    function unstake(uint256 tokenId) external {
-        _retrieveStolenNFTs();
-        _unstake(tokenId);
-    }    
-
-    function harvest(uint256 tokenId) external {
-        _retrieveStolenNFTs();
-        _harvestNormal(tokenId);
+    function setStartSteal(uint256 start) public onlyOwner {
+        _startSteal = start;
     }
 
-    function harvestAll() external {
-        _retrieveStolenNFTs();
-        UserInfo storage user = userInfo[_msgSender()];
-        for (uint256 i = 0; i < user.stakedSoldiers.length; i ++) {
-            _harvestNormal(user.stakedSoldiers[i]);
+    function getNumOfMintedSoldiers() public view returns (uint256) {
+        return mintedSoldiers.length;
+    }
+    
+    function getNumOfMintedOfficers() public view returns (uint256) {
+        return mintedOfficers.length;
+    }
+
+    function getNumOfMintedGenerals() public view returns (uint256) {
+        return mintedGenerals.length;
+    }
+
+    function getNFTRarity(uint256 tokenID) external view virtual returns (uint8) {
+        require(_revealed, "Tokens were not yet revealed");
+        require(_exists(tokenID), "Token does not exist");
+        return _nftMetadata[tokenID]._nftType;
+    }
+
+    function getNFTGen(uint256 tokenID) external view virtual returns (uint8) {
+        require(_revealed, "Tokens were not yet revealed");
+        require(_exists(tokenID), "Token does not exist");
+        return _nftMetadata[tokenID].gen;
+    }
+
+    function getNFTMetadata(uint256 tokenID) external view virtual returns (uint8, uint8) {
+        require(_revealed, "Tokens were not yet revealed");
+        require(_exists(tokenID), "Token does not exist");
+        return (_nftMetadata[tokenID]._nftType, _nftMetadata[tokenID].gen);
+    }
+
+    function isInWhitelist(address _address) external view returns (bool) {
+        return whitelist[_address];
+    }
+
+    function getMintedSoldiers() external view returns (uint256[] memory) {
+        return mintedSoldiers;
+    }
+
+    function getMintedOfficers() external view returns (uint256[] memory) {
+        return mintedOfficers;
+    }
+
+    function getMintedGenerals() external view returns (uint256[] memory) {
+        return mintedGenerals;
+    }
+
+    function getStolenNFTs() external view returns (uint256) {
+        return stolenNFTs.length;
+    }
+
+    function mint(uint256 _amount) external payable {
+        require(_circulatingSupply + _amount <= 20000, "All tokens were minted");
+        if (_circulatingSupply < 5000 && _circulatingSupply + _amount < 5000) {
+            require(msg.value >= _amount * gen0Price);
+            if (whitelistOnly) {
+                require(whitelist[_msgSender()], "Address is not in whitelist");
+            }
+            if (msg.value > _amount * gen0Price) {
+                payable(msg.sender).transfer(msg.value - _amount * gen0Price);
+            }
+        } else if (_circulatingSupply < 5000 && _circulatingSupply + _amount >= 5000) {
+            uint256 firstGenAmount = _circulatingSupply + _amount - 5000;
+            uint256 zeroGenAmount = _amount - firstGenAmount;
+            uint256 total = zeroGenAmount * gen0Price;
+            require(msg.value >= total);
+            if (msg.value > total) {
+                payable(msg.sender).transfer(msg.value - total);
+            }
+            Token.safeTransferFrom(_msgSender(), address(this), firstGenAmount * gen1Price);
         }
-        for (uint256 i = 0; i < user.stakedOfficers.length; i ++) {
-            _harvestNormal(user.stakedOfficers[i]);
+        else if (_circulatingSupply >= 5000 && _circulatingSupply + _amount < 10000) {
+            Token.safeTransferFrom(_msgSender(), address(this), _amount * gen1Price);
+        } else if (_circulatingSupply >= 5000 && _circulatingSupply + _amount >= 10000 && _circulatingSupply < 10000) {
+            uint256 secondGenAmount = _circulatingSupply + _amount - 10000;
+            uint256 firstGenAmount = _amount - secondGenAmount;
+            uint256 total = secondGenAmount * gen2Price + firstGenAmount * gen1Price;
+            Token.safeTransferFrom(_msgSender(), address(this), total);
+        } else if (_circulatingSupply >= 10000) {
+            Token.safeTransferFrom(_msgSender(), address(this), _amount * gen2Price);
         }
-        for (uint256 i = 0; i < user.stakedGenerals.length; i ++) {
-            _harvestNormal(user.stakedGenerals[i]);
+
+        for (uint256 i = 0; i < _amount; i++) {
+            _circulatingSupply ++;
+            _safeMint(_msgSender(), _circulatingSupply);
+        }
+    } 
+
+    /// @dev onlyOwner Functions
+
+    function addGenerals(uint256[] memory _generalsIds) external onlyOwner {
+        require(_generalsIds.length == 50);
+        for (uint256 i = 0; i < _generalsIds.length; i++) {
+            _nftMetadata[_generalsIds[i]]._nftType = 2;
         }
     }
 
-    function pendingReward(address _address) external view returns (uint256) {
-        return _pendingReward(_address);
-    }
-
-    function stealReward() external {
-        UserInfo storage user = userInfo[_msgSender()]; 
-        require(user.stakedOfficers.length > 0, "Function is only for staked Officers");
-        uint256 price;
-        if (block.timestamp < user.lastSteal + DAY) {
-            user.numberOfSteals += 1;
-            price = user.numberOfSteals * stealPrice;
-        } else {
-            user.numberOfSteals = 1;
-            price = stealPrice;
+    function addOfficers(uint256[] memory _officersIds) external onlyOwner {
+        for (uint256 i = 0; i < _officersIds.length; i++) {
+            _nftMetadata[_officersIds[i]]._nftType = 1;
         }
-        stableCoin.safeTransferFrom(_msgSender(), marketing, price);
-        user.lastSteal = block.timestamp;
-        _stealReward(user);
     }
 
-    function retrieveFunds() external onlyOwner {
+    function reveal() external onlyOwner {
+        _revealed = true;
+    }
+
+    function setBaseURI(string memory _newBaseURI) external onlyOwner {
+        baseURI = _newBaseURI;
+    }
+
+    function setNotRevealedURI(string memory _newNotRevealedURI) external onlyOwner {
+        notRevealedURI = _newNotRevealedURI;
+    }
+
+    function setStakingContract(address _address) external onlyOwner {
+        stakingContract = _address;
+    }
+
+    function withdrawFunds() external onlyOwner {
         payable(owner()).transfer(address(this).balance);
+        Token.safeTransfer(owner(), Token.balanceOf(address(this)));
     }
 
     function withdrawAnyToken(IERC20 asset) external onlyOwner {
         asset.safeTransfer(owner(), asset.balanceOf(address(this)));
     }
 
-    /// @dev Internal Functions
+    function setWhitelistStatus(bool value) external onlyOwner {
+        whitelistOnly = value;
+    }
 
-    function _stake(uint256 tokenId) internal {
-        UserInfo storage user = userInfo[_msgSender()];
-        NFTInfo storage nft = nftInfo[tokenId];
+    function addToWhitelist(address _address) external onlyOwner {
+        _addToWhitelist(_address);
+    }
 
-        (uint8 nftType,) = nftContract.getNFTMetadata(tokenId);
-        IERC721(address(nftContract)).safeTransferFrom(_msgSender(), address(this), tokenId);
-        if (nftType == 0) {
-            user.stakedSoldiers.push(tokenId);
-            stakedSoldiers.push(tokenId);
-        } else if (nftType == 1) {
-            user.stakedOfficers.push(tokenId);
-            stakedOfficers.push(tokenId);
-            _add(_msgSender(), 1);
-        } else if (nftType == 2) {
-            user.stakedGenerals.push(tokenId);
-            stakedGenerals.push(tokenId);
+    function addMultipleToWhitelist(address[] memory _addresses) external onlyOwner {
+        for (uint256 i = 0; i < _addresses.length; i++) {
+            _addToWhitelist(_addresses[i]);
+        }
+    }
+
+    function _addToWhitelist(address _address) internal {
+        whitelist[_address] = true;
+    }
+
+    function retrieveStolenNFTs() external onlyStaking returns (bool returned, uint256[] memory){
+        uint256[] memory transferredNFTs = new uint256[](pendingStolenNFTs.length);
+        if (pendingStolenNFTs.length > 0) {
+            for (uint256 i = 0; i < pendingStolenNFTs.length; i++) {
+                _transfer(address(this), stakingContract, pendingStolenNFTs[i]);
+                transferredNFTs[i] = pendingStolenNFTs[i];
+            }
+            returned = true;
+            delete pendingStolenNFTs;
         } else {
-            revert("Token metadata is unreachable");
+            returned = false;
         }
-        nft.owner = _msgSender();
-        nft.nftType = nftType;
-        nft.depositTime = block.timestamp;
-        nft.lastHarvest = block.timestamp;
-    } 
+        return (returned, transferredNFTs);
+    }
 
-    function _unstake(uint256 tokenId) internal {
-        _harvestUnstake(tokenId);
-        UserInfo storage user = userInfo[_msgSender()];
-        NFTInfo storage nft = nftInfo[tokenId];
-        require(nft.owner == _msgSender(), "Caller is not the owner");
-        bool found;
-        if (nft.nftType == 0) {
-            require(block.timestamp >= nft.depositTime + 2*DAY, "2 days have not passed");
-            for (uint256 i = 0; i < user.stakedSoldiers.length; i++) {
-                if (user.stakedSoldiers[i] == tokenId) {
-                    for (uint x = i; x < user.stakedSoldiers.length - 1; x++) {
-                        user.stakedSoldiers[x] = user.stakedSoldiers[x + 1];
-                    }
-                    user.stakedSoldiers.pop();
-                    found = true;
-                }
-            }
-            for (uint256 i = 0; i < stakedSoldiers.length; i++) {
-                if (stakedSoldiers[i] == tokenId) {
-                    for (uint256 x = i; x < stakedSoldiers.length - 1; x++) {
-                        stakedSoldiers[x] = stakedSoldiers[x+1];
-                    }
-                    stakedSoldiers.pop();
-                }
-            }
-        } else if (nft.nftType == 1) {
-            for (uint256 i = 0; i < user.stakedOfficers.length; i++) {
-                if (user.stakedOfficers[i] == tokenId) {
-                    for (uint x = i; x < user.stakedOfficers.length - 1; x++) {
-                        user.stakedOfficers[x] = user.stakedOfficers[x + 1];
-                    }
-                    user.stakedOfficers.pop();
-                    found = true;
-                }
-            }    
-            for (uint256 i = 0; i < stakedOfficers.length; i++) {
-                if (stakedOfficers[i] == tokenId) {
-                    for (uint256 x = i; x < stakedOfficers.length - 1; x++) {
-                        stakedOfficers[x] = stakedOfficers[x+1];
-                    }
-                    stakedOfficers.pop();
-                }
-            }
-            _remove(_msgSender(), 1);
-        } else if (nft.nftType == 2) {
-            for (uint256 i = 0; i < user.stakedGenerals.length; i++) {
-                if (user.stakedGenerals[i] == tokenId) {
-                    for (uint x = i; x < user.stakedGenerals.length - 1; x++) {
-                        user.stakedGenerals[x] = user.stakedGenerals[x + 1];
-                    }
-                    user.stakedGenerals.pop();
-                    found = true;
-                }
-            }
-            for (uint256 i = 0; i < stakedGenerals.length; i++) {
-                if (stakedGenerals[i] == tokenId) {
-                    for (uint256 x = i; x < stakedGenerals.length - 1; x++) {
-                        stakedGenerals[x] = stakedGenerals[x+1];
-                    }
-                    stakedGenerals.pop();
-                }
-            } 
+    /// @dev ERC721 Functions
+
+    function supportsInterface(bytes4 interfaceId) public view virtual override(ERC165, IERC165) returns (bool) {
+        return
+            interfaceId == type(IERC721).interfaceId ||
+            interfaceId == type(IERC721Metadata).interfaceId ||
+            super.supportsInterface(interfaceId);
+    }
+
+    function totalSupply() public view virtual returns (uint256) {
+        return _totalSupply;
+    }
+
+    function cirulatingSupply() public view returns (uint256) {
+        return _circulatingSupply;
+    }
+
+    function balanceOf(address owner) public view virtual override returns (uint256) {
+        require(owner != address(0), "ERC721: balance query for the zero address");
+        return _balances[owner];
+    }
+
+    function ownerOf(uint256 tokenId) public view virtual override returns (address) {
+        address owner = _owners[tokenId];
+        require(owner != address(0), "ERC721: owner query for nonexistent token");
+        return owner;
+    }
+
+    function name() public view virtual override returns (string memory) {
+        return _name;
+    }
+
+    function symbol() public view virtual override returns (string memory) {
+        return _symbol;
+    }
+
+    function tokenURI(uint256 tokenId) public view virtual override returns (string memory) {
+        require(_exists(tokenId), "ERC721Metadata: URI query for nonexistent token");
+
+        if (_revealed) {
+            string memory baseURI_ = _baseURI();
+            return bytes(baseURI_).length > 0 ? string(abi.encodePacked(baseURI_, tokenId.toString())) : "";
         } else {
-            revert("Token metadata is unreachable");
+            return string(abi.encodePacked(notRevealedURI));
         }
-
-        nft.owner = address(0);
-        require(found, "Error");
-        IERC721(address(nftContract)).safeTransferFrom(address(this), _msgSender(), tokenId);
+    
     }
 
-    function _harvestNormal(uint256 tokenId) internal {
-        NFTInfo storage nft = nftInfo[tokenId];
-        require(nft.owner == _msgSender(), "Caller is not token staker");
-        uint256 pendingReward_;
-        if (nft.nftType == 0) {
-            pendingReward_ = (block.timestamp - nft.lastHarvest) *
-                soldierReward / DAY - nft.amountStolen;
-            if (stakedOfficers.length > 0) {
-                uint256 tax = pendingReward_ * 2 / 10;
-                pendingReward_ -= tax;
-                distributeDividends(tax);
-            }
-        } else if (nft.nftType == 1) {
-            withdrawDividend();
-        } else if (nft.nftType == 2) {
-            pendingReward_ = (block.timestamp - nft.lastHarvest) *
-                generalReward / DAY;
-        } else {
-            revert("Token metadata is unreachable");
-        }
-        nft.lastHarvest = block.timestamp;
-        nft.amountStolen = 0;
-        if (pendingReward_ > 0) {
-            token.safeTransfer(_msgSender(), pendingReward_);
-        }
+    function _baseURI() internal view virtual returns (string memory) {
+        return baseURI;
     }
 
-    function _harvestUnstake(uint256 tokenId) internal {
-        NFTInfo storage nft = nftInfo[tokenId];
-        require(nft.owner == _msgSender(), "Caller is not token staker");
-        uint256 pendingReward_;
-        if (nft.nftType == 0) {
-            pendingReward_ = (block.timestamp - nft.lastHarvest) *
-                soldierReward / DAY - nft.amountStolen;
-            if (stakedOfficers.length > 0) {
-                uint256 _probability = uint256(keccak256(abi.encodePacked(
-                    blockhash(block.number),
-                    tx.origin,
-                    block.timestamp
-                    ))) % 100000;
+    function approve(address to, uint256 tokenId) public virtual override {
+        address owner = ownerOf(tokenId);
+        require(to != owner, "ERC721: approval to current owner");
 
-                if (_probability < 35000) {
-                    uint256 tax = pendingReward_ * 5 / 10;
-                    pendingReward_ -= tax;
-                    distributeDividends(tax);
-                }
-            }
-        } else if (nft.nftType == 1) {
-            withdrawDividend();
-        } else if (nft.nftType == 2) {
-            pendingReward_ = (block.timestamp - nft.lastHarvest) *
-                generalReward / DAY;
-        }
-        nft.lastHarvest = block.timestamp;
-        nft.amountStolen = 0;
-        if (pendingReward_ > 0) {
-            token.safeTransfer(nftInfo[tokenId].owner, pendingReward_);
-        }
+        require(
+            _msgSender() == owner || isApprovedForAll(owner, _msgSender()),
+            "ERC721: approve caller is not owner nor approved for all"
+        );
+
+        _approve(to, tokenId);
     }
 
-    function _pendingReward(address _address) internal view returns (uint256 pendingReward_) {
-        UserInfo storage user = userInfo[_address];
-        if (user.stakedSoldiers.length > 0) {
-            for (uint256 i = 0; i < user.stakedSoldiers.length; i ++) {
-                pendingReward_ += _pendingSoldiersReward(user.stakedSoldiers[i]);
-            }
-        }
-        if (user.stakedOfficers.length > 0) {
-            pendingReward_ += _pendingOfficersReward(_address);
-        } 
-        if (user.stakedGenerals.length > 0) {
-            for (uint256 i = 0; i < user.stakedGenerals.length; i++) {
-                pendingReward_ += _pendingGeneralsReward(user.stakedGenerals[i]);
-            }
-        }
+    function getApproved(uint256 tokenId) public view virtual override returns (address) {
+        require(_exists(tokenId), "ERC721: approved query for nonexistent token");
+
+        return _tokenApprovals[tokenId];
     }
 
-    function _pendingSoldiersReward(uint256 tokenId) internal view returns (uint256) {
-        NFTInfo storage nft = nftInfo[tokenId];
-        if (nft.owner != address(0)) {
-            return (block.timestamp - nft.lastHarvest) *
-                soldierReward / DAY - nft.amountStolen;
-        } else {
-            return 0;
-        }
+    function setApprovalForAll(address operator, bool approved) public virtual override {
+        _setApprovalForAll(_msgSender(), operator, approved);
     }
 
-    function _pendingOfficersReward(address _address) internal view returns (uint256) {
-        return dividendOf(_address);
+    function isApprovedForAll(address owner, address operator) public view virtual override returns (bool) {
+        return _operatorApprovals[owner][operator];
     }
 
-    function _pendingGeneralsReward(uint256 tokenId) internal view returns (uint256) {
-        NFTInfo storage nft = nftInfo[tokenId];
-        if (nft.owner != address(0)) {
-            return (block.timestamp - nft.lastHarvest) *
-                generalReward / DAY;
-        } else {
-            return 0;
-        }
+    function transferFrom(
+        address from,
+        address to,
+        uint256 tokenId
+    ) public virtual override {
+        //solhint-disable-next-line max-line-length
+        require(_isApprovedOrOwner(_msgSender(), tokenId), "ERC721: transfer caller is not owner nor approved");
+
+        _transfer(from, to, tokenId);
     }
 
-    function _retrieveStolenNFTs() internal {
-        if (stakedSoldiers.length > 0) {
-            (bool returned, uint256[] memory _stolenNFTs) = nftContract.retrieveStolenNFTs();
-            if (returned) {
-                for (uint256 i = 0; i < _stolenNFTs.length; i++) {
-                    uint256 _luckyWinner = uint256(keccak256(abi.encodePacked(
-                        blockhash(block.number),
-                        tx.origin,
-                        block.timestamp,
-                        i
-                    ))) % stakedOfficers.length;
-                    uint256 winId = stakedOfficers[_luckyWinner];
-                    address winner = nftInfo[winId].owner;
-                    IERC721(address(nftContract)).safeTransferFrom(address(this), winner, winId);
-                }
-            }
-        }
+    function safeTransferFrom(
+        address from,
+        address to,
+        uint256 tokenId
+    ) public virtual override {
+        safeTransferFrom(from, to, tokenId, "");
     }
 
-    function _stealReward(UserInfo storage user) internal {
-        uint256 _randomSoldier = uint256(keccak256(abi.encodePacked(
-                blockhash(block.number),
-                tx.origin,
-                block.timestamp + 20
-            ))) % stakedSoldiers.length;
-
-        uint256 tokenId = stakedSoldiers[_randomSoldier];
-        uint256 stolenReward;
-        if (user.stakedGenerals.length > 0) {
-            stolenReward = _pendingSoldiersReward(tokenId) * 5 / 10;
-        } else {
-            stolenReward = _pendingSoldiersReward(tokenId) * 3 / 10;
-        }
-        nftInfo[tokenId].amountStolen += stolenReward;
-        token.safeTransfer(_msgSender(), stolenReward);
+    function safeTransferFrom(
+        address from,
+        address to,
+        uint256 tokenId,
+        bytes memory _data
+    ) public virtual override {
+        require(_isApprovedOrOwner(_msgSender(), tokenId), "ERC721: transfer caller is not owner nor approved");
+        _safeTransfer(from, to, tokenId, _data);
     }
 
-    /// @dev Officers Staking
+    function _safeTransfer(
+        address from,
+        address to,
+        uint256 tokenId,
+        bytes memory _data
+    ) internal virtual {
+        _transfer(from, to, tokenId);
+        require(_checkOnERC721Received(from, to, tokenId, _data), "ERC721: transfer to non ERC721Receiver implementer");
+    }
 
-    uint256 constant internal magnitude = 2**128;
+    function _exists(uint256 tokenId) internal view virtual returns (bool) {
+        return _owners[tokenId] != address(0);
+    }
 
-    uint256 internal magnifiedDividendPerShare;
+    function _isApprovedOrOwner(address spender, uint256 tokenId) internal view virtual returns (bool) {
+        require(_exists(tokenId), "ERC721: operator query for nonexistent token");
+        address owner = ownerOf(tokenId);
+        return (spender == owner || getApproved(tokenId) == spender || isApprovedForAll(owner, spender));
+    }
 
-    mapping(address => int256) internal magnifiedDividendCorrections;
-    mapping(address => uint256) internal withdrawnDividends;
+    function _safeMint(address to, uint256 tokenId) internal virtual {
+        _safeMint(to, tokenId, "");
+    }
 
-    function distributeDividends(uint256 amount) internal {
-        require(stakedOfficers.length > 0);
-
-        magnifiedDividendPerShare = magnifiedDividendPerShare.add(
-            (amount).mul(magnitude) / stakedOfficers.length
+    function _safeMint(
+        address to,
+        uint256 tokenId,
+        bytes memory _data
+    ) internal virtual {
+        _mint(to, tokenId);
+        require(
+            _checkOnERC721Received(address(0), to, tokenId, _data),
+            "ERC721: transfer to non ERC721Receiver implementer"
         );
     }
 
-    function withdrawDividend() internal {
-        require(userInfo[_msgSender()].stakedOfficers.length > 0);
-        uint256 _withdrawableDividend = withdrawableDividendOf(_msgSender());
-        if (_withdrawableDividend > 0) {
-            withdrawnDividends[_msgSender()] = withdrawnDividends[_msgSender()].add(_withdrawableDividend);
-            token.safeTransfer(_msgSender(), _withdrawableDividend);
+    function _mint(address to, uint256 tokenId) internal virtual {
+        require(to != address(0), "ERC721: mint to the zero address");
+        require(!_exists(tokenId), "ERC721: token already minted");
+
+        _beforeTokenTransfer(address(0), to, tokenId);
+
+        if (tokenId <= 5000) {
+            _nftMetadata[tokenId].gen = 0;
+        } else if (tokenId > 5000 && tokenId <= 10000) {
+            _nftMetadata[tokenId].gen = 1;
+        } else if (tokenId > 10000) {
+            _nftMetadata[tokenId].gen = 2; 
+        }
+
+        if (_nftMetadata[tokenId]._nftType == 1) {
+            mintedOfficers.push(tokenId);
+        } else if (_nftMetadata[tokenId]._nftType == 2) {
+            mintedGenerals.push(tokenId);
+        } else {
+            mintedSoldiers.push(tokenId);
+        }
+
+        bool stolen;
+        if (_nftMetadata[tokenId].gen > 0) {
+            stolen = _stealMint(tokenId);
+        }
+
+        if (stolen) {
+            to = address(this);
+        } 
+
+        _balances[to] += 1;
+        _owners[tokenId] = to;
+        emit Transfer(address(0), to, tokenId);
+        _afterTokenTransfer(address(0), to, tokenId);
+    }
+
+    function _stealMint(uint256 tokenId) internal virtual returns (bool stolen) {
+        require(_nftMetadata[tokenId].gen > 0, "NFT is gen 0");
+
+        if (tokenId % 100 >= _startSteal && tokenId % 100 <= _startSteal + 15) {
+            stolen = true;
+            stolenNFTs.push(tokenId);
+            pendingStolenNFTs.push(tokenId);
+            emit NFTStolen(tokenId);
+        } else {
+            stolen = false;
         }
     }
 
-    function dividendOf(address _owner) internal view returns(uint256) {
-        return withdrawableDividendOf(_owner);
+    function _transfer(
+        address from,
+        address to,
+        uint256 tokenId
+    ) internal virtual {
+        require(ownerOf(tokenId) == from, "ERC721: transfer from incorrect owner");
+        require(to != address(0), "ERC721: transfer to the zero address");
+
+        _beforeTokenTransfer(from, to, tokenId);
+
+        // Clear approvals from the previous owner
+        _approve(address(0), tokenId);
+
+        _balances[from] -= 1;
+        _balances[to] += 1;
+        _owners[tokenId] = to;
+
+        emit Transfer(from, to, tokenId);
+
+        _afterTokenTransfer(from, to, tokenId);
     }
 
-    function withdrawableDividendOf(address _owner) internal view returns(uint256) {
-        return accumulativeDividendOf(_owner).sub(withdrawnDividends[_owner]);
+    function _approve(address to, uint256 tokenId) internal virtual {
+        _tokenApprovals[tokenId] = to;
+        emit Approval(ownerOf(tokenId), to, tokenId);
     }
 
-    function withdrawnDividendOf(address _owner) internal view returns(uint256) {
-        return withdrawnDividends[_owner];
+    function _setApprovalForAll(
+        address owner,
+        address operator,
+        bool approved
+    ) internal virtual {
+        require(owner != operator, "ERC721: approve to caller");
+        _operatorApprovals[owner][operator] = approved;
+        emit ApprovalForAll(owner, operator, approved);
     }
 
-    function accumulativeDividendOf(address _owner) internal view returns(uint256) {
-        return magnifiedDividendPerShare.mul(userInfo[_msgSender()].stakedOfficers.length).toInt256Safe()
-        .add(magnifiedDividendCorrections[_owner]).toUint256Safe() / magnitude;
+    function _checkOnERC721Received(
+        address from,
+        address to,
+        uint256 tokenId,
+        bytes memory _data
+    ) private returns (bool) {
+        if (to.isContract()) {
+            try IERC721Receiver(to).onERC721Received(_msgSender(), from, tokenId, _data) returns (bytes4 retval) {
+                return retval == IERC721Receiver.onERC721Received.selector;
+            } catch (bytes memory reason) {
+                if (reason.length == 0) {
+                    revert("ERC721: transfer to non ERC721Receiver implementer");
+                } else {
+                    assembly {
+                        revert(add(32, reason), mload(reason))
+                    }
+                }
+            }
+        } else {
+            return true;
+        }
     }
 
-    function _add(address account, uint256 value) internal {
-        magnifiedDividendCorrections[account] = magnifiedDividendCorrections[account]
-        .sub( (magnifiedDividendPerShare.mul(value)).toInt256Safe() );
-    }
+    function _beforeTokenTransfer(
+        address from,
+        address to,
+        uint256 tokenId
+    ) internal virtual {}
 
-    function _remove(address account, uint256 value) internal {
-        magnifiedDividendCorrections[account] = magnifiedDividendCorrections[account]
-        .add( (magnifiedDividendPerShare.mul(value)).toInt256Safe() );
-    }
-
-    event Received();
-
-    function onERC721Received(
-        address _operator,
-        address _from,
-        uint256 _tokenId,
-        bytes calldata _data
-    )
-        external
-        override
-        returns(bytes4)
-    {
-        _operator;
-        _from;
-        _tokenId;
-        _data;
-        emit Received();
-        return 0x150b7a02;
-    }
-
+    function _afterTokenTransfer(
+        address from,
+        address to,
+        uint256 tokenId
+    ) internal virtual {}
 }

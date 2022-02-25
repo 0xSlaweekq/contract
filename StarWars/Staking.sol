@@ -921,6 +921,8 @@ contract Staking is Ownable, IERC721Receiver {
     IERC20 stableCoin;
     address private marketing;
 
+    uint256 private totalFarmed;
+
     struct UserInfo {
         uint256[] stakedSoldiers;
         uint256[] stakedOfficers;
@@ -936,6 +938,9 @@ contract Staking is Ownable, IERC721Receiver {
         uint256 depositTime;
         uint256 lastHarvest;
         uint256 amountStolen;
+
+        uint256 numberOfSteals;
+        uint256 lastSteal;
     }
 
     mapping (address => UserInfo) public userInfo;
@@ -950,6 +955,8 @@ contract Staking is Ownable, IERC721Receiver {
     uint256 private stealPrice = 5 * 10**18;
     uint256 private DAY = 60*60*24;
 
+    uint256 private farmStartDate;
+
     constructor(address _token, address _nftContract, address _stableCoin, address _marketing) {
         nftContract = IForceNFT(_nftContract);
         token = IERC20(_token);
@@ -959,6 +966,43 @@ contract Staking is Ownable, IERC721Receiver {
 
     receive() external payable {
         revert();
+    }
+
+    function getNFTpending(uint256 tokenId) external view returns (uint256) {
+        NFTInfo storage nft = nftInfo[tokenId];
+        if (nft.nftType == 0) {
+            return _pendingSoldiersReward(tokenId);
+        } else if (nft.nftType == 1) {
+            return _pendingOfficersReward(tokenId);
+        } else if (nft.nftType == 2) {
+            return _pendingGeneralsReward(tokenId);
+        } else {
+            return 0;
+        }
+    }
+
+    function startFarming(uint256 _startDate) external onlyOwner {
+        if (_startDate != 0) {
+            farmStartDate = _startDate;
+        } else {
+            farmStartDate = block.timestamp;
+        }
+    }
+
+    function getNumOfStakedSoldiers() public view returns (uint256) {
+        return stakedSoldiers.length;
+    }
+
+    function getNumOfStakedOfficers() public view returns (uint256) {
+        return stakedOfficers.length;
+    }
+
+    function getNumOfStakedGenerals() public view returns (uint256) {
+        return stakedGenerals.length;
+    }
+
+    function getTotalFarmed() public view returns (uint256) {
+        return totalFarmed;
     }
 
     function stake(uint256 tokenId) external {
@@ -1028,19 +1072,20 @@ contract Staking is Ownable, IERC721Receiver {
         return _pendingReward(_address);
     }
 
-    function stealReward() external {
+    function stealReward(uint256 tokenId) external {
         UserInfo storage user = userInfo[_msgSender()]; 
-        require(user.stakedOfficers.length > 0, "Function is only for staked Officers");
+        NFTInfo storage nft = nftInfo[tokenId];
+        require(nft.nftType == 1, "Function is only for staked Officers");
         uint256 price;
-        if (block.timestamp < user.lastSteal + DAY) {
-            user.numberOfSteals += 1;
-            price = user.numberOfSteals * stealPrice;
+        if (block.timestamp < nft.lastSteal + DAY) {
+            nft.numberOfSteals += 1;
+            price = nft.numberOfSteals * stealPrice;
         } else {
-            user.numberOfSteals = 1;
+            nft.numberOfSteals = 1;
             price = stealPrice;
         }
         stableCoin.safeTransferFrom(_msgSender(), marketing, price);
-        user.lastSteal = block.timestamp;
+        nft.lastSteal = block.timestamp;
         _stealReward(user);
     }
 
@@ -1066,7 +1111,9 @@ contract Staking is Ownable, IERC721Receiver {
         } else if (nftType == 1) {
             user.stakedOfficers.push(tokenId);
             stakedOfficers.push(tokenId);
-            _add(_msgSender(), 1);
+            _add(tokenId);
+            nft.numberOfSteals = 0;
+            nft.lastSteal = 0;
         } else if (nftType == 2) {
             user.stakedGenerals.push(tokenId);
             stakedGenerals.push(tokenId);
@@ -1104,6 +1151,8 @@ contract Staking is Ownable, IERC721Receiver {
                     stakedSoldiers.pop();
                 }
             }
+            nft.lastSteal = 0;
+            nft.numberOfSteals = 0;
         } else if (nft.nftType == 1) {
             for (uint256 i = 0; i < user.stakedOfficers.length; i++) {
                 if (user.stakedOfficers[i] == tokenId) {
@@ -1122,7 +1171,7 @@ contract Staking is Ownable, IERC721Receiver {
                     stakedOfficers.pop();
                 }
             }
-            _remove(_msgSender(), 1);
+            _remove(tokenId);
         } else if (nft.nftType == 2) {
             for (uint256 i = 0; i < user.stakedGenerals.length; i++) {
                 if (user.stakedGenerals[i] == tokenId) {
@@ -1153,61 +1202,79 @@ contract Staking is Ownable, IERC721Receiver {
     function _harvestNormal(uint256 tokenId) internal {
         NFTInfo storage nft = nftInfo[tokenId];
         require(nft.owner == _msgSender(), "Caller is not token staker");
-        uint256 pendingReward_;
-        if (nft.nftType == 0) {
-            pendingReward_ = (block.timestamp - nft.lastHarvest) *
-                soldierReward / DAY - nft.amountStolen;
-            if (stakedOfficers.length > 0) {
-                uint256 tax = pendingReward_ * 2 / 10;
-                pendingReward_ -= tax;
-                distributeDividends(tax);
+        if (farmStartDate != 0 && farmStartDate <= block.timestamp) {
+            uint256 pendingReward_;
+            uint256 timeDiff;
+            if (farmStartDate > nft.lastHarvest) {
+                timeDiff = block.timestamp - farmStartDate;
+            } else {
+                timeDiff = block.timestamp - nft.lastHarvest;
             }
-        } else if (nft.nftType == 1) {
-            withdrawDividend();
-        } else if (nft.nftType == 2) {
-            pendingReward_ = (block.timestamp - nft.lastHarvest) *
-                generalReward / DAY;
-        } else {
-            revert("Token metadata is unreachable");
+            if (nft.nftType == 0) {
+                pendingReward_ = timeDiff * soldierReward / DAY - nft.amountStolen;
+                if (stakedOfficers.length > 0) {
+                    uint256 tax = pendingReward_ * 2 / 10;
+                    pendingReward_ -= tax;
+                    distributeDividends(tax);
+                }
+            } else if (nft.nftType == 1) {
+                withdrawDividend(tokenId);
+            } else if (nft.nftType == 2) {
+                pendingReward_ = timeDiff * generalReward / DAY;
+            } else {
+                revert("Token metadata is unreachable");
+            }
+            nft.lastHarvest = block.timestamp;
+            nft.amountStolen = 0;
+            if (pendingReward_ > 0) {
+                totalFarmed += pendingReward_;
+                token.safeTransfer(_msgSender(), pendingReward_);
+            }
         }
-        nft.lastHarvest = block.timestamp;
-        nft.amountStolen = 0;
-        if (pendingReward_ > 0) {
-            token.safeTransfer(_msgSender(), pendingReward_);
-        }
+        
     }
 
     function _harvestUnstake(uint256 tokenId) internal {
         NFTInfo storage nft = nftInfo[tokenId];
         require(nft.owner == _msgSender(), "Caller is not token staker");
-        uint256 pendingReward_;
-        if (nft.nftType == 0) {
-            pendingReward_ = (block.timestamp - nft.lastHarvest) *
-                soldierReward / DAY - nft.amountStolen;
-            if (stakedOfficers.length > 0) {
-                uint256 _probability = uint256(keccak256(abi.encodePacked(
-                    blockhash(block.number),
-                    tx.origin,
-                    block.timestamp
-                    ))) % 100000;
-
-                if (_probability < 35000) {
-                    uint256 tax = pendingReward_ * 5 / 10;
-                    pendingReward_ -= tax;
-                    distributeDividends(tax);
-                }
+        if (farmStartDate != 0 && farmStartDate <= block.timestamp) {
+            uint256 pendingReward_;
+            uint256 timeDiff;
+            if (farmStartDate > nft.lastHarvest) {
+                timeDiff = block.timestamp - farmStartDate;
+            } else {
+                timeDiff = block.timestamp - nft.lastHarvest;
             }
-        } else if (nft.nftType == 1) {
-            withdrawDividend();
-        } else if (nft.nftType == 2) {
-            pendingReward_ = (block.timestamp - nft.lastHarvest) *
-                generalReward / DAY;
+            if (nft.nftType == 0) {
+                pendingReward_ = timeDiff *
+                    soldierReward / DAY - nft.amountStolen;
+                if (stakedOfficers.length > 0) {
+                    uint256 _probability = uint256(keccak256(abi.encodePacked(
+                        blockhash(block.number),
+                        tx.origin,
+                        block.timestamp
+                        ))) % 100000;
+
+                    if (_probability < 35000) {
+                        uint256 tax = pendingReward_ * 5 / 10;
+                        pendingReward_ -= tax;
+                        distributeDividends(tax);
+                    }
+                }
+            } else if (nft.nftType == 1) {
+                withdrawDividend(tokenId);
+            } else if (nft.nftType == 2) {
+                pendingReward_ = timeDiff *
+                    generalReward / DAY;
+            }
+            nft.lastHarvest = block.timestamp;
+            nft.amountStolen = 0;
+            if (pendingReward_ > 0) {
+                totalFarmed += pendingReward_;
+                token.safeTransfer(nftInfo[tokenId].owner, pendingReward_);
+            }
         }
-        nft.lastHarvest = block.timestamp;
-        nft.amountStolen = 0;
-        if (pendingReward_ > 0) {
-            token.safeTransfer(nftInfo[tokenId].owner, pendingReward_);
-        }
+        
     }
 
     function _pendingReward(address _address) internal view returns (uint256 pendingReward_) {
@@ -1218,7 +1285,9 @@ contract Staking is Ownable, IERC721Receiver {
             }
         }
         if (user.stakedOfficers.length > 0) {
-            pendingReward_ += _pendingOfficersReward(_address);
+            for (uint256 i = 0; i < user.stakedOfficers.length; i++) {
+                pendingReward_ += _pendingOfficersReward(user.stakedOfficers[i]);
+            }
         } 
         if (user.stakedGenerals.length > 0) {
             for (uint256 i = 0; i < user.stakedGenerals.length; i++) {
@@ -1228,31 +1297,47 @@ contract Staking is Ownable, IERC721Receiver {
     }
 
     function _pendingSoldiersReward(uint256 tokenId) internal view returns (uint256) {
+        if (farmStartDate == 0 || farmStartDate > block.timestamp) {
+            return 0;
+        }
         NFTInfo storage nft = nftInfo[tokenId];
         if (nft.owner != address(0)) {
-            return (block.timestamp - nft.lastHarvest) *
-                soldierReward / DAY - nft.amountStolen;
+            uint256 timeDiff;
+            if (farmStartDate > nft.lastHarvest) {
+                timeDiff = block.timestamp - farmStartDate;
+            } else {
+                timeDiff = block.timestamp - nft.lastHarvest;
+            }
+            return timeDiff * soldierReward / DAY - nft.amountStolen;
         } else {
             return 0;
         }
     }
 
-    function _pendingOfficersReward(address _address) internal view returns (uint256) {
-        return dividendOf(_address);
+    function _pendingOfficersReward(uint256 tokenId) internal view returns (uint256) {
+        return dividendOf(tokenId);
     }
 
     function _pendingGeneralsReward(uint256 tokenId) internal view returns (uint256) {
+        if (farmStartDate == 0 || farmStartDate > block.timestamp) {
+            return 0;
+        }
         NFTInfo storage nft = nftInfo[tokenId];
         if (nft.owner != address(0)) {
-            return (block.timestamp - nft.lastHarvest) *
-                generalReward / DAY;
+            uint256 timeDiff;
+            if (farmStartDate > nft.lastHarvest) {
+                timeDiff = block.timestamp - farmStartDate;
+            } else {
+                timeDiff = block.timestamp - nft.lastHarvest;
+            }
+            return timeDiff * generalReward / DAY;
         } else {
             return 0;
         }
     }
 
     function _retrieveStolenNFTs() internal {
-        if (stakedSoldiers.length > 0) {
+        if (stakedOfficers.length > 0) {
             (bool returned, uint256[] memory _stolenNFTs) = nftContract.retrieveStolenNFTs();
             if (returned) {
                 for (uint256 i = 0; i < _stolenNFTs.length; i++) {
@@ -1264,7 +1349,7 @@ contract Staking is Ownable, IERC721Receiver {
                     ))) % stakedOfficers.length;
                     uint256 winId = stakedOfficers[_luckyWinner];
                     address winner = nftInfo[winId].owner;
-                    IERC721(address(nftContract)).safeTransferFrom(address(this), winner, winId);
+                    IERC721(address(nftContract)).safeTransferFrom(address(this), winner, _stolenNFTs[i]);
                 }
             }
         }
@@ -1285,6 +1370,7 @@ contract Staking is Ownable, IERC721Receiver {
             stolenReward = _pendingSoldiersReward(tokenId) * 3 / 10;
         }
         nftInfo[tokenId].amountStolen += stolenReward;
+        totalFarmed += stolenReward;
         token.safeTransfer(_msgSender(), stolenReward);
     }
 
@@ -1294,8 +1380,8 @@ contract Staking is Ownable, IERC721Receiver {
 
     uint256 internal magnifiedDividendPerShare;
 
-    mapping(address => int256) internal magnifiedDividendCorrections;
-    mapping(address => uint256) internal withdrawnDividends;
+    mapping(uint256 => int256) internal magnifiedDividendCorrections;
+    mapping(uint256 => uint256) internal withdrawnDividends;
 
     function distributeDividends(uint256 amount) internal {
         require(stakedOfficers.length > 0);
@@ -1305,40 +1391,40 @@ contract Staking is Ownable, IERC721Receiver {
         );
     }
 
-    function withdrawDividend() internal {
-        require(userInfo[_msgSender()].stakedOfficers.length > 0);
-        uint256 _withdrawableDividend = withdrawableDividendOf(_msgSender());
+    function withdrawDividend(uint256 tokenId) internal {
+        require(nftInfo[tokenId].owner == _msgSender(), "Caller is not the staker");
+        uint256 _withdrawableDividend = withdrawableDividendOf(tokenId);
         if (_withdrawableDividend > 0) {
-            withdrawnDividends[_msgSender()] = withdrawnDividends[_msgSender()].add(_withdrawableDividend);
+            withdrawnDividends[tokenId] = withdrawnDividends[tokenId].add(_withdrawableDividend);
             token.safeTransfer(_msgSender(), _withdrawableDividend);
         }
     }
 
-    function dividendOf(address _owner) internal view returns(uint256) {
-        return withdrawableDividendOf(_owner);
+    function dividendOf(uint256 tokenId) internal view returns(uint256) {
+        return withdrawableDividendOf(tokenId);
     }
 
-    function withdrawableDividendOf(address _owner) internal view returns(uint256) {
-        return accumulativeDividendOf(_owner).sub(withdrawnDividends[_owner]);
+    function withdrawableDividendOf(uint256 tokenId) internal view returns(uint256) {
+        return accumulativeDividendOf(tokenId).sub(withdrawnDividends[tokenId]);
     }
 
-    function withdrawnDividendOf(address _owner) internal view returns(uint256) {
-        return withdrawnDividends[_owner];
+    function withdrawnDividendOf(uint256 tokenId) internal view returns(uint256) {
+        return withdrawnDividends[tokenId];
     }
 
-    function accumulativeDividendOf(address _owner) internal view returns(uint256) {
-        return magnifiedDividendPerShare.mul(userInfo[_msgSender()].stakedOfficers.length).toInt256Safe()
-        .add(magnifiedDividendCorrections[_owner]).toUint256Safe() / magnitude;
+    function accumulativeDividendOf(uint256 tokenId) internal view returns(uint256) {
+        return magnifiedDividendPerShare.toInt256Safe()
+        .add(magnifiedDividendCorrections[tokenId]).toUint256Safe() / magnitude;
     }
 
-    function _add(address account, uint256 value) internal {
-        magnifiedDividendCorrections[account] = magnifiedDividendCorrections[account]
-        .sub( (magnifiedDividendPerShare.mul(value)).toInt256Safe() );
+    function _add(uint256 tokenId) internal {
+        magnifiedDividendCorrections[tokenId] = magnifiedDividendCorrections[tokenId]
+        .sub( (magnifiedDividendPerShare).toInt256Safe() );
     }
 
-    function _remove(address account, uint256 value) internal {
-        magnifiedDividendCorrections[account] = magnifiedDividendCorrections[account]
-        .add( (magnifiedDividendPerShare.mul(value)).toInt256Safe() );
+    function _remove(uint256 tokenId) internal {
+        magnifiedDividendCorrections[tokenId] = magnifiedDividendCorrections[tokenId]
+        .add( (magnifiedDividendPerShare).toInt256Safe() );
     }
 
     event Received();

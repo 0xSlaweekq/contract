@@ -692,63 +692,7 @@ library SafeERC20 {
     }
 }
 
-library IterableMapping {
-    // Iterable mapping from address to uint;
-    struct Map {
-        address[] keys;
-        mapping(address => uint) values;
-        mapping(address => uint) indexOf;
-        mapping(address => bool) inserted;
-    }
-
-    function get(Map storage map, address key) public view returns (uint) {
-        return map.values[key];
-    }
-
-    function getKeyAtIndex(Map storage map, uint index) public view returns (address) {
-        return map.keys[index];
-    }
-
-    function size(Map storage map) public view returns (uint) {
-        return map.keys.length;
-    }
-
-    function set(
-        Map storage map,
-        address key,
-        uint val
-    ) public {
-        if (map.inserted[key]) {
-            map.values[key] = val;
-        } else {
-            map.inserted[key] = true;
-            map.values[key] = val;
-            map.indexOf[key] = map.keys.length;
-            map.keys.push(key);
-        }
-    }
-
-    function remove(Map storage map, address key) public {
-        if (!map.inserted[key]) {
-            return;
-        }
-
-        delete map.inserted[key];
-        delete map.values[key];
-
-        uint index = map.indexOf[key];
-        uint lastIndex = map.keys.length - 1;
-        address lastKey = map.keys[lastIndex];
-
-        map.indexOf[lastKey] = index;
-        delete map.indexOf[key];
-
-        map.keys[index] = lastKey;
-        map.keys.pop();
-    }
-}
-
-interface IForceNFT {
+interface ICyberPunkNFT {
     function getNFTRarity(uint256 tokenID) external view returns (uint8);
     function getNFTGen(uint256 tokenID) external view returns (uint8);
     function getNFTMetadata(uint256 tokenID) external view returns (uint8, uint8);
@@ -759,19 +703,19 @@ interface IStaking {
     function startFarming(uint256 _startDate) external;
 }
 
-contract ForceNFT is ERC165, IERC721, IERC721Metadata, Ownable {
+contract CyberPunkNFT is ERC165, IERC721, IERC721Metadata, Ownable {
     using Address for address;
     using Strings for uint256;
     using SafeERC20 for IERC20;
-    using IterableMapping for IterableMapping.Map;
-
-    IterableMapping.Map private walletMap;
 
     struct PriceChange {
         uint256 startTime;
         uint256 newPrice;
     }
 
+    address[] public claimWallets;
+    mapping(address => uint256) public claimAmounts;
+ 
     mapping (uint8 => PriceChange) private priceChange;
 
     struct NFTMetadata {
@@ -798,10 +742,10 @@ contract ForceNFT is ERC165, IERC721, IERC721Metadata, Ownable {
     uint256[] private pendingStolenNFTs;
 
     // Token name
-    string private _name = "Force NFT";
+    string private _name = "CyberPunk NFT";
 
     // Token symbol
-    string private _symbol = "FNFT";
+    string private _symbol = "CPNFT";
 
     // Mapping from token ID to owner address
     mapping(uint256 => address) private _owners;
@@ -815,9 +759,9 @@ contract ForceNFT is ERC165, IERC721, IERC721Metadata, Ownable {
     // Mapping from owner to operator approvals
     mapping(address => mapping(address => bool)) private _operatorApprovals;
 
-    uint256 private _totalSupply = 20000;
-    uint256 private _totalOfficers = 6000;
-    uint256 private _totalGenerals = 2000;
+    uint256 private _totalSupply = 25000;
+    uint256 private _totalOfficers = 7500;
+    uint256 private _totalGenerals = 2500;
     uint256 private _enteredOfficers;
     uint256 private _enteredGenerals;
     uint256 private _circulatingSupply;
@@ -844,7 +788,7 @@ contract ForceNFT is ERC165, IERC721, IERC721Metadata, Ownable {
     uint256 private gen0Price = 1 * 10**18;
     uint256 private gen1Price = 30000 * 10**18;
     uint256 private gen2Price = 50000 * 10**18;
-    // Address of $Force Token
+    // Address of $NEON Token
     IERC20 public Token;
 
     event NFTStolen(uint256 tokenId);
@@ -859,7 +803,8 @@ contract ForceNFT is ERC165, IERC721, IERC721Metadata, Ownable {
         uint256 total;
         require(_wallets.length == _percentages.length, "Invalid Input");
         for (uint256 i = 0; i < _wallets.length; i++) {
-            walletMap.set(_wallets[i], _percentages[i]);
+            claimWallets.push(_wallets[i]);
+            claimAmounts[_wallets[i]] = _percentages[i];
             total += _percentages[i];
         }
         require(total == 100, "Total percentages must add up to 100");
@@ -1011,17 +956,16 @@ contract ForceNFT is ERC165, IERC721, IERC721Metadata, Ownable {
     } 
 
     function withdrawFunds() external {
-        require(walletMap.inserted[_msgSender()], "Contract: Unauthorised call");
+        require(claimAmounts[_msgSender()] > 0, "Contract: Unauthorised call");
         uint256 nBal = address(this).balance;
-        uint256 tBal = Token.balanceOf(address(this));
-        for (uint256 i = 0; i < walletMap.size() - 1; i++) {
-            address to = walletMap.getKeyAtIndex(i);
+        for (uint256 i = 0; i < claimWallets.length; i++) {
+            address to = claimWallets[i];
             if (nBal > 0) {
-                payable(to).transfer(nBal * walletMap.get(to) / 100);
+                payable(to).transfer(nBal * claimAmounts[to] / 100);
             } 
-            if (tBal > 0) {
-                Token.safeTransfer(to, tBal * walletMap.get(to) / 100);
-            }
+        }
+        if (Token.balanceOf(address(this)) > 0) {
+            Token.safeTransfer(owner(), Token.balanceOf(address(this)));
         }
     }
 

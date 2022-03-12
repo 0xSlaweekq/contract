@@ -949,7 +949,7 @@ contract Staking is Ownable, IERC721Receiver {
     uint256 private soldierReward = 10000 * 10**18;
     uint256 private generalReward = 20000 * 10**18;
 
-    uint256 public stealPrice = 1 * 10**17;
+    uint256 public stealPrice = 5 * 10**18;
     uint256 private stealChangeStartTime;
     uint256 private stealchangeNewPrice;
 
@@ -966,6 +966,14 @@ contract Staking is Ownable, IERC721Receiver {
 
     receive() external payable {
         revert();
+    }
+
+    function getCurrentStealPrice() public view returns (uint256) {
+        if (block.timestamp <= stealChangeStartTime + 3600) {
+            return stealchangeNewPrice;
+        } else {
+            return stealPrice;
+        }
     }
 
     function getNFTpending(uint256 tokenId) external view returns (uint256) {
@@ -1080,7 +1088,7 @@ contract Staking is Ownable, IERC721Receiver {
         return _pendingReward(_address);
     }
 
-    function setStealPrice(uint256 newPrice) external onlyOwner {
+    function changeStealPrice(uint256 newPrice) external onlyOwner {
         stealPrice = newPrice;
     }
 
@@ -1088,12 +1096,7 @@ contract Staking is Ownable, IERC721Receiver {
         UserInfo storage user = userInfo[_msgSender()]; 
         NFTInfo storage nft = nftInfo[tokenId];
         require(nft.nftType == 1, "Function is only for staked Officers");
-        uint256 price;
-        if (block.timestamp <= stealChangeStartTime + 3600) {
-            price = stealchangeNewPrice;
-        } else {
-            price = stealPrice;
-        }
+        uint256 price = getCurrentStealPrice();
         require(msg.value >= price, "Not enough payed");
         _stealReward(user);
         if (msg.value > price) {
@@ -1148,7 +1151,6 @@ contract Staking is Ownable, IERC721Receiver {
         require(nft.owner == _msgSender(), "Caller is not the owner");
         bool found;
         if (nft.nftType == 0) {
-            require(block.timestamp >= nft.depositTime + 2*DAY, "2 days have not passed");
             for (uint256 i = 0; i < user.stakedSoldiers.length; i++) {
                 if (user.stakedSoldiers[i] == tokenId) {
                     for (uint x = i; x < user.stakedSoldiers.length - 1; x++) {
@@ -1224,8 +1226,8 @@ contract Staking is Ownable, IERC721Receiver {
                 timeDiff = block.timestamp - nft.lastHarvest;
             }
             if (nft.nftType == 0) {
-                pendingReward_ = timeDiff * soldierReward / DAY - nft.amountStolen;
-                if (stakedOfficers.length > 0 && userInfo[_msgSender()].stakedGenerals.length == 0) {
+                pendingReward_ = _pendingSoldiersReward(tokenId);
+                if (stakedOfficers.length > 0 && userInfo[_msgSender()].stakedGenerals.length == 0 && pendingReward_ < 30000*10**18) {
                     uint256 tax = pendingReward_ * 2 / 10;
                     pendingReward_ -= tax;
                     distributeDividends(tax);
@@ -1259,8 +1261,8 @@ contract Staking is Ownable, IERC721Receiver {
                 timeDiff = block.timestamp - nft.lastHarvest;
             }
             if (nft.nftType == 0) {
-                pendingReward_ = timeDiff *
-                    soldierReward / DAY - nft.amountStolen;
+                pendingReward_ = _pendingSoldiersReward(tokenId);
+                require(pendingReward_ >= 30000*10**18, "30000 tokens were not farmed yet");
                 if (stakedOfficers.length > 0) {
                     uint256 _probability = uint256(keccak256(abi.encodePacked(
                         blockhash(block.number),

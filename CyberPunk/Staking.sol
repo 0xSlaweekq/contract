@@ -949,7 +949,7 @@ contract Staking is Ownable, IERC721Receiver {
     uint256 private soldierReward = 10000 * 10**18;
     uint256 private generalReward = 20000 * 10**18;
 
-    uint256 public stealPrice = 5 * 10**18;
+    uint256 public stealPrice = 25 * 10**16;
     uint256 private stealChangeStartTime;
     uint256 private stealchangeNewPrice;
 

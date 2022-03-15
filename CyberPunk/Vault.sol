@@ -2,6 +2,22 @@
 pragma solidity 0.8.11;
 
 interface IERC20 {
+
+    /**
+     * @dev Returns the name of the token.
+     */
+    function name() external view returns (string memory);
+
+    /**
+     * @dev Returns the symbol of the token.
+     */
+    function symbol() external view returns (string memory);
+
+    /**
+     * @dev Returns the decimals places of the token.
+     */
+    function decimals() external view returns (uint8);
+
     /**
      * @dev Returns the amount of tokens in existence.
      */
@@ -598,35 +614,23 @@ contract CyberBank is Ownable, ReentrancyGuard {
 
     // Info of each user.
     struct UserInfo {
-        uint256 amount;     // How many LP tokens the user has provided.
-        uint256 rewardDebt; // Reward debt. See explanation below.
-        //
-        // We do some fancy math here. Basically, any point in time, the amount of tokens
-        // entitled to a user but is pending to be distributed is:
-        //
-        //   pending reward = (user.amount * pool.accTokenPerShare) - user.rewardDebt
-        //
-        // Whenever a user deposits or withdraws LP tokens to a pool. Here's what happens:
-        //   1. The pool's `accTokenPerShare` (and `lastRewardBlock`) gets updated.
-        //   2. User receives the pending reward sent to his/her address.
-        //   3. User's `amount` gets updated.
-        //   4. User's `rewardDebt` gets updated.
+        uint256 amount;
+        uint256 rewardDebt;
     }
 
     // Info of each pool.
     struct PoolInfo {
-        IERC20 lpToken;           // Address of LP token contract, zero represents HT pool.
+        IERC20 lpToken;
         IERC20 rewardToken;
-        uint256 amount;     // How many LP tokens the pool has.
-        uint256 rewardForEachBlock;    //Reward for each block
-        uint256 lastRewardBlock;  // Last block number that token distribution occurs.
-        uint256 accTokenPerShare; // Accumulated token per share, times 1e12. See below.
-        uint256 startBlock; // Reward start block.
-        uint256 endBlock;  // Reward end block.
-        uint256 rewarded;// the total token has beed reward, including the dev and user harvest
+        uint256 acc_token_precision;
+        uint256 amount;
+        uint256 rewardForEachBlock;
+        uint256 lastRewardBlock;
+        uint256 accTokenPerShare;
+        uint256 startBlock;
+        uint256 endBlock;
+        uint256 rewarded;
     }
-
-    uint256 private constant ACC_TOKEN_PRECISION = 1e18;
 
     uint8 public constant ZERO = 0;
     uint16 public constant RATIO_BASE = 1000;
@@ -641,13 +645,13 @@ contract CyberBank is Ownable, ReentrancyGuard {
     event EmergencyWithdraw(address indexed user, uint256 indexed pid, uint256 amount);
     event Harvest(address indexed user, uint256 indexed pid, uint256 amount);
     event HarvestAndRestake(address indexed user, uint256 indexed pid, uint256 amount);
-    event EmergencyStop(address indexed user, address to);
+    event EmergencyStop(address indexed user);
     event Add(uint256 rewardForEachBlock, IERC20 lpToken, bool withUpdate,
         uint256 startBlock, uint256 endBlock, bool withTokenTransfer);
-    event SetPoolInfo(uint256 pid, uint256 rewardsOneBlock, bool withUpdate, uint256 startBlock, uint256 endBlock);
-    event ClosePool(uint256 pid, address payable to);
+    event SetPoolInfo(uint256 pid, uint256 rewardsTotal, bool withUpdate, uint256 startBlock, uint256 endBlock);
+    event ClosePool(uint256 pid);
 
-    event AddRewardForPool(uint256 pid, uint256 addTokenPerPool, bool withTokenTransfer);
+    event AddRewardForPool(uint256 pid, uint256 addTokenPerBlock, bool withTokenTransfer);
 
     modifier validatePoolByPid(uint256 _pid) {
         require(_pid < poolInfo .length, "Pool does not exist");
@@ -671,10 +675,17 @@ contract CyberBank is Ownable, ReentrancyGuard {
         if (_withUpdate) {
             massUpdatePools();
         }
+        if (_rewardToken != IERC20(address(0))) {
+            _totalReward = _totalReward * 10 ** uint256(_rewardToken.decimals());
+        } else {
+            _totalReward = _totalReward * 10 **18;
+        }
         uint256 _rewardForEachBlock = _totalReward.div(_endBlock.sub(_startBlock));
+
         poolInfo.push(PoolInfo({
             lpToken : _lpToken,
             rewardToken: _rewardToken,
+            acc_token_precision: 10**uint256(_rewardToken.decimals()),
             amount : ZERO,
             rewardForEachBlock : _rewardForEachBlock,
             lastRewardBlock : block.number > _startBlock ? block.number : _startBlock,
@@ -691,7 +702,7 @@ contract CyberBank is Ownable, ReentrancyGuard {
     }
 
     // Update the given pool's pool info. Can only be called by the owner. 
-    function setPoolInfo(uint256 _pid, uint256 _rewardForEachBlock, bool _withUpdate, uint256 _startBlock, uint256 _endBlock) external validatePoolByPid(_pid) onlyOwner {
+    function setPoolInfo(uint256 _pid, uint256 _totalReward, bool _withUpdate, uint256 _startBlock, uint256 _endBlock) external validatePoolByPid(_pid) onlyOwner {
         if (_withUpdate) {
             massUpdatePools();
         }
@@ -710,10 +721,11 @@ contract CyberBank is Ownable, ReentrancyGuard {
             }
             pool.endBlock = _endBlock;
         }
-        if (_rewardForEachBlock > ZERO) {
+        if (_totalReward > ZERO) {
+            uint256 _rewardForEachBlock = _totalReward.div(pool.endBlock.sub(pool.startBlock));
             pool.rewardForEachBlock = _rewardForEachBlock;
         }
-        emit SetPoolInfo(_pid, _rewardForEachBlock, _withUpdate, _startBlock, _endBlock);
+        emit SetPoolInfo(_pid, _totalReward, _withUpdate, _startBlock, _endBlock);
     }
 
     // Return reward multiplier over the given _from to _to block.
@@ -722,6 +734,12 @@ contract CyberBank is Ownable, ReentrancyGuard {
             return _to.sub(_from);
         }
         return ZERO;
+    }
+
+    /// @return APR for 1 year
+    function getAPR(uint256 _pid) public view validatePoolByPid(_pid) returns (uint256) {
+        PoolInfo storage pool = poolInfo[_pid];
+        return pool.rewardForEachBlock * 20*60*24*365 * 10**18 / pool.amount;
     }
 
     // Update reward variables of the given pool to be up-to-date.
@@ -754,12 +772,11 @@ contract CyberBank is Ownable, ReentrancyGuard {
         uint256 tokenReward = multiplier.mul(pool.rewardForEachBlock);
         if (tokenReward > ZERO) {
             uint256 poolTokenReward = tokenReward;
-            pool.accTokenPerShare = pool.accTokenPerShare.add(poolTokenReward.mul(ACC_TOKEN_PRECISION).div(lpSupply));
+            pool.accTokenPerShare = pool.accTokenPerShare.add(poolTokenReward.mul(pool.acc_token_precision).div(lpSupply));
         }
     }
 
-    // View function to see pending on frontend.
-    function pendingTokens(uint256 _pid, address _user) public view validatePoolByPid(_pid) returns (uint256 tokenReward) {
+    function pendingReward(uint256 _pid, address _user) public view validatePoolByPid(_pid) returns (uint256 tokenReward) {
         PoolInfo storage pool = poolInfo[_pid];
         if (_user == address(0)) {
             _user = msg.sender;
@@ -779,9 +796,9 @@ contract CyberBank is Ownable, ReentrancyGuard {
                 multiplier = getMultiplier(lastRewardBlock, block.number);
             }
             uint256 poolTokenReward = multiplier.mul(pool.rewardForEachBlock).div(RATIO_BASE);
-            accTokenPerShare = accTokenPerShare.add(poolTokenReward.mul(ACC_TOKEN_PRECISION).div(lpSupply));
+            accTokenPerShare = accTokenPerShare.add(poolTokenReward.mul(pool.acc_token_precision).div(lpSupply));
         }
-        tokenReward = user.amount.mul(accTokenPerShare).div(ACC_TOKEN_PRECISION).sub(user.rewardDebt);
+        tokenReward = user.amount.mul(accTokenPerShare).div(pool.acc_token_precision).sub(user.rewardDebt);
     }
 
     // Update reward vairables for all pools. Be careful of gas spending!
@@ -792,22 +809,22 @@ contract CyberBank is Ownable, ReentrancyGuard {
         }
     }
 
-    // Deposit LP tokens to CyberBank
-    function deposit(uint256 _pid, uint256 _amount) external validatePoolByPid(_pid) payable {
+    function deposit(uint256 _pid, uint256 _amount) external payable validatePoolByPid(_pid) {
         PoolInfo storage pool = poolInfo[_pid];
         require(block.number <= pool.endBlock, "this pool has ended!");
         require(block.number >= pool.startBlock, "this pool has not started!");
-        if (pool.lpToken == IERC20(address(0))) {//if pool is HT
-            require(_amount == msg.value, "msg.value must be equals to amount!");
-        }
         UserInfo storage user = userInfo[_pid][msg.sender];
         harvest(_pid, msg.sender);
         if (pool.lpToken != IERC20(address(0))) {
+            _amount = _amount * 10 ** uint256(pool.lpToken.decimals());
             pool.lpToken.safeTransferFrom(msg.sender, address(this), _amount);
+        } else {
+            _amount = _amount * 10**18;
+            require(_amount == msg.value, "msg.value must be equals to amount!");        
         }
         pool.amount = pool.amount.add(_amount);
         user.amount = user.amount.add(_amount);
-        user.rewardDebt = user.amount.mul(pool.accTokenPerShare).div(ACC_TOKEN_PRECISION);
+        user.rewardDebt = user.amount.mul(pool.accTokenPerShare).div(pool.acc_token_precision);
         emit Deposit(msg.sender, _pid, _amount);
     }
 
@@ -816,14 +833,19 @@ contract CyberBank is Ownable, ReentrancyGuard {
     }
 
     // Withdraw LP tokens from CyberBank.
-    function withdraw(uint256 _pid, uint256 _amount) external validatePoolByPid(_pid) payable {
+    function withdraw(uint256 _pid, uint256 _amount) external validatePoolByPid(_pid) {
         PoolInfo storage pool = poolInfo[_pid];
         UserInfo storage user = userInfo[_pid][msg.sender];
         require(block.number >= pool.startBlock, "this pool has not started!");
+        if (pool.lpToken != IERC20(address(0))) {
+            _amount = _amount * 10 **uint256(pool.lpToken.decimals());
+        } else if (pool.lpToken == IERC20(address(0))) {
+            _amount = _amount * 10**18;
+        }
         require(user.amount >= _amount, "withdraw: not good");
         harvest(_pid, msg.sender);
         user.amount = user.amount.sub(_amount);
-        user.rewardDebt = user.amount.mul(pool.accTokenPerShare).div(ACC_TOKEN_PRECISION);
+        user.rewardDebt = user.amount.mul(pool.accTokenPerShare).div(pool.acc_token_precision);
         pool.amount = pool.amount.sub(_amount);
 
         if (pool.lpToken != IERC20(address(0))) {
@@ -835,7 +857,7 @@ contract CyberBank is Ownable, ReentrancyGuard {
     }
 
     //transfer HT
-    function transferMainnetToken(address payable _to, uint256 _amount) internal nonReentrant {
+    function transferMainnetToken(address payable _to, uint256 _amount) internal {
         _to.transfer(_amount);
     }
 
@@ -845,26 +867,45 @@ contract CyberBank is Ownable, ReentrancyGuard {
         }
         PoolInfo storage pool = poolInfo[_pid];
         UserInfo storage user = userInfo[_pid][_to];
-        updatePool(_pid);
-        uint256 pending = user.amount.mul(pool.accTokenPerShare).div(ACC_TOKEN_PRECISION).sub(user.rewardDebt);
-        if (pending > ZERO) {
-            success = true;
-            safeTransferTokenFromThis(pool.rewardToken, _to, pending);
-            pool.rewarded = pool.rewarded.add(pending);
-            user.rewardDebt = user.amount.mul(pool.accTokenPerShare).div(ACC_TOKEN_PRECISION);
-        } else {
-            success = false;
+        if(user.amount != 0) {
+            updatePool(_pid);
+            uint256 pending = user.amount.mul(pool.accTokenPerShare).div(pool.acc_token_precision).sub(user.rewardDebt);
+            if (pending > ZERO) {
+                success = true;
+                if (pool.rewardToken == IERC20(address(0))) {
+                    transferMainnetToken(payable(_to), pending);
+                } else {
+                    safeTransferTokenFromThis(pool.rewardToken, _to, pending);
+                }
+                pool.rewarded = pool.rewarded.add(pending);
+                user.rewardDebt = user.amount.mul(pool.accTokenPerShare).div(pool.acc_token_precision);
+            } else {
+                success = false;
+            }
+            emit Harvest(_to, _pid, pending);
         }
-        emit Harvest(_to, _pid, pending);
     }
 
-    function closePool(uint256 _pid, address payable _to) public validatePoolByPid(_pid) onlyOwner {
-        PoolInfo storage pool = poolInfo[_pid];
-        pool.endBlock = block.number;
-        if (_to == address(0)) {
-            _to = payable(msg.sender);
+    function emergencyStop() public onlyOwner {
+        uint256 length = poolInfo.length;
+        for (uint256 pid = ZERO; pid < length; ++pid) {
+            closePool(pid);
         }
-        emit ClosePool(_pid, _to);
+        emit EmergencyStop(msg.sender);
+    }
+
+    function closePool(uint256 _pid) public validatePoolByPid(_pid) onlyOwner {
+        PoolInfo storage pool = poolInfo[_pid];
+        if (block.timestamp < pool.endBlock) {
+            uint256 rewardDiff = pool.rewardForEachBlock.mul(pool.endBlock.sub(block.timestamp));
+            if (pool.rewardToken != IERC20(address(0))) {
+                pool.rewardToken.safeTransfer(_msgSender(), rewardDiff);
+            } else {
+                transferMainnetToken(_msgSender(), rewardDiff);
+            }
+        }
+        pool.endBlock = block.number;
+        emit ClosePool(_pid);
     }
 
     // Safe transfer token function, just in case if rounding error causes pool to not have enough tokens.
@@ -877,24 +918,30 @@ contract CyberBank is Ownable, ReentrancyGuard {
         }
     }
 
-    // Add reward for pool from the current block or start block
-    function addRewardForPool(uint256 _pid, uint256 _addTokenPerPool, bool _withTokenTransfer) external validatePoolByPid(_pid) onlyOwner {
-        require(_addTokenPerPool > ZERO, "token amount must be greater than zero!");
+    function addRewardForPool(uint256 _pid, uint256 _addTotalTokens, bool _withTokenTransfer) external validatePoolByPid(_pid) onlyOwner {
+        require(_addTotalTokens > ZERO, "add token must be greater than zero!");
         PoolInfo storage pool = poolInfo[_pid];
         require(block.number < pool.endBlock, "this pool has ended!");
         updatePool(_pid);
 
+        if (pool.rewardToken != IERC20(address(0))) {
+            _addTotalTokens = _addTotalTokens * 10 **uint256((pool.rewardToken.decimals()));
+        } else {
+            _addTotalTokens = _addTotalTokens * 10 **18;
+        }
+
         uint256 addTokenPerBlock;
         if (block.number < pool.startBlock) {
-            addTokenPerBlock = _addTokenPerPool.div(pool.endBlock.sub(pool.startBlock));
+            addTokenPerBlock = _addTotalTokens.div(pool.endBlock.sub(pool.startBlock));
         } else {
-            addTokenPerBlock = _addTokenPerPool.div(pool.endBlock.sub(block.timestamp));
+            addTokenPerBlock = _addTotalTokens.div(pool.endBlock.sub(block.number));
         }
 
         pool.rewardForEachBlock = pool.rewardForEachBlock.add(addTokenPerBlock);
         if (_withTokenTransfer) {
-            pool.rewardToken.safeTransferFrom(msg.sender, address(this), _addTokenPerPool);
+            pool.rewardToken.safeTransferFrom(msg.sender, address(this), _addTotalTokens);
         }
-        emit AddRewardForPool(_pid, _addTokenPerPool, _withTokenTransfer);
+        emit AddRewardForPool(_pid, _addTotalTokens, _withTokenTransfer);
     }
+
 }

@@ -745,7 +745,7 @@ contract CyberPunkNFT is ERC165, IERC721, IERC721Metadata, Ownable {
     string private _name = "CyberPunk NFT";
 
     // Token symbol
-    string private _symbol = "CPNFT";
+    string private _symbol = "CYBER";
 
     // Mapping from token ID to owner address
     mapping(uint256 => address) private _owners;

@@ -903,7 +903,7 @@ library SafeMathUint {
   }
 }
 
-interface ICyberPunkNFT {
+interface ICyberPunkMetisGame {
     function getNFTRarity(uint256 tokenID) external view returns (uint8);
     function getNFTGen(uint256 tokenID) external view returns (uint8);
     function getNFTMetadata(uint256 tokenID) external view returns (uint8, uint8);
@@ -916,9 +916,8 @@ contract Staking is Ownable, IERC721Receiver {
     using SafeMathUint for uint256;
     using SafeMathInt for int256;
 
-    ICyberPunkNFT nftContract;
+    ICyberPunkMetisGame nftContract;
     IERC20 token;
-    address private marketing;
 
     uint256 private totalFarmed;
 
@@ -958,10 +957,9 @@ contract Staking is Ownable, IERC721Receiver {
     bool private farmStarted = false;
     uint256 private farmStartDate;
 
-    constructor(address _token, address _nftContract, address _marketing) {
-        nftContract = ICyberPunkNFT(_nftContract);
+    constructor(address _token, address _nftContract) {
+        nftContract = ICyberPunkMetisGame(_nftContract);
         token = IERC20(_token);
-        marketing = _marketing;
     }
 
     receive() external payable {

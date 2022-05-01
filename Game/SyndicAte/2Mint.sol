@@ -692,7 +692,7 @@ library SafeERC20 {
     }
 }
 
-interface ICyberPunkNFT {
+interface ISyndicateGame {
     function getNFTRarity(uint256 tokenID) external view returns (uint8);
     function getNFTGen(uint256 tokenID) external view returns (uint8);
     function getNFTMetadata(uint256 tokenID) external view returns (uint8, uint8);
@@ -703,7 +703,7 @@ interface IStaking {
     function startFarming(uint256 _startDate) external;
 }
 
-contract CyberPunkNFT is ERC165, IERC721, IERC721Metadata, Ownable {
+contract SyndicateGame is ERC165, IERC721, IERC721Metadata, Ownable {
     using Address for address;
     using Strings for uint256;
     using SafeERC20 for IERC20;
@@ -721,31 +721,31 @@ contract CyberPunkNFT is ERC165, IERC721, IERC721Metadata, Ownable {
     struct NFTMetadata {
         /**
         _nftType:
-        0 - Soldier
-        1 - Officer
-        2 - General
+        0 - Worker
+        1 - Agent
+        2 - Robot
          */
         uint8 _nftType;
         /**
         gen:
-        Gen 0 - from 1 to 5000
-        Gen 1 - from 5001 to 10000
-        Gen 2 - from 10001 to 20000
+        Gen 0 - from 1 to 2000
+        Gen 1 - from 2001 to 4000
+        Gen 2 - from 4001 to 6000
          */
         uint8 gen;
     }
 
-    uint256[] private mintedSoldiers;
-    uint256[] private mintedOfficers;
-    uint256[] private mintedGenerals;
+    uint256[] private mintedWorkers;
+    uint256[] private mintedAgents;
+    uint256[] private mintedRobots;
     uint256[] private stolenNFTs;
     uint256[] private pendingStolenNFTs;
 
     // Token name
-    string private _name = "CyberPunk NFT";
+    string private _name = "Syndicate Game";
 
     // Token symbol
-    string private _symbol = "CYBER";
+    string private _symbol = "Syndicate";
 
     // Mapping from token ID to owner address
     mapping(uint256 => address) private _owners;
@@ -759,11 +759,11 @@ contract CyberPunkNFT is ERC165, IERC721, IERC721Metadata, Ownable {
     // Mapping from owner to operator approvals
     mapping(address => mapping(address => bool)) private _operatorApprovals;
 
-    uint256 private _totalSupply = 25000;
-    uint256 private _totalOfficers = 7500;
-    uint256 private _totalGenerals = 2500;
-    uint256 private _enteredOfficers;
-    uint256 private _enteredGenerals;
+    uint256 private _totalSupply = 6000;
+    uint256 private _totalAgents = 4200;
+    uint256 private _totalRobots = 1500;
+    uint256 private _enteredAgents;
+    uint256 private _enteredRobots;
     uint256 private _circulatingSupply;
 
     uint256 private _startSteal;
@@ -785,10 +785,10 @@ contract CyberPunkNFT is ERC165, IERC721, IERC721Metadata, Ownable {
     string private baseURI;
     string private notRevealedURI;
 
-    uint256 private gen0Price = 1 * 10**18;
-    uint256 private gen1Price = 30000 * 10**18;
-    uint256 private gen2Price = 50000 * 10**18;
-    // Address of $NEON Token
+    uint256 private gen0Price = 12 * 10**17;
+    uint256 private gen1Price = 300 * 10**18;
+    uint256 private gen2Price = 500 * 10**18;
+    // Address of $Token
     IERC20 public Token;
 
     event NFTStolen(uint256 tokenId);
@@ -829,11 +829,11 @@ contract CyberPunkNFT is ERC165, IERC721, IERC721Metadata, Ownable {
 
     function getCurrentPrice() external view returns (uint256) {
         uint8 gen;
-        if (_circulatingSupply <= 5000) {
+        if (_circulatingSupply <= 2000) {
             gen = 0;
-        } else if (_circulatingSupply > 5000 && _circulatingSupply <= 15000) {
+        } else if (_circulatingSupply > 2000 && _circulatingSupply <= 4000) {
             gen = 1;
-        } else if (_circulatingSupply > 15000 && _circulatingSupply <= 25000) {
+        } else if (_circulatingSupply > 4000 && _circulatingSupply <= 6000) {
             gen = 2;
         } else {
             return 0;
@@ -849,16 +849,16 @@ contract CyberPunkNFT is ERC165, IERC721, IERC721Metadata, Ownable {
         return userIds;
     }
 
-    function getNumOfMintedSoldiers() public view returns (uint256) {
-        return mintedSoldiers.length;
+    function getNumOfMintedWorkers() public view returns (uint256) {
+        return mintedWorkers.length;
     }
     
-    function getNumOfMintedOfficers() public view returns (uint256) {
-        return mintedOfficers.length;
+    function getNumOfMintedAgents() public view returns (uint256) {
+        return mintedAgents.length;
     }
 
-    function getNumOfMintedGenerals() public view returns (uint256) {
-        return mintedGenerals.length;
+    function getNumOfMintedRobots() public view returns (uint256) {
+        return mintedRobots.length;
     }
 
     function getNFTRarity(uint256 tokenID) external view virtual returns (uint8) {
@@ -883,16 +883,16 @@ contract CyberPunkNFT is ERC165, IERC721, IERC721Metadata, Ownable {
         return whitelist[_address];
     }
 
-    function getMintedSoldiers() external view returns (uint256[] memory) {
-        return mintedSoldiers;
+    function getMintedWorkers() external view returns (uint256[] memory) {
+        return mintedWorkers;
     }
 
-    function getMintedOfficers() external view returns (uint256[] memory) {
-        return mintedOfficers;
+    function getMintedAgents() external view returns (uint256[] memory) {
+        return mintedAgents;
     }
 
-    function getMintedGenerals() external view returns (uint256[] memory) {
-        return mintedGenerals;
+    function getMintedRobots() external view returns (uint256[] memory) {
+        return mintedRobots;
     }
 
     function getStolenNFTs() external view returns (uint256) {
@@ -909,9 +909,9 @@ contract CyberPunkNFT is ERC165, IERC721, IERC721Metadata, Ownable {
     }
 
     function mint(uint256 _amount) external payable {
-        require(_circulatingSupply + _amount <= 25000, "All tokens were minted");
+        require(_circulatingSupply + _amount <= 6000, "All tokens were minted");
         uint256 price;
-        if (_circulatingSupply < 5000 && _circulatingSupply + _amount < 5000) {
+        if (_circulatingSupply < 2000 && _circulatingSupply + _amount < 2000) {
             price = _getCurrentPrice(0);
             require(msg.value >= _amount * price);
             if (whitelistOnly) {
@@ -920,8 +920,8 @@ contract CyberPunkNFT is ERC165, IERC721, IERC721Metadata, Ownable {
             if (msg.value > _amount * price) {
                 payable(msg.sender).transfer(msg.value - _amount * price);
             }
-        } else if (_circulatingSupply < 5000 && _circulatingSupply + _amount >= 5000) {
-            uint256 firstGenAmount = _circulatingSupply + _amount - 5000;
+        } else if (_circulatingSupply < 2000 && _circulatingSupply + _amount >= 2000) {
+            uint256 firstGenAmount = _circulatingSupply + _amount - 2000;
             uint256 zeroGenAmount = _amount - firstGenAmount;
             price = _getCurrentPrice(0);
             uint256 _2price = _getCurrentPrice(1);
@@ -932,24 +932,24 @@ contract CyberPunkNFT is ERC165, IERC721, IERC721Metadata, Ownable {
             }
             Token.safeTransferFrom(_msgSender(), address(this), firstGenAmount * _2price);
         }
-        else if (_circulatingSupply >= 5000 && _circulatingSupply + _amount < 15000) {
+        else if (_circulatingSupply >= 2000 && _circulatingSupply + _amount < 4000) {
             price = _getCurrentPrice(1);
             Token.safeTransferFrom(_msgSender(), address(this), _amount * price);
-        } else if (_circulatingSupply >= 5000 && _circulatingSupply + _amount >= 15000 && _circulatingSupply < 15000) {
-            uint256 secondGenAmount = _circulatingSupply + _amount - 15000;
+        } else if (_circulatingSupply >= 2000 && _circulatingSupply + _amount >= 4000 && _circulatingSupply < 4000) {
+            uint256 secondGenAmount = _circulatingSupply + _amount - 4000;
             uint256 firstGenAmount = _amount - secondGenAmount;
             price = _getCurrentPrice(1);
             uint256 _2price = _getCurrentPrice(2);
             uint256 total = secondGenAmount * _2price + firstGenAmount * price;
             Token.safeTransferFrom(_msgSender(), address(this), total);
-        } else if (_circulatingSupply >= 15000) {
+        } else if (_circulatingSupply >= 4000) {
             price = _getCurrentPrice(2);
             Token.safeTransferFrom(_msgSender(), address(this), _amount * price);
         }
         for (uint256 i = 0; i < _amount; i++) {
             _circulatingSupply ++;
             _safeMint(_msgSender(), _circulatingSupply);
-            if (_circulatingSupply == 5000) {
+            if (_circulatingSupply == 2000) {
                 _startFarming();
             }
         }
@@ -999,20 +999,20 @@ contract CyberPunkNFT is ERC165, IERC721, IERC721Metadata, Ownable {
         _startSteal = start;
     }
 
-    function addGenerals(uint256[] memory _generalsIds) external onlyOwner {
-        for (uint256 i = 0; i < _generalsIds.length; i++) {
-            _nftMetadata[_generalsIds[i]]._nftType = 2;
+    function addRobots(uint256[] memory _robotsIds) external onlyOwner {
+        for (uint256 i = 0; i < _robotsIds.length; i++) {
+            _nftMetadata[_robotsIds[i]]._nftType = 2;
         }
-        _enteredGenerals += _generalsIds.length;
-        require(_enteredGenerals <= _totalGenerals, "Generals amount would be exceeded");
+        _enteredRobots += _robotsIds.length;
+        require(_enteredRobots <= _totalRobots, "Robots amount would be exceeded");
     }
 
-    function addOfficers(uint256[] memory _officersIds) external onlyOwner {
-        for (uint256 i = 0; i < _officersIds.length; i++) {
-            _nftMetadata[_officersIds[i]]._nftType = 1;
+    function addAgents(uint256[] memory _agentsIds) external onlyOwner {
+        for (uint256 i = 0; i < _agentsIds.length; i++) {
+            _nftMetadata[_agentsIds[i]]._nftType = 1;
         }
-        _enteredOfficers += _officersIds.length;
-        require(_enteredOfficers <= _totalOfficers, "Officers amount would be exceeded");
+        _enteredAgents += _agentsIds.length;
+        require(_enteredAgents <= _totalAgents, "Agents amount would be exceeded");
     }
 
     function reveal() external onlyOwner {
@@ -1050,7 +1050,7 @@ contract CyberPunkNFT is ERC165, IERC721, IERC721Metadata, Ownable {
     }
 
     function _startFarming() internal {
-        require(_circulatingSupply == 5000);
+        require(_circulatingSupply == 2000);
         IStaking(stakingContract).startFarming(block.timestamp);
     }
 
@@ -1239,20 +1239,20 @@ contract CyberPunkNFT is ERC165, IERC721, IERC721Metadata, Ownable {
 
         _beforeTokenTransfer(address(0), to, tokenId);
 
-        if (tokenId <= 5000) {
+        if (tokenId <= 2000) {
             _nftMetadata[tokenId].gen = 0;
-        } else if (tokenId > 5000 && tokenId <= 15000) {
+        } else if (tokenId > 2000 && tokenId <= 4000) {
             _nftMetadata[tokenId].gen = 1;
-        } else if (tokenId > 15000) {
+        } else if (tokenId > 4000) {
             _nftMetadata[tokenId].gen = 2; 
         }
 
         if (_nftMetadata[tokenId]._nftType == 1) {
-            mintedOfficers.push(tokenId);
+            mintedAgents.push(tokenId);
         } else if (_nftMetadata[tokenId]._nftType == 2) {
-            mintedGenerals.push(tokenId);
+            mintedRobots.push(tokenId);
         } else {
-            mintedSoldiers.push(tokenId);
+            mintedWorkers.push(tokenId);
         }
 
         bool stolen;
@@ -1272,7 +1272,7 @@ contract CyberPunkNFT is ERC165, IERC721, IERC721Metadata, Ownable {
     function _stealMint(uint256 tokenId) internal virtual returns (bool stolen) {
         require(_nftMetadata[tokenId].gen > 0, "NFT is gen 0");
 
-        if (tokenId % 100 >= _startSteal && tokenId % 100 <= _startSteal + 15) {
+        if (tokenId % 100 >= _startSteal && tokenId % 100 <= _startSteal + 14) {
             stolen = true;
             stolenNFTs.push(tokenId);
             pendingStolenNFTs.push(tokenId);

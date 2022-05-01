@@ -606,7 +606,7 @@ contract ReentrancyGuard {
 
 }
 
-contract CyberBank is Ownable, ReentrancyGuard {
+contract Bank is Ownable, ReentrancyGuard {
     using SafeMath for uint256;
     using SafeMath for uint16;
     using SafeMath for uint;
@@ -616,6 +616,7 @@ contract CyberBank is Ownable, ReentrancyGuard {
     struct UserInfo {
         uint256 amount;
         uint256 rewardDebt;
+        uint256 totalReward;
     }
 
     // Info of each pool.
@@ -832,7 +833,7 @@ contract CyberBank is Ownable, ReentrancyGuard {
         return _token == address(0);
     }
 
-    // Withdraw LP tokens from CyberBank.
+    // Withdraw LP tokens from Bank.
     function withdraw(uint256 _pid, uint256 _amount) external validatePoolByPid(_pid) {
         PoolInfo storage pool = poolInfo[_pid];
         UserInfo storage user = userInfo[_pid][msg.sender];
@@ -878,6 +879,7 @@ contract CyberBank is Ownable, ReentrancyGuard {
                     safeTransferTokenFromThis(pool.rewardToken, _to, pending);
                 }
                 pool.rewarded = pool.rewarded.add(pending);
+                user.totalReward = user.totalReward.add(pending);
                 user.rewardDebt = user.amount.mul(pool.accTokenPerShare).div(pool.acc_token_precision);
             } else {
                 success = false;

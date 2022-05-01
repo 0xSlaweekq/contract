@@ -210,7 +210,7 @@ interface IERC20 {
 
 contract NeonToken is Context, IERC20, Ownable {
 
-    uint256 private _totalSupply = 3 * 10 ** 9 * (10 ** 18);
+    uint256 private _totalSupply = 25 * 10 ** 8 * (10 ** 18);
     string private _name = "Neon";
     string private _symbol = "NEON";
     uint8 private _decimals = 18;

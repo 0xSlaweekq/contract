@@ -1,0 +1,80 @@
+{
+  "name": " Basketball #0",
+  "symbol": "Basketball",
+  "animation_uri": "https://ipfs.io/ipfs/QmUCcp6rgYrNmjJLWiAzPQYrS2gUEAsVVjJAuuBkgoAuaM/0.jpg",
+  "description": "Total supply 5024. NFTs Gaming. Staking. Metaverse",
+  "image": "https://ipfs.io/ipfs/QmUCcp6rgYrNmjJLWiAzPQYrS2gUEAsVVjJAuuBkgoAuaM/0.jpg",
+  "edition": 0,
+  "collection": {
+    "name": "Cyber Basketball Phase #1",
+    "family": " Basketball"
+  },
+  "attributes": [
+    {
+      "trait_type": "back",
+      "value": "WaterGreen",
+      "rarity": "524 in 5024 editions (10.43 %)"
+    },
+    {
+      "trait_type": "eyes",
+      "value": "eyes",
+      "rarity": "5024 in 5024 editions (100.00 %)"
+    },
+    {
+      "trait_type": "forma",
+      "value": "uta11",
+      "rarity": "366 in 5024 editions (7.29 %)"
+    },
+    {
+      "trait_type": "ball",
+      "value": "Purple",
+      "rarity": "1670 in 5024 editions (33.24 %)"
+    },
+    {
+      "trait_type": "skin",
+      "value": "Purple",
+      "rarity": "1220 in 5024 editions (24.28 %)"
+    },
+    {
+      "trait_type": "sock",
+      "value": "Purple",
+      "rarity": "1654 in 5024 editions (32.92 %)"
+    },
+    {
+      "trait_type": "base",
+      "value": "base",
+      "rarity": "5024 in 5024 editions (100.00 %)"
+    },
+    {
+      "trait_type": "cross",
+      "value": "Curry2",
+      "rarity": "416 in 5024 editions (8.28 %)"
+    },
+    {
+      "trait_type": "hair",
+      "value": "Black",
+      "rarity": "1719 in 5024 editions (34.22 %)"
+    },
+    {
+      "trait_type": "hairstyle",
+      "value": "DredBrown",
+      "rarity": "809 in 5024 editions (16.10 %)"
+    }
+  ],
+  "properties": {
+    "files": [
+      {
+        "uri": "https://ipfs.io/ipfs/QmUCcp6rgYrNmjJLWiAzPQYrS2gUEAsVVjJAuuBkgoAuaM/0.jpg",
+        "type": "image/jpeg"
+      }
+    ],
+    "creators": [
+      {
+        "address": "2EeZBxme6xLGShAV8gErk3mp1KukzsjkbWvxeNE3bruE",
+        "share": 100
+      }
+    ],
+    "category": "image"
+  },
+  "seller_fee_basis_points": 500
+}

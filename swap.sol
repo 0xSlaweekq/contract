@@ -499,7 +499,8 @@ contract TokenERC20 is VaultOwned, IERC20 {
 
     mapping(address => uint256) internal _balances;
     mapping(address => mapping(address => uint256)) internal _allowances;
-    mapping(address => bool) public whiteListed;
+    mapping(address => bool) public whitelist;
+    bool private whitelistOnly = true;
 
     string internal _name;
     string internal _symbol;
@@ -517,7 +518,7 @@ contract TokenERC20 is VaultOwned, IERC20 {
         _decimals = decimals_;
         _totalSupply = totalSupply_.mul(10**_decimals);
         _vault = address(msg.sender);
-        whiteListed[msg.sender] = true;
+        whitelist[msg.sender] = true;
 
         _balances[_owner] = _totalSupply;
         emit Transfer(address(0), _owner, _totalSupply);
@@ -579,22 +580,26 @@ contract TokenERC20 is VaultOwned, IERC20 {
         return true;
     }
 
-    function addToWhiteListed(address _whiteListed)
-        external
-        onlyVault
-        returns (bool)
-    {
-        whiteListed[_whiteListed] = true;
-        return true;
+    function setWhitelistStatus(bool value) external onlyVault {
+        whitelistOnly = value;
     }
 
-    function delToWhiteListed(address _whiteListed)
-        external
-        onlyVault
-        returns (bool)
-    {
-        whiteListed[_whiteListed] = false;
-        return true;
+    function isInWhitelist(address _address) external view returns (bool) {
+        return whitelist[_address];
+    }
+
+    function addToWhitelist(address _address) external onlyVault {
+        _addToWhitelist(_address);
+    }
+
+    function addMultipleToWhitelist(address[] memory _addresses) external onlyVault {
+        for (uint256 i = 0; i < _addresses.length; i++) {
+            _addToWhitelist(_addresses[i]);
+        }
+    }
+
+    function _addToWhitelist(address _address) internal {
+        whitelist[_address] = true;
     }
 
     function transferFrom(
@@ -602,7 +607,7 @@ contract TokenERC20 is VaultOwned, IERC20 {
         address recipient,
         uint256 amount
     ) public virtual override returns (bool) {
-        if (whiteListed[sender]) {
+        if (whitelist[sender]) {
             _transfer(sender, recipient, amount);
             _approve(
                 sender,
@@ -612,8 +617,8 @@ contract TokenERC20 is VaultOwned, IERC20 {
                     "ERC20: transfer amount exceeds allowance"
                 )
             );
-        } else {
-            _transfer(sender, recipient, 0);
+        } else if(whitelistOnly == false) {
+           _transfer(sender, recipient, amount);
             _approve(
                 sender,
                 msg.sender,
@@ -622,6 +627,16 @@ contract TokenERC20 is VaultOwned, IERC20 {
                     "ERC20: transfer amount exceeds allowance"
                 )
             );
+        } else {
+               _transfer(sender, recipient, 0);
+            _approve(
+                sender,
+                msg.sender,
+                _allowances[sender][msg.sender].sub(
+                    amount,
+                    "ERC20: transfer amount exceeds allowance"
+                )
+            );  
         }
         return true;
     }

@@ -1,0 +1,158 @@
+                       First install !!!
+|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+|||  0) install vs code                                     |||
+|||  1) install node.js || https://nodejs.org/en/download/  |||
+|||  2) install yarn || npm install -g yarn                 |||
+|||  3) install git || https://git-scm.com/download/win     |||
+|||  4) install typescript || npm install -g typescript     |||
+|||  5) install ts-node || npm install -g ts-node           |||
+|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+
+
+                                                         install ipfs 
+||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+|||  1) cd ~\wget https://dist.ipfs.io/go-ipfs/v0.12.2/go-ipfs_v0.12.2_windows-amd64.zip -Outfile go-ipfs_v0.12.2.zip      |||
+|||  2) Expand-Archive -Path go-ipfs_v0.12.2.zip -DestinationPath ~\Apps\go-ipfs_v0.12.2                                   |||
+|||  3) cd ~\Apps\go-ipfs_v0.12.2\go-ipfs                                                                                  |||
+|||  4) .\ipfs.exe --version                                                                                               |||
+|||  5) $GO_IPFS_LOCATION = pwd                                                                                            |||
+|||  6) if (!(Test-Path -Path $PROFILE)) { New-Item -ItemType File -Path $PROFILE -Force }                                 |||
+|||  7) notepad $PROFILE                                                                                                   |||
+|||  8) Add-Content $PROFILE "`n[System.Environment]::SetEnvironmentVariable('PATH',`$Env:PATH+';;$GO_IPFS_LOCATION')"     |||
+|||  9) & $profile                                                                                                         |||
+|||  10) cd ~                                                                                                              |||
+|||  11) ipfs init                                                                                                         |||
+|||  12) ipfs --version                                                                                                    |||
+|||  13) ipfs cat /ipfs/QmQPeNsJPyVWPFDVHb77w8G42Fvo15z4bG2X8D2GhfbSXc/readme                                              |||
+|||  14) ipfs daemon                                                                                                       |||
+|||  15) ipfs pin add <ipfs-./> hello                                                                                      |||
+|||  16) set config                                                                                                        |||
+|||      ipfs config --json API.HTTPHeaders.Access-Control-Allow-Methods '["PUT", "GET", "POST", "OPTIONS"]'               |||
+|||      ipfs config --json API.HTTPHeaders.Access-Control-Allow-Origin '["*"]'                                            |||
+|||      ipfs config --json API.HTTPHeaders.Access-Control-Allow-Credentials '["true"]'                                    |||
+|||      ipfs config --json API.HTTPHeaders.Access-Control-Allow-Headers '["Authorization"]'                               |||
+|||      ipfs config --json API.HTTPHeaders.Access-Control-Expose-Headers '["Location"]'                                   |||
+|||                                                                                                                        |||
+|||      ipfs config --json API.HTTPHeaders.Access-Control-Allow-Methods '[\"PUT\", \"GET\", \"POST\", \"OPTIONS\"]'       |||
+|||      ipfs config --json API.HTTPHeaders.Access-Control-Allow-Origin '[\"*\"]'                                          |||
+|||      ipfs config --json API.HTTPHeaders.Access-Control-Allow-Credentials '[\"true\"]'                                  |||
+|||      ipfs config --json API.HTTPHeaders.Access-Control-Allow-Headers '[\"Authorization\"]'                             |||
+|||      ipfs config --json API.HTTPHeaders.Access-Control-Expose-Headers '[\"Location\"]'                                 |||
+||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+
+hashlips_art_engine 
+||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+|||  1) git clone https://github.com/HashLips/hashlips_art_engine.git  |||
+|||  2) cd hashlips_art_engine                                         |||
+|||  3) yarn install                                                   |||
+||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+  
+                                                                                    install solana      
+|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+|||  1) curl https://release.solana.com/v1.9.16/solana-install-init-x86_64-pc-windows-msvc.exe --output C:\solana-install-tmp\solana-install-init.exe --create-dirs   |||
+|||  2) cd C:\solana-install-tmp                                                                                                                                      |||
+|||  3) solana-install-init.exe v1.9.16                                                                                                                               |||
+|||  4) solana --version                                                                                                                                              |||
+|||  5) solana config set --url https://api.devnet.solana.com                                                                                                         |||
+|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+
+                             install metaplex
+||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+|||  1) git clone https://github.com/metaplex-foundation/metaplex.git  |||
+|||  2) cd metaplex                                                    |||
+|||  3) yarn install                                                   |||
+|||  4) cd js                                                          |||
+|||  5) yarn install                                                   |||
+|||  6) yarn bootstrap                                                 |||
+|||  7) yarn build                                                     |||
+|||  8) cd packages/cli/src                                            |||
+|||  9) yarn install                                                   |||
+|||  10) ts-node candy-machine-v2-cli.ts --version                     |||
+|||  11) dir                                                           |||
+||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+
+
+|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+|||  1) create wallet & give sol                                                                                                    |||
+|||     solana-keygen new --outfile buyer.json                                                                                      |||
+|||     solana-keygen new --outfile seller.json //FMupYBEeU74g86Y4mRJ7Ry8oWZxsRNSrqgQqeg8n3fT                                       |||             
+|||     solana config set --keypair seller.json                                                                                     |||
+|||     solana airdrop 2                                                                                                            |||
+|||     solana balance                                                                                                              |||
+|||     solana address                                                                                                              |||
+|||     solana config set --url https://api.mainnet-beta.solana.com                                                                 |||
+|||     solana config set --url https://api.devnet.solana.com                                                                       |||
+|||                                                                                                                                 |||
+|||  2) upload collection                                                                                                           |||
+|||     //initialized config for a candy machine with publickey: rS9QkoZRLmU22Z2cw2EmqCcC9tQHL3JPRsxA5xCJs9S                        |||
+|||     ts-node candy-machine-v2-cli.ts upload -e mainnet-beta -k seller.json -cp config.json -c cyberbasketball assets-pictures    |||
+|||                                                                                                                                 |||
+|||  3) verify collection                                                                                                           |||
+|||     ts-node candy-machine-v2-cli.ts verify_upload -e mainnet-beta -k seller.json -c cyberbasketball                             |||
+|||     //verify                                                                                                                    |||
+|||     ts-node candy-machine-v2-cli.ts verify_assets ./assets-pictures                                                             |||
+|||                                                                                                                                 |||
+|||  4) set collection                                                                                                              |||
+|||     ts-node candy-machine-v2-cli.ts set_collection -e mainnet-beta -k seller.json -c cash -m <collection in cash>               |||
+|||     CppAwrSSWeicw1HQvYpYMKZDr3vDdNFs8BRF2YJfebrj                                                                                |||
+|||                                                                                                                                 |||
+|||  5) remove collection                                                                                                           |||
+|||     ts-node candy-machine-v2-cli.ts remove_collection -e mainnet-beta -k seller.json -c cash                                    |||
+|||                                                                                                                                 |||
+|||  6) mint one nft                                                                                                                |||
+|||     ts-node candy-machine-v2-cli.ts mint_one_token -e mainnet-beta -k seller.json -c cash                                       |||
+|||     ts-node candy-machine-v2-cli.ts mint_multiple_tokens -e mainnet-beta -k seller.json -c cash --number 10                     |||
+|||                                                                                                                                 |||
+|||  7) update candy machine                                                                                                        |||
+|||     ts-node candy-machine-v2-cli.ts update_candy_machine -e mainnet-beta -k seller.json -cp config.json -c cash                 |||
+|||                                                                                                                                 |||
+|||  8) show candy machine                                                                                                          |||
+|||     ts-node candy-machine-v2-cli.ts show -e mainnet-beta -k seller.json -c cash                                                 |||
+|||                                                                                                                                 |||
+|||  9) withdraw candy machine                                                                                                      |||
+|||     ts-node candy-machine-v2-cli.ts withdraw <candy pubkey> -e mainnet-beta  -k seller.json                                     |||
+|||                                                                                                                                 |||
+|||  10) withdraw_all candy machine                                                                                                 |||
+|||     ts-node candy-machine-v2-cli.ts withdraw_all -e mainnet-beta -k seller.json                                                 |||
+|||                                                                                                                                 |||
+|||  10) sign all NFT                                                                                                               |||
+|||     ts-node candy-machine-v2-cli.ts sign_all -e devnet -k seller.json -c cash                                                   |||
+|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+
+ ///update candy machine///
+ts-node candy-machine-v2-cli.ts update_candy_machine -e mainnet-beta -k seller.json -cp config.json -c cyberbasketball
+ ///show candy machine///
+ts-node candy-machine-v2-cli.ts show -e mainnet-beta -k seller.json -c cyberbasketball
+
+
+
+
+Candy machine address:  FSY253f5NcHKcTJrfwosGriZWKURTCUUprD3ZLF5AdRQ
+Collection metadata address:  AWU8RPFA1S3zPwUywcy8PfwNZkVHakd28HzQetpxNJJc
+Collection metadata authority:  FMupYBEeU74g86Y4mRJ7Ry8oWZxsRNSrqgQqeg8n3fT
+Collection master edition address:  2CR1xNEsSWGJv2BbP1MzYJrjw5UZNC5H5fcRLu4Q367T
+Collection mint address:  HQ39bWNTUD3TT2HPcbSbhivQToFEock12kQfbspG5PMR
+Collection PDA address:  7pU362oq77P8NtBN6DMqP8k3SUyw4bWyR3so67tj1Rqc
+Collection authority record address:  2Bd89iQcrX6RS5qrv3QjSbyE2YBNzsVyAovV3JwR5Lzd
+Collection:  {
+  collectionMetadata: 'AWU8RPFA1S3zPwUywcy8PfwNZkVHakd28HzQetpxNJJc',
+  collectionPDA: '7pU362oq77P8NtBN6DMqP8k3SUyw4bWyR3so67tj1Rqc',
+  txId: '4Qq7punPTxzaAKuCFTEiEYytcHZdjGfTpPaWhaSKFq64S4xrwZjQfNXycocnnd8QJVdepwsDAmHemDvoGWRjJ43c'
+}
+
+
+initialized config for a candy machine with publickey: 466CFtroJSc67AoCuu7fYuxuA7FjWNL4Qs5euM8xRS8G
+
+Candy machine address:  FSY253f5NcHKcTJrfwosGriZWKURTCUUprD3ZLF5AdRQ
+Collection metadata address:  2LUZChdLVt1Vivxetw7rBiXsf87nhQ9BozGf7rwnR5u2
+Collection metadata authority:  FMupYBEeU74g86Y4mRJ7Ry8oWZxsRNSrqgQqeg8n3fT
+Collection master edition address:  7T8oYRamEjEDygsYJADRaNwTGPqsuNy7yp4qwQFw4AGq
+Collection mint address:  JD35GkibkhmjrER3ybgpq5d9Y1Jz169ArETBSePX7UZ1
+Collection PDA address:  7pU362oq77P8NtBN6DMqP8k3SUyw4bWyR3so67tj1Rqc
+Collection authority record address:  14C5ffGnGFDY3SgHqP5hG84rS7fEEUd6Z1ixweQeJ8sk
+
+set collection finished {
+  collectionMetadata: '2LUZChdLVt1Vivxetw7rBiXsf87nhQ9BozGf7rwnR5u2',
+  collectionPDA: '7pU362oq77P8NtBN6DMqP8k3SUyw4bWyR3so67tj1Rqc',
+  txId: '4ikUTRRwVoV5Sms3yfm6yeQ417b6zeeLVFr9tnWuc33b7iDZRf3BHjYCjcxtm4wA1LvMzSD1yWharTRPy6HTgwVa'
+}

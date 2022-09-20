@@ -1,345 +1,11 @@
+//Powered by Ether Wars Game
 // SPDX-License-Identifier: MIT
 
 pragma solidity ^0.8.4;
 
-library EnumerableSet {
-    // To implement this library for multiple types with as little code
-    // repetition as possible, we write it in terms of a generic Set type with
-    // bytes32 values.
-    // The Set implementation uses private functions, and user-facing
-    // implementations (such as AddressSet) are just wrappers around the
-    // underlying Set.
-    // This means that we can only create new EnumerableSets for types that fit
-    // in bytes32.
+import '@openzeppelin/contracts/access/Ownable.sol';
+import '@openzeppelin/contracts/utils/structs/EnumerableSet.sol';
 
-    struct Set {
-        // Storage of set values
-        bytes32[] _values;
-        // Position of the value in the `values` array, plus 1 because index 0
-        // means a value is not in the set.
-        mapping(bytes32 => uint256) _indexes;
-    }
-
-    /**
-     * @dev Add a value to a set. O(1).
-     *
-     * Returns true if the value was added to the set, that is if it was not
-     * already present.
-     */
-    function _add(Set storage set, bytes32 value) private returns (bool) {
-        if (!_contains(set, value)) {
-            set._values.push(value);
-            // The value is stored at length-1, but we add 1 to all indexes
-            // and use 0 as a sentinel value
-            set._indexes[value] = set._values.length;
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    /**
-     * @dev Removes a value from a set. O(1).
-     *
-     * Returns true if the value was removed from the set, that is if it was
-     * present.
-     */
-    function _remove(Set storage set, bytes32 value) private returns (bool) {
-        // We read and store the value's index to prevent multiple reads from the same storage slot
-        uint256 valueIndex = set._indexes[value];
-
-        if (valueIndex != 0) {
-            // Equivalent to contains(set, value)
-            // To delete an element from the _values array in O(1), we swap the element to delete with the last one in
-            // the array, and then remove the last element (sometimes called as 'swap and pop').
-            // This modifies the order of the array, as noted in {at}.
-
-            uint256 toDeleteIndex = valueIndex - 1;
-            uint256 lastIndex = set._values.length - 1;
-
-            if (lastIndex != toDeleteIndex) {
-                bytes32 lastValue = set._values[lastIndex];
-
-                // Move the last value to the index where the value to delete is
-                set._values[toDeleteIndex] = lastValue;
-                // Update the index for the moved value
-                set._indexes[lastValue] = valueIndex; // Replace lastValue's index to valueIndex
-            }
-
-            // Delete the slot where the moved value was stored
-            set._values.pop();
-
-            // Delete the index for the deleted slot
-            delete set._indexes[value];
-
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    /**
-     * @dev Returns true if the value is in the set. O(1).
-     */
-    function _contains(Set storage set, bytes32 value) private view returns (bool) {
-        return set._indexes[value] != 0;
-    }
-
-    /**
-     * @dev Returns the number of values on the set. O(1).
-     */
-    function _length(Set storage set) private view returns (uint256) {
-        return set._values.length;
-    }
-
-    /**
-     * @dev Returns the value stored at position `index` in the set. O(1).
-     *
-     * Note that there are no guarantees on the ordering of values inside the
-     * array, and it may change when more values are added or removed.
-     *
-     * Requirements:
-     *
-     * - `index` must be strictly less than {length}.
-     */
-    function _at(Set storage set, uint256 index) private view returns (bytes32) {
-        return set._values[index];
-    }
-
-    /**
-     * @dev Return the entire set in an array
-     *
-     * WARNING: This operation will copy the entire storage to memory, which can be quite expensive. This is designed
-     * to mostly be used by view accessors that are queried without any gas fees. Developers should keep in mind that
-     * this function has an unbounded cost, and using it as part of a state-changing function may render the function
-     * uncallable if the set grows to a point where copying to memory consumes too much gas to fit in a block.
-     */
-    function _values(Set storage set) private view returns (bytes32[] memory) {
-        return set._values;
-    }
-
-    // Bytes32Set
-
-    struct Bytes32Set {
-        Set _inner;
-    }
-
-    /**
-     * @dev Add a value to a set. O(1).
-     *
-     * Returns true if the value was added to the set, that is if it was not
-     * already present.
-     */
-    function add(Bytes32Set storage set, bytes32 value) internal returns (bool) {
-        return _add(set._inner, value);
-    }
-
-    /**
-     * @dev Removes a value from a set. O(1).
-     *
-     * Returns true if the value was removed from the set, that is if it was
-     * present.
-     */
-    function remove(Bytes32Set storage set, bytes32 value) internal returns (bool) {
-        return _remove(set._inner, value);
-    }
-
-    /**
-     * @dev Returns true if the value is in the set. O(1).
-     */
-    function contains(Bytes32Set storage set, bytes32 value) internal view returns (bool) {
-        return _contains(set._inner, value);
-    }
-
-    /**
-     * @dev Returns the number of values in the set. O(1).
-     */
-    function length(Bytes32Set storage set) internal view returns (uint256) {
-        return _length(set._inner);
-    }
-
-    /**
-     * @dev Returns the value stored at position `index` in the set. O(1).
-     *
-     * Note that there are no guarantees on the ordering of values inside the
-     * array, and it may change when more values are added or removed.
-     *
-     * Requirements:
-     *
-     * - `index` must be strictly less than {length}.
-     */
-    function at(Bytes32Set storage set, uint256 index) internal view returns (bytes32) {
-        return _at(set._inner, index);
-    }
-
-    /**
-     * @dev Return the entire set in an array
-     *
-     * WARNING: This operation will copy the entire storage to memory, which can be quite expensive. This is designed
-     * to mostly be used by view accessors that are queried without any gas fees. Developers should keep in mind that
-     * this function has an unbounded cost, and using it as part of a state-changing function may render the function
-     * uncallable if the set grows to a point where copying to memory consumes too much gas to fit in a block.
-     */
-    function values(Bytes32Set storage set) internal view returns (bytes32[] memory) {
-        bytes32[] memory store = _values(set._inner);
-        bytes32[] memory result;
-
-        /// @solidity memory-safe-assembly
-        assembly {
-            result := store
-        }
-
-        return result;
-    }
-
-    // AddressSet
-
-    struct AddressSet {
-        Set _inner;
-    }
-
-    /**
-     * @dev Add a value to a set. O(1).
-     *
-     * Returns true if the value was added to the set, that is if it was not
-     * already present.
-     */
-    function add(AddressSet storage set, address value) internal returns (bool) {
-        return _add(set._inner, bytes32(uint256(uint160(value))));
-    }
-
-    /**
-     * @dev Removes a value from a set. O(1).
-     *
-     * Returns true if the value was removed from the set, that is if it was
-     * present.
-     */
-    function remove(AddressSet storage set, address value) internal returns (bool) {
-        return _remove(set._inner, bytes32(uint256(uint160(value))));
-    }
-
-    /**
-     * @dev Returns true if the value is in the set. O(1).
-     */
-    function contains(AddressSet storage set, address value) internal view returns (bool) {
-        return _contains(set._inner, bytes32(uint256(uint160(value))));
-    }
-
-    /**
-     * @dev Returns the number of values in the set. O(1).
-     */
-    function length(AddressSet storage set) internal view returns (uint256) {
-        return _length(set._inner);
-    }
-
-    /**
-     * @dev Returns the value stored at position `index` in the set. O(1).
-     *
-     * Note that there are no guarantees on the ordering of values inside the
-     * array, and it may change when more values are added or removed.
-     *
-     * Requirements:
-     *
-     * - `index` must be strictly less than {length}.
-     */
-    function at(AddressSet storage set, uint256 index) internal view returns (address) {
-        return address(uint160(uint256(_at(set._inner, index))));
-    }
-
-    /**
-     * @dev Return the entire set in an array
-     *
-     * WARNING: This operation will copy the entire storage to memory, which can be quite expensive. This is designed
-     * to mostly be used by view accessors that are queried without any gas fees. Developers should keep in mind that
-     * this function has an unbounded cost, and using it as part of a state-changing function may render the function
-     * uncallable if the set grows to a point where copying to memory consumes too much gas to fit in a block.
-     */
-    function values(AddressSet storage set) internal view returns (address[] memory) {
-        bytes32[] memory store = _values(set._inner);
-        address[] memory result;
-
-        /// @solidity memory-safe-assembly
-        assembly {
-            result := store
-        }
-
-        return result;
-    }
-
-    // UintSet
-
-    struct UintSet {
-        Set _inner;
-    }
-
-    /**
-     * @dev Add a value to a set. O(1).
-     *
-     * Returns true if the value was added to the set, that is if it was not
-     * already present.
-     */
-    function add(UintSet storage set, uint256 value) internal returns (bool) {
-        return _add(set._inner, bytes32(value));
-    }
-
-    /**
-     * @dev Removes a value from a set. O(1).
-     *
-     * Returns true if the value was removed from the set, that is if it was
-     * present.
-     */
-    function remove(UintSet storage set, uint256 value) internal returns (bool) {
-        return _remove(set._inner, bytes32(value));
-    }
-
-    /**
-     * @dev Returns true if the value is in the set. O(1).
-     */
-    function contains(UintSet storage set, uint256 value) internal view returns (bool) {
-        return _contains(set._inner, bytes32(value));
-    }
-
-    /**
-     * @dev Returns the number of values in the set. O(1).
-     */
-    function length(UintSet storage set) internal view returns (uint256) {
-        return _length(set._inner);
-    }
-
-    /**
-     * @dev Returns the value stored at position `index` in the set. O(1).
-     *
-     * Note that there are no guarantees on the ordering of values inside the
-     * array, and it may change when more values are added or removed.
-     *
-     * Requirements:
-     *
-     * - `index` must be strictly less than {length}.
-     */
-    function at(UintSet storage set, uint256 index) internal view returns (uint256) {
-        return uint256(_at(set._inner, index));
-    }
-
-    /**
-     * @dev Return the entire set in an array
-     *
-     * WARNING: This operation will copy the entire storage to memory, which can be quite expensive. This is designed
-     * to mostly be used by view accessors that are queried without any gas fees. Developers should keep in mind that
-     * this function has an unbounded cost, and using it as part of a state-changing function may render the function
-     * uncallable if the set grows to a point where copying to memory consumes too much gas to fit in a block.
-     */
-    function values(UintSet storage set) internal view returns (uint256[] memory) {
-        bytes32[] memory store = _values(set._inner);
-        uint256[] memory result;
-
-        /// @solidity memory-safe-assembly
-        assembly {
-            result := store
-        }
-
-        return result;
-    }
-}
 /**
  * @dev Interface of an ERC721A compliant contract.
  */
@@ -633,7 +299,7 @@ contract ERC721A is IERC721A {
 
     // The bit mask of the `burned` bit in packed ownership.
     uint256 private constant BITMASK_BURNED = 1 << 224;
-    
+
     // The bit position of the `nextInitialized` bit in packed ownership.
     uint256 private constant BITPOS_NEXT_INITIALIZED = 225;
 
@@ -685,7 +351,7 @@ contract ERC721A is IERC721A {
     }
 
     /**
-     * @dev Returns the starting token ID. 
+     * @dev Returns the starting token ID.
      * To change the starting token ID, please override this function.
      */
     function _startTokenId() internal view virtual returns (uint256) {
@@ -701,7 +367,7 @@ contract ERC721A is IERC721A {
 
     /**
      * @dev Returns the total number of tokens in existence.
-     * Burned tokens will reduce the count. 
+     * Burned tokens will reduce the count.
      * To get the total number of tokens minted, please see `_totalMinted`.
      */
     function totalSupply() public view override returns (uint256) {
@@ -779,7 +445,8 @@ contract ERC721A is IERC721A {
     function _setAux(address owner, uint64 aux) internal {
         uint256 packed = _packedAddressData[owner];
         uint256 auxCasted;
-        assembly { // Cast aux without masking.
+        assembly {
+            // Cast aux without masking.
             auxCasted := aux
         }
         packed = (packed & BITMASK_AUX_COMPLEMENT) | (auxCasted << BITPOS_AUX);
@@ -873,7 +540,7 @@ contract ERC721A is IERC721A {
      * @dev See {IERC721Metadata-tokenURI}.
      */
     function tokenURI(uint256 tokenId) public view virtual override returns (string memory) {
-        require(_exists(tokenId), "ERC721Metadata: URI query for nonexistent token");
+        require(_exists(tokenId), 'ERC721Metadata: URI query for nonexistent token');
 
         string memory baseURI = _baseURI();
         return bytes(baseURI).length != 0 ? string(abi.encodePacked(baseURI, _toString(tokenId))) : '';
@@ -1245,7 +912,7 @@ contract ERC721A is IERC721A {
             _packedOwnerships[tokenId] =
                 _addressToUint256(from) |
                 (block.timestamp << BITPOS_START_TIMESTAMP) |
-                BITMASK_BURNED | 
+                BITMASK_BURNED |
                 BITMASK_NEXT_INITIALIZED;
 
             // If the next slot may not have been initialized (i.e. `nextInitialized == false`) .
@@ -1310,14 +977,14 @@ contract ERC721A is IERC721A {
     function getUserNFTIds(address user) public view returns (uint256[] memory) {
         return ownerToTokens[user].values();
     }
-    
+
     function getUserMetadata(address user) public view returns (string[] memory) {
         string[] memory userMetadata = new string[](getUserNFTIds(user).length);
         for (uint256 i = 0; i < getUserNFTIds(user).length; i++) {
             userMetadata[i] = tokenURI(getUserNFTIds(user)[i]);
         }
         return userMetadata;
-    } 
+    }
 
     /**
      * @dev Hook that is called before a set of serially-ordered token ids are about to be transferred. This includes minting.
@@ -1340,11 +1007,11 @@ contract ERC721A is IERC721A {
         uint256 _tokenId,
         uint256 _amount
     ) internal virtual {
-        for (uint256 i=0; i < _amount; i++) {
-            ownerToTokens[to].add(_tokenId+i);
+        for (uint256 i = 0; i < _amount; i++) {
+            ownerToTokens[to].add(_tokenId + i);
         }
-        for (uint256 i=0; i < _amount; i++){
-            ownerToTokens[from].remove(_tokenId+i);
+        for (uint256 i = 0; i < _amount; i++) {
+            ownerToTokens[from].remove(_tokenId + i);
         }
     }
 
@@ -1385,9 +1052,9 @@ contract ERC721A is IERC721A {
      */
     function _toString(uint256 value) internal pure returns (string memory ptr) {
         assembly {
-            // The maximum value of a uint256 contains 78 digits (1 byte per digit), 
+            // The maximum value of a uint256 contains 78 digits (1 byte per digit),
             // but we allocate 128 bytes to keep the free memory pointer 32-byte word aliged.
-            // We will need 1 32-byte word to store the length, 
+            // We will need 1 32-byte word to store the length,
             // and 3 32-byte words to store a maximum of 78 digits. Total: 32 + 3 * 32 = 128.
             ptr := add(mload(0x40), 128)
             // Update the free memory pointer to allocate.
@@ -1400,7 +1067,7 @@ contract ERC721A is IERC721A {
             // The following is essentially a do-while loop that also handles the zero case.
             // Costs a bit more than early returning for the zero case,
             // but cheaper in terms of deployment and overall runtime costs.
-            for { 
+            for {
                 // Initialize and perform the first pass without check.
                 let temp := value
                 // Move the pointer 1 byte leftwards to point to an empty character slot.
@@ -1408,14 +1075,15 @@ contract ERC721A is IERC721A {
                 // Write the character to the pointer. 48 is the ASCII index of '0'.
                 mstore8(ptr, add(48, mod(temp, 10)))
                 temp := div(temp, 10)
-            } temp { 
+            } temp {
                 // Keep dividing `temp` until zero.
                 temp := div(temp, 10)
-            } { // Body of the for loop.
+            } {
+                // Body of the for loop.
                 ptr := sub(ptr, 1)
                 mstore8(ptr, add(48, mod(temp, 10)))
             }
-            
+
             let length := sub(end, ptr)
             // Move the pointer 32 bytes leftwards to make room for the length.
             ptr := sub(ptr, 32)
@@ -1425,334 +1093,83 @@ contract ERC721A is IERC721A {
     }
 }
 
-/**
- * @dev Provides information about the current execution context, including the
- * sender of the transaction and its data. While these are generally available
- * via msg.sender and msg.data, they should not be accessed in such a direct
- * manner, since when dealing with meta-transactions the account sending and
- * paying for execution may not be the actual sender (as far as an application
- * is concerned).
- *
- * This contract is only required for intermediate, library-like contracts.
- */
-abstract contract Context {
-    function _msgSender() internal view virtual returns (address) {
-        return msg.sender;
+contract Alphapass is ERC721A, Ownable {
+    uint256 public mintPrice = 0.019 ether;
+    uint256 private constant MAX_SUPPLY = 300;
+
+    string private baseURI;
+    mapping(address => uint256) private mintedCount;
+
+    mapping(address => bool) private whitelist;
+    bool public whitelistOnly = true;
+
+    address[] private claimWallets;
+    mapping(address => uint256) private claimAmounts;
+
+    constructor(address[] memory _wallets, uint256[] memory _percentages) ERC721A('ETHER WARS:Alpha Pass', 'EWAP') {
+        uint256 total;
+        require(_wallets.length == _percentages.length, 'Invalid Input');
+        for (uint256 i = 0; i < _wallets.length; i++) {
+            claimWallets.push(_wallets[i]);
+            claimAmounts[_wallets[i]] = _percentages[i];
+            total += _percentages[i];
+        }
+        require(total == 100, 'Total percentages must add up to 100');
     }
 
-    function _msgData() internal view virtual returns (bytes calldata) {
-        return msg.data;
-    }
-}
+    function mint() external payable {
+        require(totalSupply() + 1 <= MAX_SUPPLY, 'Exceeds supply');
+        if (whitelistOnly) {
+            require(whitelist[_msgSender()], 'Address is not in whitelist');
+        }
 
-/**
- * @dev Contract module which provides a basic access control mechanism, where
- * there is an account (an owner) that can be granted exclusive access to
- * specific functions.
- *
- * By default, the owner account will be the one that deploys the contract. This
- * can later be changed with {transferOwnership}.
- *
- * This module is used through inheritance. It will make available the modifier
- * `onlyOwner`, which can be applied to your functions to restrict their use to
- * the owner.
- */
-abstract contract Ownable is Context {
-    address private _owner;
+        mintedCount[msg.sender] += 1;
+        require(msg.value == mintPrice, 'ETH sent not correct');
 
-    event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
+        require(mintedCount[msg.sender] <= 1, 'You used max mints');
 
-    /**
-     * @dev Initializes the contract setting the deployer as the initial owner.
-     */
-    constructor() {
-        _transferOwnership(_msgSender());
+        _mint(msg.sender, 1);
     }
 
-    /**
-     * @dev Returns the address of the current owner.
-     */
-    function owner() public view virtual returns (address) {
-        return _owner;
+    function setBaseURI(string calldata _newBaseUri) external onlyOwner {
+        baseURI = _newBaseUri;
     }
 
-    /**
-     * @dev Throws if called by any account other than the owner.
-     */
-    modifier onlyOwner() {
-        require(owner() == _msgSender(), "Ownable: caller is not the owner");
-        _;
+    function tokenURI(uint256 tokenId) public view virtual override returns (string memory) {
+        require(_exists(tokenId), 'ERC721Metadata: URI query for nonexistent token');
+        return bytes(_baseURI()).length != 0 ? string(abi.encodePacked(_baseURI(), _toString(tokenId))) : '';
     }
 
-    /**
-     * @dev Leaves the contract without owner. It will not be possible to call
-     * `onlyOwner` functions anymore. Can only be called by the current owner.
-     *
-     * NOTE: Renouncing ownership will leave the contract without an owner,
-     * thereby removing any functionality that is only available to the owner.
-     */
-    function renounceOwnership() public virtual onlyOwner {
-        _transferOwnership(address(0));
+    function _baseURI() internal view override returns (string memory) {
+        return baseURI;
     }
 
-    /**
-     * @dev Transfers ownership of the contract to a new account (`newOwner`).
-     * Can only be called by the current owner.
-     */
-    function transferOwnership(address newOwner) public virtual onlyOwner {
-        require(newOwner != address(0), "Ownable: new owner is the zero address");
-        _transferOwnership(newOwner);
+    function isInWhitelist(address _address) external view returns (bool) {
+        return whitelist[_address];
     }
 
-    /**
-     * @dev Transfers ownership of the contract to a new account (`newOwner`).
-     * Internal function without access restriction.
-     */
-    function _transferOwnership(address newOwner) internal virtual {
-        address oldOwner = _owner;
-        _owner = newOwner;
-        emit OwnershipTransferred(oldOwner, newOwner);
-    }
-}
-
-/**
- * @dev Contract module which allows children to implement an emergency stop
- * mechanism that can be triggered by an authorized account.
- *
- * This module is used through inheritance. It will make available the
- * modifiers `whenNotPaused` and `whenPaused`, which can be applied to
- * the functions of your contract. Note that they will not be pausable by
- * simply including this module, only once the modifiers are put in place.
- */
-abstract contract Pausable is Context {
-    /**
-     * @dev Emitted when the pause is triggered by `account`.
-     */
-    event Paused(address account);
-
-    /**
-     * @dev Emitted when the pause is lifted by `account`.
-     */
-    event Unpaused(address account);
-
-    bool private _paused;
-
-    /**
-     * @dev Initializes the contract in unpaused state.
-     */
-    constructor() {
-        _paused = false;
+    function setWhitelistStatus(bool value) external onlyOwner {
+        whitelistOnly = value;
     }
 
-    /**
-     * @dev Modifier to make a function callable only when the contract is not paused.
-     *
-     * Requirements:
-     *
-     * - The contract must not be paused.
-     */
-    modifier whenNotPaused() {
-        _requireNotPaused();
-        _;
+    function addMultipleToWhitelist(address[] memory _addresses) external onlyOwner {
+        for (uint256 i = 0; i < _addresses.length; i++) {
+            _addToWhitelist(_addresses[i]);
+        }
     }
 
-    /**
-     * @dev Modifier to make a function callable only when the contract is paused.
-     *
-     * Requirements:
-     *
-     * - The contract must be paused.
-     */
-    modifier whenPaused() {
-        _requirePaused();
-        _;
+    function _addToWhitelist(address _address) internal {
+        whitelist[_address] = true;
     }
 
-    /**
-     * @dev Returns true if the contract is paused, and false otherwise.
-     */
-    function paused() public view virtual returns (bool) {
-        return _paused;
+    function withdrawFunds() external {
+        require(claimAmounts[_msgSender()] > 0, 'Contract: Unauthorised call');
+        uint256 nBal = address(this).balance;
+        for (uint256 i = 0; i < claimWallets.length; i++) {
+            address to = claimWallets[i];
+            if (nBal > 0) {
+                payable(to).transfer((nBal * claimAmounts[to]) / 100);
+            }
+        }
     }
-
-    /**
-     * @dev Throws if the contract is paused.
-     */
-    function _requireNotPaused() internal view virtual {
-        require(!paused(), "Pausable: paused");
-    }
-
-    /**
-     * @dev Throws if the contract is not paused.
-     */
-    function _requirePaused() internal view virtual {
-        require(paused(), "Pausable: not paused");
-    }
-
-    /**
-     * @dev Triggers stopped state.
-     *
-     * Requirements:
-     *
-     * - The contract must not be paused.
-     */
-    function _pause() internal virtual whenNotPaused {
-        _paused = true;
-        emit Paused(_msgSender());
-    }
-
-    /**
-     * @dev Returns to normal state.
-     *
-     * Requirements:
-     *
-     * - The contract must be paused.
-     */
-    function _unpause() internal virtual whenPaused {
-        _paused = false;
-        emit Unpaused(_msgSender());
-    }
-}
-
-contract Gem is ERC721A, Ownable, Pausable {
-  uint256 constant private MAX_SUPPLY = 4995;
-  uint256 constant private MAX_PER_TRANSACTION = 3;
-
-  string private baseURI;
-  mapping(address => bool) private maxFreeMint;
-  mapping(address => uint256) public freeMintedCount;
-  
-  constructor() ERC721A("Gem", "GEM") {
-      _pause();
-  }
-
-  function mint(uint256 _amount) whenNotPaused() external {
-    require(totalSupply() + _amount <= MAX_SUPPLY, "Exceeds supply");
-    require(_amount <= MAX_PER_TRANSACTION, "Exceeds max per tx");
-    
-    freeMintedCount[msg.sender] += _amount;
-
-    require(freeMintedCount[msg.sender] <= 9, "You used max free mints");
-
-    _mint(msg.sender, _amount);
-  }
-
-  function setBaseURI(string calldata _newBaseUri) external onlyOwner {
-    baseURI = _newBaseUri;
-  }
-  function tokenURI(uint256 tokenId) public view virtual override returns (string memory) {
-    require(_exists(tokenId), "ERC721Metadata: URI query for nonexistent token");
-
-    return bytes(_baseURI()).length != 0 ? string(abi.encodePacked(_baseURI(), _toString(tokenId))) : '';
-  }
-  function _baseURI() internal view override returns (string memory) {
-    return baseURI;
-  }
-
-  function flipSale()  external onlyOwner {
-    _unpause();
-  }
-
-  function collectReserves(uint256 _amount) external onlyOwner {
-    require(totalSupply() == 0, "Reserves already taken");
-
-    _mint(msg.sender, _amount);
-  }
-
-  function withdraw() external onlyOwner {
-    require(
-    payable(owner()).send(address(this).balance),
-        "Withdraw unsuccessful"
-    );
-  }
-}
-
-contract CraftGem is ERC721A, Ownable {
-  uint256 constant mutatePrice = 0.01 ether;
-  uint256 constant MAX_SUPPLY = 999;
-  uint256 constant MAX_PER_TRANSACTION = 3;
-
-  uint256 public publicMintPrice = 0.1 ether;
-  string private baseURI;
-
-  mapping(uint256 => bool) public usedGem;
-
-  Gem private immutable gemContract;
-
-  address[] private claimWallets;
-  mapping(address => uint256) private claimAmounts;
-
-  constructor(address _gemAddress, address[] memory _wallets, uint256[] memory _percentages) ERC721A("Craft Gem", "CraftGem") {
-    gemContract = Gem(_gemAddress);
-    uint256 total;
-    require(_wallets.length == _percentages.length, "Invalid Input");
-    for (uint256 i = 0; i < _wallets.length; i++) {
-        claimWallets.push(_wallets[i]);
-        claimAmounts[_wallets[i]] = _percentages[i];
-        total += _percentages[i];
-    }
-    require(total == 100, "Total percentages must add up to 100");
-  }
-
-  function mutate(uint256[] calldata _gemIds) external payable {
-    require(_gemIds.length == 3, "Needs 3 gems to mutate");
-    require(msg.value == mutatePrice, "ETH sent not correct");
-
-    require(_gemIds[0] != _gemIds[1], "No duplicate gems allowed");
-    require(_gemIds[0] != _gemIds[2], "No duplicate gems allowed");
-    require(_gemIds[1] != _gemIds[2], "No duplicate gems allowed");
-
-    for (uint256 i = 0; i < _gemIds.length; ++i) {
-      require(
-        gemContract.ownerOf(_gemIds[i]) == msg.sender,
-        "Not gem owner"
-      );
-      require(usedGem[_gemIds[i]] == false, "Gem already used for mutation");
-    }
-
-    usedGem[_gemIds[0]] = true;
-    usedGem[_gemIds[1]] = true;
-
-    gemContract.transferFrom(
-      msg.sender,
-      0x000000000000000000000000000000000000dEaD,
-      _gemIds[2]
-    );
-
-    _mint(msg.sender, 1);
-  }
-
-  function publicMint(uint256 _amount) external payable {
-    require(totalSupply() + _amount <= MAX_SUPPLY, "Exceeds supply");
-    require(_amount <= MAX_PER_TRANSACTION, "Exceeds max per tx");
-
-    require(msg.value == _amount * publicMintPrice, "ETH sent not correct");
-
-    _mint(msg.sender, _amount);
-  }
-
-  function setBaseURI(string calldata _newBaseUri) external onlyOwner {
-    baseURI = _newBaseUri;
-  }
-
-  function tokenURI(uint256 tokenId) public view virtual override returns (string memory) {
-    require(_exists(tokenId), "ERC721Metadata: URI query for nonexistent token");
-
-    return bytes(_baseURI()).length != 0 ? string(abi.encodePacked(_baseURI(), _toString(tokenId))) : '';
-  }
-
-  function _baseURI() internal view override returns (string memory) {
-    return baseURI;
-  }
-
-  function withdraw() external onlyOwner {
-    require(claimAmounts[_msgSender()] > 0, "Contract: Unauthorised call");
-    uint256 nBal = address(this).balance;
-    for (uint256 i = 0; i < claimWallets.length; i++) {
-        address to = claimWallets[i];
-        if (nBal > 0) {
-            payable(to).transfer(nBal * claimAmounts[to] / 100);
-        } 
-    }
-  }
 }

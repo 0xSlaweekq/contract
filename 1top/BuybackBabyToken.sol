@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.4;
-import '../../interfaces/IERC20Extended.sol';
-import '../../interfaces/IUniswapV2Factory.sol';
-import '../../interfaces/IUniswapV2Router02.sol';
+import '@openzeppelin/contracts/proxy/Clones.sol';
+import '@openzeppelin/contracts/token/ERC20/IERC20.sol';
+import '@uniswap/v2-core/contracts/interfaces/IUniswapV2Factory.sol';
+import '@uniswap/v2-periphery/contracts/interfaces/IUniswapV2Router02.sol';
 import '../../dividend/DividendDistributor.sol';
-import '../../libs/Clones.sol';
 
 abstract contract Auth {
     address internal owner;
@@ -86,7 +86,7 @@ abstract contract BaseToken {
     event TokenCreated(address indexed owner, address indexed token, TokenType tokenType, uint256 version);
 }
 
-contract BuybackBabyToken is IERC20Extended, Auth, BaseToken {
+contract BuybackBabyToken is IERC20, Auth, BaseToken {
     using SafeMath for uint256;
 
     uint256 public constant VERSION = 1;
@@ -330,9 +330,7 @@ contract BuybackBabyToken is IERC20Extended, Auth, BaseToken {
     function getMultipliedFee() public view returns (uint256) {
         if (buybackMultiplierTriggeredAt.add(buybackMultiplierLength) > block.timestamp) {
             uint256 remainingTime = buybackMultiplierTriggeredAt.add(buybackMultiplierLength).sub(block.timestamp);
-            uint256 feeIncrease = totalFee.mul(buybackMultiplierNumerator).div(buybackMultiplierDenominator).sub(
-                totalFee
-            );
+            uint256 feeIncrease = totalFee.mul(buybackMultiplierNumerator).div(buybackMultiplierDenominator).sub(totalFee);
             return totalFee.add(feeIncrease.mul(remainingTime).div(buybackMultiplierLength));
         }
         return totalFee;
@@ -365,13 +363,7 @@ contract BuybackBabyToken is IERC20Extended, Auth, BaseToken {
         path[1] = router.WETH();
         uint256 balanceBefore = address(this).balance;
 
-        router.swapExactTokensForETHSupportingFeeOnTransferTokens(
-            amountToSwap,
-            0,
-            path,
-            address(this),
-            block.timestamp
-        );
+        router.swapExactTokensForETHSupportingFeeOnTransferTokens(amountToSwap, 0, path, address(this), block.timestamp);
 
         uint256 amountBNB = address(this).balance.sub(balanceBefore);
 
@@ -381,11 +373,11 @@ contract BuybackBabyToken is IERC20Extended, Auth, BaseToken {
         uint256 amountBNBReflection = amountBNB.mul(reflectionFee).div(totalBNBFee);
         uint256 amountBNBMarketing = amountBNB.mul(marketingFee).div(totalBNBFee);
 
-        try distributor.deposit{value: amountBNBReflection}() {} catch {}
+        try distributor.deposit{ value: amountBNBReflection }() {} catch {}
         payable(marketingFeeReceiver).transfer(amountBNBMarketing);
 
         if (amountToLiquify > 0) {
-            router.addLiquidityETH{value: amountBNBLiquidity}(
+            router.addLiquidityETH{ value: amountBNBLiquidity }(
                 address(this),
                 amountToLiquify,
                 0,
@@ -432,7 +424,7 @@ contract BuybackBabyToken is IERC20Extended, Auth, BaseToken {
         path[0] = router.WETH();
         path[1] = address(this);
 
-        router.swapExactETHForTokensSupportingFeeOnTransferTokens{value: amount}(0, path, to, block.timestamp);
+        router.swapExactETHForTokensSupportingFeeOnTransferTokens{ value: amount }(0, path, to, block.timestamp);
     }
 
     function setAutoBuybackSettings(

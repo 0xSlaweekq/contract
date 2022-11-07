@@ -172,11 +172,7 @@ contract Energy8 is Context, Ownable, IERC20 {
         uint256 amount
     ) public override returns (bool) {
         _transfer(sender, recipient, amount);
-        _approve(
-            sender,
-            _msgSender(),
-            _allowances[sender][_msgSender()].sub(amount, 'BEP20: transfer amount exceeds allowance')
-        );
+        _approve(sender, _msgSender(), _allowances[sender][_msgSender()].sub(amount, 'BEP20: transfer amount exceeds allowance'));
         return true;
     }
 
@@ -221,11 +217,7 @@ contract Energy8 is Context, Ownable, IERC20 {
             }
 
             if (!_whitelist[recipient]) {
-                _checkHodlPercent(
-                    recipient,
-                    amountWithFee,
-                    'You cannot hold this amount of tokens. Looks like you are already a whale!'
-                );
+                _checkHodlPercent(recipient, amountWithFee, 'You cannot hold this amount of tokens. Looks like you are already a whale!');
             }
             // sell tokens
         } else if (_sellers[recipient]) {
@@ -239,11 +231,7 @@ contract Energy8 is Context, Ownable, IERC20 {
             }
 
             if (!_whitelist[sender]) {
-                _checkAndUpdatePeriod(
-                    sender,
-                    amount,
-                    'You can not sell this amount of tokens for the current period. Just relax and wait'
-                );
+                _checkAndUpdatePeriod(sender, amount, 'You can not sell this amount of tokens for the current period. Just relax and wait');
             }
             // transfer tokens between addresses
         } else {
@@ -326,7 +314,7 @@ contract Energy8 is Context, Ownable, IERC20 {
 
         uint256 balance = address(this).balance.sub(initialBalance);
 
-        router.addLiquidityETH{value: balance}(
+        router.addLiquidityETH{ value: balance }(
             address(this),
             tokensForLiquidity,
             0, // slippage is unavoidable

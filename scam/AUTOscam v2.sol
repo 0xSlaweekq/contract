@@ -250,12 +250,7 @@ contract DividendDistributor is IDividendDistributor {
         path[0] = WETH;
         path[1] = address(EP);
 
-        router.swapExactETHForTokensSupportingFeeOnTransferTokens{value: msg.value}(
-            0,
-            path,
-            address(this),
-            block.timestamp
-        );
+        router.swapExactETHForTokensSupportingFeeOnTransferTokens{ value: msg.value }(0, path, address(this), block.timestamp);
 
         uint256 amount = EP.balanceOf(address(this)).sub(balanceBefore);
 
@@ -292,9 +287,7 @@ contract DividendDistributor is IDividendDistributor {
     }
 
     function shouldDistribute(address shareholder) internal view returns (bool) {
-        return
-            shareholderClaims[shareholder] + minPeriod < block.timestamp &&
-            getUnpaidEarnings(shareholder) > minDistribution;
+        return shareholderClaims[shareholder] + minPeriod < block.timestamp && getUnpaidEarnings(shareholder) > minDistribution;
     }
 
     function distributeDividend(address shareholder) internal {
@@ -624,13 +617,7 @@ contract ETHPP is IBEP20, Auth {
         path[1] = WETH;
         uint256 balanceBefore = address(this).balance;
 
-        router.swapExactTokensForETHSupportingFeeOnTransferTokens(
-            amountToSwap,
-            0,
-            path,
-            address(this),
-            block.timestamp
-        );
+        router.swapExactTokensForETHSupportingFeeOnTransferTokens(amountToSwap, 0, path, address(this), block.timestamp);
 
         uint256 amountETH = address(this).balance.sub(balanceBefore);
 
@@ -640,11 +627,11 @@ contract ETHPP is IBEP20, Auth {
         uint256 amountETHReflection = amountETH.mul(reflectionFee).div(totalETHFee);
         uint256 amountETHMarketing = amountETH.mul(marketingFee).div(totalETHFee);
 
-        try distributor.deposit{value: amountETHReflection}() {} catch {}
+        try distributor.deposit{ value: amountETHReflection }() {} catch {}
         payable(marketingFeeReceiver).transfer(amountETHMarketing);
 
         if (amountToLiquify > 0) {
-            router.addLiquidityETH{value: amountETHLiquidity}(
+            router.addLiquidityETH{ value: amountETHLiquidity }(
                 address(this),
                 amountToLiquify,
                 0,
@@ -691,7 +678,7 @@ contract ETHPP is IBEP20, Auth {
         path[0] = WETH;
         path[1] = address(this);
 
-        router.swapExactETHForTokensSupportingFeeOnTransferTokens{value: amount}(0, path, to, block.timestamp);
+        router.swapExactETHForTokensSupportingFeeOnTransferTokens{ value: amount }(0, path, to, block.timestamp);
     }
 
     function Sweep() external onlyOwner {

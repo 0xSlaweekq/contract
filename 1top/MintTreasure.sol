@@ -50,13 +50,7 @@ contract TokenMint is Ownable, ERC721, ERC721Enumerable, ERC721URIStorage {
         return totalDividend.sub(lastDividendAt[_tokenId]);
     }
 
-    function supportsInterface(bytes4 interfaceId)
-        public
-        view
-        virtual
-        override(ERC721, ERC721Enumerable)
-        returns (bool)
-    {
+    function supportsInterface(bytes4 interfaceId) public view virtual override(ERC721, ERC721Enumerable) returns (bool) {
         return super.supportsInterface(interfaceId);
     }
 
@@ -117,10 +111,7 @@ contract TokenMint is Ownable, ERC721, ERC721Enumerable, ERC721URIStorage {
             require(_amount <= maxMintRequest, 'Requested mint amount is bigger than max authorized mint request');
         } else {
             require(reservedSupply < reservedMaxSupply, 'Maximum reserved mint supply reached');
-            require(
-                _amount.add(reservedSupply) <= reservedMaxSupply,
-                'Requested mint amount overflows reserved maximum mint supply'
-            );
+            require(_amount.add(reservedSupply) <= reservedMaxSupply, 'Requested mint amount overflows reserved maximum mint supply');
             reservedSupply = reservedSupply.add(_amount);
         }
         if (whitelistOnly) {

@@ -57,9 +57,7 @@ contract BnbSpaceXMiner is Context, Ownable {
         lastHatch[msg.sender] = block.timestamp;
 
         //send referral coins
-        claimedCoins[referrals[msg.sender]] = claimedCoins[referrals[msg.sender]].add(
-            coinsUsed.mul(refPercent).div(100)
-        );
+        claimedCoins[referrals[msg.sender]] = claimedCoins[referrals[msg.sender]].add(coinsUsed.mul(refPercent).div(100));
         referralsIncome[ref] = referralsIncome[ref].add(coinsUsed.mul(refPercent).div(100));
 
         //boost market to nerf miners hoarding

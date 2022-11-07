@@ -369,11 +369,7 @@ contract Staking is Ownable, IERC721Receiver, Pausable {
             }
             if (nft.nftType == 0) {
                 pendingReward_ = _pendingSoldiersReward(tokenId);
-                if (
-                    stakedOfficers.length > 0 &&
-                    userInfo[_msgSender()].stakedGenerals.length == 0 &&
-                    pendingReward_ < 100 * 10**18
-                ) {
+                if (stakedOfficers.length > 0 && userInfo[_msgSender()].stakedGenerals.length == 0 && pendingReward_ < 100 * 10**18) {
                     uint256 tax = (pendingReward_ * 2) / 10;
                     pendingReward_ -= tax;
                     distributeDividends(tax);
@@ -409,9 +405,8 @@ contract Staking is Ownable, IERC721Receiver, Pausable {
                 pendingReward_ = _pendingSoldiersReward(tokenId);
                 require(pendingReward_ >= 100 * 10**18, '100 tokens were not farmed yet');
                 if (stakedOfficers.length > 0) {
-                    uint256 _probability = uint256(
-                        keccak256(abi.encodePacked(blockhash(block.number), tx.origin, block.timestamp))
-                    ) % 100000;
+                    uint256 _probability = uint256(keccak256(abi.encodePacked(blockhash(block.number), tx.origin, block.timestamp))) %
+                        100000;
 
                     if (_probability < 35000) {
                         uint256 tax = (pendingReward_ * 5) / 10;
@@ -497,9 +492,8 @@ contract Staking is Ownable, IERC721Receiver, Pausable {
             (bool returned, uint256[] memory _stolenNFTs) = nftContract.retrieveStolenNFTs();
             if (returned) {
                 for (uint256 i = 0; i < _stolenNFTs.length; i++) {
-                    uint256 _luckyWinner = uint256(
-                        keccak256(abi.encodePacked(blockhash(block.number), tx.origin, block.timestamp, i))
-                    ) % stakedOfficers.length;
+                    uint256 _luckyWinner = uint256(keccak256(abi.encodePacked(blockhash(block.number), tx.origin, block.timestamp, i))) %
+                        stakedOfficers.length;
                     uint256 winId = stakedOfficers[_luckyWinner];
                     address winner = nftInfo[winId].owner;
                     IERC721(address(nftContract)).safeTransferFrom(address(this), winner, _stolenNFTs[i]);
@@ -509,9 +503,8 @@ contract Staking is Ownable, IERC721Receiver, Pausable {
     }
 
     function _stealReward(UserInfo storage user) internal {
-        uint256 _randomSoldier = uint256(
-            keccak256(abi.encodePacked(blockhash(block.number), tx.origin, block.timestamp + 20))
-        ) % stakedSoldiers.length;
+        uint256 _randomSoldier = uint256(keccak256(abi.encodePacked(blockhash(block.number), tx.origin, block.timestamp + 20))) %
+            stakedSoldiers.length;
 
         uint256 tokenId = stakedSoldiers[_randomSoldier];
         address owner = nftInfo[tokenId].owner;
@@ -569,21 +562,15 @@ contract Staking is Ownable, IERC721Receiver, Pausable {
     }
 
     function accumulativeDividendOf(uint256 tokenId) internal view returns (uint256) {
-        return
-            magnifiedDividendPerShare.toInt256Safe().add(magnifiedDividendCorrections[tokenId]).toUint256Safe() /
-            magnitude;
+        return magnifiedDividendPerShare.toInt256Safe().add(magnifiedDividendCorrections[tokenId]).toUint256Safe() / magnitude;
     }
 
     function _add(uint256 tokenId) internal {
-        magnifiedDividendCorrections[tokenId] = magnifiedDividendCorrections[tokenId].sub(
-            (magnifiedDividendPerShare).toInt256Safe()
-        );
+        magnifiedDividendCorrections[tokenId] = magnifiedDividendCorrections[tokenId].sub((magnifiedDividendPerShare).toInt256Safe());
     }
 
     function _remove(uint256 tokenId) internal {
-        magnifiedDividendCorrections[tokenId] = magnifiedDividendCorrections[tokenId].add(
-            (magnifiedDividendPerShare).toInt256Safe()
-        );
+        magnifiedDividendCorrections[tokenId] = magnifiedDividendCorrections[tokenId].add((magnifiedDividendPerShare).toInt256Safe());
     }
 
     event Received();

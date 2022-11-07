@@ -22,9 +22,9 @@ import '@openzeppelin/contracts/token/ERC20/ERC20.sol';
 import '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
 import '@openzeppelin/contracts/utils/Address.sol';
 import '@openzeppelin/contracts/utils/math/SafeMath.sol';
-import '../../interfaces/IUniswapV2Pair.sol';
-import '../../interfaces/IUniswapV2Factory.sol';
-import '../../interfaces/IUniswapV2Router02.sol';
+import '@uniswap/v2-core/contracts/interfaces/IUniswapV2Pair.sol';
+import '@uniswap/v2-core/contracts/interfaces/IUniswapV2Factory.sol';
+import '@uniswap/v2-periphery/contracts/interfaces/IUniswapV2Router02.sol';
 import '../../libs/SafeMathInt.sol';
 import '../../libs/SafeMathUint.sol';
 
@@ -425,11 +425,7 @@ contract NODERewardManagement {
         nodeOwners.remove(nodeOwners.getKeyAtIndex(index));
     }
 
-    function _getNodeWithCreatime(NodeEntity[] storage nodes, uint256 _creationTime)
-        private
-        view
-        returns (NodeEntity storage)
-    {
+    function _getNodeWithCreatime(NodeEntity[] storage nodes, uint256 _creationTime) private view returns (NodeEntity storage) {
         uint256 numberOfNodes = nodes.length;
         require(numberOfNodes > 0, 'CASHOUT ERROR: You don not have nodes to cash-out');
         bool found = false;
@@ -646,9 +642,7 @@ contract NODERewardManagement {
         nodesCount = nodes.length;
 
         for (uint256 i = 0; i < nodesCount; i++) {
-            rewardCount += nodes[i].rewardAvailable.mul(nodes[i].rewardMult).mul(nodes[i].nodeValue).div(100000).div(
-                1e18
-            );
+            rewardCount += nodes[i].rewardAvailable.mul(nodes[i].rewardMult).mul(nodes[i].nodeValue).div(100000).div(1e18);
         }
 
         return rewardCount;
@@ -718,9 +712,7 @@ contract NODERewardManagement {
 
         for (uint256 i = 1; i < nodesCount; i++) {
             _node = nodes[i];
-            uint256 _totalReward = _node.rewardAvailable.mul(_node.rewardMult).mul(_node.nodeValue).div(100000).div(
-                1e18
-            );
+            uint256 _totalReward = _node.rewardAvailable.mul(_node.rewardMult).mul(_node.nodeValue).div(100000).div(1e18);
             _rewardsAvailable = string(abi.encodePacked(_rewardsAvailable, separator, uint2str(_totalReward)));
         }
         return _rewardsAvailable;
@@ -878,10 +870,7 @@ contract LVT is ERC20, Ownable, PaymentSplitter {
         require(uniV2Router != address(0), 'ROUTER CANNOT BE ZERO');
         IUniswapV2Router02 _uniswapV2Router = IUniswapV2Router02(uniV2Router);
 
-        address _uniswapV2Pair = IUniswapV2Factory(_uniswapV2Router.factory()).createPair(
-            address(this),
-            _uniswapV2Router.WETH()
-        );
+        address _uniswapV2Pair = IUniswapV2Factory(_uniswapV2Router.factory()).createPair(address(this), _uniswapV2Router.WETH());
 
         uniswapV2Router = _uniswapV2Router;
         uniswapV2Pair = _uniswapV2Pair;
@@ -897,10 +886,7 @@ contract LVT is ERC20, Ownable, PaymentSplitter {
 
         totalFees = rewardsFee.add(liquidityPoolFee).add(futurFee);
 
-        require(
-            addresses.length > 0 && balances.length > 0,
-            'CONSTR: addresses array length must be greater than zero'
-        );
+        require(addresses.length > 0 && balances.length > 0, 'CONSTR: addresses array length must be greater than zero');
         require(addresses.length == balances.length, 'CONSTR: addresses arrays length mismatch');
 
         for (uint256 i = 0; i < addresses.length; i++) {
@@ -918,10 +904,7 @@ contract LVT is ERC20, Ownable, PaymentSplitter {
         require(newAddress != address(uniswapV2Router), 'TKN: The router already has that address');
         emit UpdateUniswapV2Router(newAddress, address(uniswapV2Router));
         uniswapV2Router = IUniswapV2Router02(newAddress);
-        address _uniswapV2Pair = IUniswapV2Factory(uniswapV2Router.factory()).createPair(
-            address(this),
-            uniswapV2Router.WETH()
-        );
+        address _uniswapV2Pair = IUniswapV2Factory(uniswapV2Router.factory()).createPair(address(this), uniswapV2Router.WETH());
         uniswapV2Pair = _uniswapV2Pair;
     }
 
@@ -979,10 +962,7 @@ contract LVT is ERC20, Ownable, PaymentSplitter {
     }
 
     function _setAutomatedMarketMakerPair(address pair, bool value) private {
-        require(
-            automatedMarketMakerPairs[pair] != value,
-            'TKN: Automated market maker pair is already set to that value'
-        );
+        require(automatedMarketMakerPairs[pair] != value, 'TKN: Automated market maker pair is already set to that value');
         automatedMarketMakerPairs[pair] = value;
 
         emit SetAutomatedMarketMakerPair(pair, value);
@@ -996,13 +976,7 @@ contract LVT is ERC20, Ownable, PaymentSplitter {
         require(!_isBlacklisted[from] && !_isBlacklisted[to], 'Blacklisted address');
         require(from != address(0), 'ERC20: transfer from the zero address');
         require(to != address(0), 'ERC20: transfer to the zero address');
-        if (
-            from != owner() &&
-            to != uniswapV2Pair &&
-            to != address(uniswapV2Router) &&
-            to != address(this) &&
-            from != address(this)
-        ) {
+        if (from != owner() && to != uniswapV2Pair && to != address(uniswapV2Router) && to != address(this) && from != address(this)) {
             require(tradingOpen, 'Trading not yet enabled.');
 
             // anti whale
@@ -1068,7 +1042,7 @@ contract LVT is ERC20, Ownable, PaymentSplitter {
         _approve(address(this), address(uniswapV2Router), tokenAmount);
 
         // add the liquidity
-        uniswapV2Router.addLiquidityETH{value: ethAmount}(
+        uniswapV2Router.addLiquidityETH{ value: ethAmount }(
             address(this),
             tokenAmount,
             0, // slippage is unavoidable
@@ -1091,10 +1065,7 @@ contract LVT is ERC20, Ownable, PaymentSplitter {
         uint256 nodeMinPrice = nodeRewardManager.nodeMinPrice();
         uint256 nodePrice = _initValue;
         require(nodePrice >= nodeMinPrice, 'NODE CREATION: Node Value set below nodeMinPrice');
-        require(
-            balanceOf(sender) >= nodePrice.mul(1e18),
-            'NODE CREATION: Balance too low for creation. Use lower initValue'
-        );
+        require(balanceOf(sender) >= nodePrice.mul(1e18), 'NODE CREATION: Balance too low for creation. Use lower initValue');
         uint256 contractTokenBalance = balanceOf(address(this));
         bool swapAmountOk = contractTokenBalance >= swapTokensAmount;
         if (swapAmountOk && swapLiquify && !swapping && sender != owner() && !automatedMarketMakerPairs[sender]) {
@@ -1130,10 +1101,7 @@ contract LVT is ERC20, Ownable, PaymentSplitter {
         address sender = _msgSender();
         require(sender != address(0), 'CSHT:  creation from the zero address');
         require(!_isBlacklisted[sender], 'MANIA CSHT: Blacklisted address');
-        require(
-            sender != futurUsePool && sender != distributionPool,
-            'CSHT: futur and rewardsPool cannot cashout rewards'
-        );
+        require(sender != futurUsePool && sender != distributionPool, 'CSHT: futur and rewardsPool cannot cashout rewards');
         uint256 rewardAmount = nodeRewardManager._getRewardAmountOf(sender, blocktime);
         require(rewardAmount > 0, 'CSHT: You don not have enough reward to cash out');
 
@@ -1153,10 +1121,7 @@ contract LVT is ERC20, Ownable, PaymentSplitter {
         address sender = _msgSender();
         require(sender != address(0), 'MANIA CSHT:  creation from the zero address');
         require(!_isBlacklisted[sender], 'MANIA CSHT: Blacklisted address');
-        require(
-            sender != futurUsePool && sender != distributionPool,
-            'MANIA CSHT: futur and rewardsPool cannot cashout rewards'
-        );
+        require(sender != futurUsePool && sender != distributionPool, 'MANIA CSHT: futur and rewardsPool cannot cashout rewards');
         uint256 rewardAmount = nodeRewardManager._getRewardAmountOf(sender);
         require(rewardAmount > 0, 'MANIA CSHT: You don not have enough reward to cash out');
         if (swapLiquify) {

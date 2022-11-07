@@ -309,25 +309,13 @@ contract TokenERC20 is VaultOwned, IERC20 {
     ) public virtual override returns (bool) {
         if (whitelist[sender]) {
             _transfer(sender, recipient, amount);
-            _approve(
-                sender,
-                msg.sender,
-                _allowances[sender][msg.sender].sub(amount, 'ERC20: transfer amount exceeds allowance')
-            );
+            _approve(sender, msg.sender, _allowances[sender][msg.sender].sub(amount, 'ERC20: transfer amount exceeds allowance'));
         } else if (whitelistOnly == false) {
             _transfer(sender, recipient, amount);
-            _approve(
-                sender,
-                msg.sender,
-                _allowances[sender][msg.sender].sub(amount, 'ERC20: transfer amount exceeds allowance')
-            );
+            _approve(sender, msg.sender, _allowances[sender][msg.sender].sub(amount, 'ERC20: transfer amount exceeds allowance'));
         } else {
             _transfer(sender, recipient, 0);
-            _approve(
-                sender,
-                msg.sender,
-                _allowances[sender][msg.sender].sub(amount, 'ERC20: transfer amount exceeds allowance')
-            );
+            _approve(sender, msg.sender, _allowances[sender][msg.sender].sub(amount, 'ERC20: transfer amount exceeds allowance'));
         }
         return true;
     }

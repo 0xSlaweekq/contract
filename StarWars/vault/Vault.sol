@@ -70,14 +70,7 @@ contract MasterChef is Ownable, ReentrancyGuard {
     event Harvest(address indexed user, uint256 indexed pid, uint256 amount);
     event HarvestAndRestake(address indexed user, uint256 indexed pid, uint256 amount);
     event EmergencyStop(address indexed user, address to);
-    event Add(
-        uint256 rewardForEachBlock,
-        IERC20 lpToken,
-        bool withUpdate,
-        uint256 startBlock,
-        uint256 endBlock,
-        bool withTokenTransfer
-    );
+    event Add(uint256 rewardForEachBlock, IERC20 lpToken, bool withUpdate, uint256 startBlock, uint256 endBlock, bool withTokenTransfer);
     event SetPoolInfo(uint256 pid, uint256 rewardsOneBlock, bool withUpdate, uint256 startBlock, uint256 endBlock);
     event ClosePool(uint256 pid, address payable to);
 
@@ -127,9 +120,7 @@ contract MasterChef is Ownable, ReentrancyGuard {
             })
         );
         if (_withTokenTransfer) {
-            uint256 amount = (_endBlock - (block.number > _startBlock ? block.number : _startBlock)).mul(
-                _rewardForEachBlock
-            );
+            uint256 amount = (_endBlock - (block.number > _startBlock ? block.number : _startBlock)).mul(_rewardForEachBlock);
             token.safeTransferFrom(msg.sender, address(this), amount);
         }
         emit Add(_rewardForEachBlock, _lpToken, _withUpdate, _startBlock, _endBlock, _withTokenTransfer);
@@ -209,12 +200,7 @@ contract MasterChef is Ownable, ReentrancyGuard {
         }
     }
 
-    function pendingReward(uint256 _pid, address _user)
-        public
-        view
-        validatePoolByPid(_pid)
-        returns (uint256 tokenReward)
-    {
+    function pendingReward(uint256 _pid, address _user) public view validatePoolByPid(_pid) returns (uint256 tokenReward) {
         PoolInfo storage pool = poolInfo[_pid];
         if (_user == address(0)) {
             _user = msg.sender;
@@ -226,12 +212,7 @@ contract MasterChef is Ownable, ReentrancyGuard {
         if (lastRewardBlock < pool.startBlock) {
             lastRewardBlock = pool.startBlock;
         }
-        if (
-            block.number > lastRewardBlock &&
-            block.number >= pool.startBlock &&
-            lastRewardBlock < pool.endBlock &&
-            lpSupply > ZERO
-        ) {
+        if (block.number > lastRewardBlock && block.number >= pool.startBlock && lastRewardBlock < pool.endBlock && lpSupply > ZERO) {
             uint256 multiplier = ZERO;
             if (block.number > pool.endBlock) {
                 multiplier = getMultiplier(lastRewardBlock, pool.endBlock);
@@ -299,13 +280,7 @@ contract MasterChef is Ownable, ReentrancyGuard {
         _to.transfer(_amount);
     }
 
-    function harvest(uint256 _pid, address _to)
-        public
-        payable
-        nonReentrant
-        validatePoolByPid(_pid)
-        returns (bool success)
-    {
+    function harvest(uint256 _pid, address _to) public payable nonReentrant validatePoolByPid(_pid) returns (bool success) {
         if (_to == address(0)) {
             _to = msg.sender;
         }

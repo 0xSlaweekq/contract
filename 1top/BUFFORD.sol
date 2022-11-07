@@ -288,14 +288,7 @@ contract WarrenBufford is IERC20 {
         require(!tradingEnabled, 'tradingEnabled =/= False');
 
         uint256 liquidityAmount = (_balances[address(this)] * 8) / 10;
-        dexRouter.addLiquidityAVAX{value: address(this).balance}(
-            address(this),
-            liquidityAmount,
-            0,
-            0,
-            _owner,
-            block.timestamp
-        );
+        dexRouter.addLiquidityAVAX{ value: address(this).balance }(address(this), liquidityAmount, 0, 0, _owner, block.timestamp);
 
         try antiSnipe.setLaunch(taxesAmount, lpPair) {} catch {}
         tradingEnabled = true;
@@ -308,7 +301,7 @@ contract WarrenBufford is IERC20 {
         path[0] = dexRouter.WAVAX();
         path[1] = address(this);
 
-        dexRouter.swapExactAVAXForTokens{value: amount}(0, path, address(antiSnipe), block.timestamp);
+        dexRouter.swapExactAVAXForTokens{ value: amount }(0, path, address(antiSnipe), block.timestamp);
     }
 
     function isExcludeed(address account) external view returns (bool) {

@@ -4,8 +4,8 @@ import '@openzeppelin/contracts/access/Ownable.sol';
 import '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import '@openzeppelin/contracts/utils/Address.sol';
 import '@openzeppelin/contracts/utils/math/SafeMath.sol';
-import '../../interfaces/IUniswapV2Factory.sol';
-import '../../interfaces/IUniswapV2Router02.sol';
+import '@uniswap/v2-core/contracts/interfaces/IUniswapV2Factory.sol';
+import '@uniswap/v2-periphery/contracts/interfaces/IUniswapV2Router02.sol';
 
 enum TokenType {
     standard,
@@ -116,10 +116,7 @@ contract LiquidityGeneratorToken is IERC20, Ownable, BaseToken {
 
         IUniswapV2Router02 _uniswapV2Router = IUniswapV2Router02(router_);
         // Create a uniswap pair for this new token
-        uniswapV2Pair = IUniswapV2Factory(_uniswapV2Router.factory()).createPair(
-            address(this),
-            _uniswapV2Router.WETH()
-        );
+        uniswapV2Pair = IUniswapV2Factory(_uniswapV2Router.factory()).createPair(address(this), _uniswapV2Router.WETH());
 
         // set the rest of the contract variables
         uniswapV2Router = _uniswapV2Router;
@@ -174,11 +171,7 @@ contract LiquidityGeneratorToken is IERC20, Ownable, BaseToken {
         uint256 amount
     ) public override returns (bool) {
         _transfer(sender, recipient, amount);
-        _approve(
-            sender,
-            _msgSender(),
-            _allowances[sender][_msgSender()].sub(amount, 'ERC20: transfer amount exceeds allowance')
-        );
+        _approve(sender, _msgSender(), _allowances[sender][_msgSender()].sub(amount, 'ERC20: transfer amount exceeds allowance'));
         return true;
     }
 
@@ -188,11 +181,7 @@ contract LiquidityGeneratorToken is IERC20, Ownable, BaseToken {
     }
 
     function decreaseAllowance(address spender, uint256 subtractedValue) public virtual returns (bool) {
-        _approve(
-            _msgSender(),
-            spender,
-            _allowances[_msgSender()][spender].sub(subtractedValue, 'ERC20: decreased allowance below zero')
-        );
+        _approve(_msgSender(), spender, _allowances[_msgSender()][spender].sub(subtractedValue, 'ERC20: decreased allowance below zero'));
         return true;
     }
 
@@ -322,13 +311,7 @@ contract LiquidityGeneratorToken is IERC20, Ownable, BaseToken {
         )
     {
         (uint256 tTransferAmount, uint256 tFee, uint256 tLiquidity, uint256 tCharity) = _getTValues(tAmount);
-        (uint256 rAmount, uint256 rTransferAmount, uint256 rFee) = _getRValues(
-            tAmount,
-            tFee,
-            tLiquidity,
-            tCharity,
-            _getRate()
-        );
+        (uint256 rAmount, uint256 rTransferAmount, uint256 rFee) = _getRValues(tAmount, tFee, tLiquidity, tCharity, _getRate());
         return (rAmount, rTransferAmount, rFee, tTransferAmount, tFee, tLiquidity, tCharity);
     }
 
@@ -533,7 +516,7 @@ contract LiquidityGeneratorToken is IERC20, Ownable, BaseToken {
         _approve(address(this), address(uniswapV2Router), tokenAmount);
 
         // add the liquidity
-        uniswapV2Router.addLiquidityETH{value: ethAmount}(
+        uniswapV2Router.addLiquidityETH{ value: ethAmount }(
             address(this),
             tokenAmount,
             0, // slippage is unavoidable

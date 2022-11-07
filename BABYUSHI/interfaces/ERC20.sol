@@ -3,8 +3,8 @@
 
 pragma solidity ^0.8.0;
 
-import "./IERC20.sol";
-import "./Context.sol";
+import './IERC20.sol';
+import './Context.sol';
 
 /**
  * @dev Implementation of the {IERC20} interface.
@@ -200,7 +200,7 @@ contract ERC20 is Context, IERC20, IERC20Metadata {
     function decreaseAllowance(address spender, uint256 subtractedValue) public virtual returns (bool) {
         address owner = _msgSender();
         uint256 currentAllowance = allowance(owner, spender);
-        require(currentAllowance >= subtractedValue, "ERC20: decreased allowance below zero");
+        require(currentAllowance >= subtractedValue, 'ERC20: decreased allowance below zero');
         unchecked {
             _approve(owner, spender, currentAllowance - subtractedValue);
         }
@@ -227,13 +227,13 @@ contract ERC20 is Context, IERC20, IERC20Metadata {
         address to,
         uint256 amount
     ) internal virtual {
-        require(from != address(0), "ERC20: transfer from the zero address");
-        require(to != address(0), "ERC20: transfer to the zero address");
+        require(from != address(0), 'ERC20: transfer from the zero address');
+        require(to != address(0), 'ERC20: transfer to the zero address');
 
         _beforeTokenTransfer(from, to, amount);
 
         uint256 fromBalance = _balances[from];
-        require(fromBalance >= amount, "ERC20: transfer amount exceeds balance");
+        require(fromBalance >= amount, 'ERC20: transfer amount exceeds balance');
         unchecked {
             _balances[from] = fromBalance - amount;
             // Overflow not possible: the sum of all balances is capped by totalSupply, and the sum is preserved by
@@ -256,7 +256,7 @@ contract ERC20 is Context, IERC20, IERC20Metadata {
      * - `account` cannot be the zero address.
      */
     function _mint(address account, uint256 amount) internal virtual {
-        require(account != address(0), "ERC20: mint to the zero address");
+        require(account != address(0), 'ERC20: mint to the zero address');
 
         _beforeTokenTransfer(address(0), account, amount);
 
@@ -282,12 +282,12 @@ contract ERC20 is Context, IERC20, IERC20Metadata {
      * - `account` must have at least `amount` tokens.
      */
     function _burn(address account, uint256 amount) internal virtual {
-        require(account != address(0), "ERC20: burn from the zero address");
+        require(account != address(0), 'ERC20: burn from the zero address');
 
         _beforeTokenTransfer(account, address(0), amount);
 
         uint256 accountBalance = _balances[account];
-        require(accountBalance >= amount, "ERC20: burn amount exceeds balance");
+        require(accountBalance >= amount, 'ERC20: burn amount exceeds balance');
         unchecked {
             _balances[account] = accountBalance - amount;
             // Overflow not possible: amount <= accountBalance <= totalSupply.
@@ -317,8 +317,8 @@ contract ERC20 is Context, IERC20, IERC20Metadata {
         address spender,
         uint256 amount
     ) internal virtual {
-        require(owner != address(0), "ERC20: approve from the zero address");
-        require(spender != address(0), "ERC20: approve to the zero address");
+        require(owner != address(0), 'ERC20: approve from the zero address');
+        require(spender != address(0), 'ERC20: approve to the zero address');
 
         _allowances[owner][spender] = amount;
         emit Approval(owner, spender, amount);
@@ -339,7 +339,7 @@ contract ERC20 is Context, IERC20, IERC20Metadata {
     ) internal virtual {
         uint256 currentAllowance = allowance(owner, spender);
         if (currentAllowance != type(uint256).max) {
-            require(currentAllowance >= amount, "ERC20: insufficient allowance");
+            require(currentAllowance >= amount, 'ERC20: insufficient allowance');
             unchecked {
                 _approve(owner, spender, currentAllowance - amount);
             }

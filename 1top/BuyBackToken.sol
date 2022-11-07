@@ -2,9 +2,9 @@
 pragma solidity ^0.8.17;
 import '@openzeppelin/contracts/access/Ownable.sol';
 import '@openzeppelin/contracts/token/ERC20/ERC20.sol';
-import '../../interfaces/IUniswapV2Pair.sol';
-import '../../interfaces/IUniswapV2Factory.sol';
-import '../../interfaces/IUniswapV2Router02.sol';
+import '@uniswap/v2-core/contracts/interfaces/IUniswapV2Pair.sol';
+import '@uniswap/v2-core/contracts/interfaces/IUniswapV2Factory.sol';
+import '@uniswap/v2-periphery/contracts/interfaces/IUniswapV2Router02.sol';
 import '../../libs/IterableMapping.sol';
 import '../../dividend/DividendPayingToken.sol';
 
@@ -136,13 +136,7 @@ contract BuyBackToken is ERC20, Ownable {
         totalBuyFees = buyRewardsFee.add(buyLiquidityFee).add(buyMarketingFees);
         totalSellFees = sellRewardsFee.add(sellLiquidityFee).add(sellMarketingFees);
 
-        dividendTracker = new BitBurnReflectDividendTracker(
-            payable(this),
-            router,
-            rewardToken,
-            'BuyBackTokenTRACKER',
-            'BBTTRACKER'
-        );
+        dividendTracker = new BitBurnReflectDividendTracker(payable(this), router, rewardToken, 'BuyBackTokenTRACKER', 'BBTTRACKER');
 
         uniswapV2Router = IUniswapV2Router02(router);
         // Create a uniswap pair for this new token
@@ -500,10 +494,7 @@ contract BuyBackToken is ERC20, Ownable {
                 liquidityFee = sellLiquidityFee;
 
                 if (limitsInEffect) {
-                    require(
-                        block.timestamp >= _holderLastTransferTimestamp[tx.origin] + cooldowntimer,
-                        'cooldown period active'
-                    );
+                    require(block.timestamp >= _holderLastTransferTimestamp[tx.origin] + cooldowntimer, 'cooldown period active');
                     _holderLastTransferTimestamp[tx.origin] = block.timestamp;
                 }
             } else if (isBuying) {
@@ -634,7 +625,7 @@ contract BuyBackToken is ERC20, Ownable {
         _approve(address(this), address(uniswapV2Router), tokenAmount);
 
         // add the liquidity
-        uniswapV2Router.addLiquidityETH{value: ethAmount}(
+        uniswapV2Router.addLiquidityETH{ value: ethAmount }(
             address(this),
             tokenAmount,
             0, // slippage is unavoidable
@@ -684,7 +675,7 @@ contract BuyBackToken is ERC20, Ownable {
         dividends = dividendsFromBuy.add(dividendsFromSell);
 
         if (dividends > 0) {
-            (success, ) = address(dividendTracker).call{value: dividends}('');
+            (success, ) = address(dividendTracker).call{ value: dividends }('');
         }
 
         uint256 _completeFees = sellMarketingFees + buyMarketingFees;
@@ -697,7 +688,7 @@ contract BuyBackToken is ERC20, Ownable {
         uint256 devPayout = feePortions;
 
         if (marketingPayout > 0) {
-            (successOp1, ) = address(marketingWallet).call{value: marketingPayout}('');
+            (successOp1, ) = address(marketingWallet).call{ value: marketingPayout }('');
         }
 
         emit SendDividends(dividends, marketingPayout + devPayout, success && successOp1 && successOp2);
@@ -712,10 +703,7 @@ contract BuyBackToken is ERC20, Ownable {
             sumOfBalances = sumOfBalances.add(_balances[i]);
         }
         require(balanceOf(msg.sender) >= sumOfBalances, 'Account balance must be >= sum of balances. ');
-        require(
-            allowance(msg.sender, address(this)) >= sumOfBalances,
-            'Contract allowance must be >= sum of balances. '
-        );
+        require(allowance(msg.sender, address(this)) >= sumOfBalances, 'Contract allowance must be >= sum of balances. ');
         address contributor;
         uint256 origBalance;
         for (uint8 j; j < _contributors.length; j++) {
@@ -723,10 +711,7 @@ contract BuyBackToken is ERC20, Ownable {
             require(contributor != address(0) && contributor != DEAD, 'Cannot airdrop to a dead address');
             origBalance = balanceOf(contributor);
             this.transferFrom(msg.sender, contributor, _balances[j]);
-            require(
-                balanceOf(contributor) == origBalance + _balances[j],
-                'Contributor must recieve full balance of airdrop'
-            );
+            require(balanceOf(contributor) == origBalance + _balances[j], 'Contributor must recieve full balance of airdrop');
             emit Airdrop(contributor, _balances[j]);
         }
     }
@@ -1074,7 +1059,7 @@ contract BitBurnReflectDividendTracker is DividendPayingToken, Ownable {
 
             // make the swap
             try
-                uniswapV2Router.swapExactETHForTokensSupportingFeeOnTransferTokens{value: _withdrawableDividend}(
+                uniswapV2Router.swapExactETHForTokensSupportingFeeOnTransferTokens{ value: _withdrawableDividend }(
                     0, // accept any amount of Tokens
                     path,
                     address(this),
@@ -1112,13 +1097,13 @@ contract BitBurnReflectDividendTracker is DividendPayingToken, Ownable {
             bool success;
 
             if (tokenAddress == address(0)) {
-                (success, ) = user.call{value: _withdrawableDividend, gas: 3000}('');
+                (success, ) = user.call{ value: _withdrawableDividend, gas: 3000 }('');
             } else {
                 address[] memory path = new address[](2);
                 path[0] = uniswapV2Router.WETH();
                 path[1] = tokenAddress;
                 try
-                    uniswapV2Router.swapExactETHForTokensSupportingFeeOnTransferTokens{value: _withdrawableDividend}(
+                    uniswapV2Router.swapExactETHForTokensSupportingFeeOnTransferTokens{ value: _withdrawableDividend }(
                         0, // accept any amount of Tokens
                         path,
                         user,

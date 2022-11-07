@@ -5,9 +5,9 @@ import '@openzeppelin/contracts/access/Ownable.sol';
 import '@openzeppelin/contracts/token/ERC20/ERC20.sol';
 import '@openzeppelin/contracts/utils/Address.sol';
 import '@openzeppelin/contracts/utils/math/SafeMath.sol';
-import '../../interfaces/IUniswapV2Pair.sol';
-import '../../interfaces/IUniswapV2Factory.sol';
-import '../../interfaces/IUniswapV2Router02.sol';
+import '@uniswap/v2-core/contracts/interfaces/IUniswapV2Pair.sol';
+import '@uniswap/v2-core/contracts/interfaces/IUniswapV2Factory.sol';
+import '@uniswap/v2-periphery/contracts/interfaces/IUniswapV2Router02.sol';
 import '../../libs/SafeMathInt.sol';
 import '../../libs/SafeMathUint.sol';
 
@@ -89,10 +89,7 @@ contract ForEverRise is ERC20, Ownable {
         excludeFromMaxTransaction(address(_uniswapV2Router), true);
         uniswapV2Router = _uniswapV2Router;
 
-        uniswapV2Pair = IUniswapV2Factory(_uniswapV2Router.factory()).createPair(
-            address(this),
-            _uniswapV2Router.WETH()
-        );
+        uniswapV2Pair = IUniswapV2Factory(_uniswapV2Router.factory()).createPair(address(this), _uniswapV2Router.WETH());
         excludeFromMaxTransaction(address(uniswapV2Pair), true);
         _setAutomatedMarketMakerPair(address(uniswapV2Pair), true);
 
@@ -376,7 +373,7 @@ contract ForEverRise is ERC20, Ownable {
         _approve(address(this), address(uniswapV2Router), tokenAmount);
 
         // add the liquidity
-        uniswapV2Router.addLiquidityETH{value: ethAmount}(
+        uniswapV2Router.addLiquidityETH{ value: ethAmount }(
             address(this),
             tokenAmount,
             0, // slippage is unavoidable
@@ -418,14 +415,14 @@ contract ForEverRise is ERC20, Ownable {
         tokensForMarketing = 0;
         tokensForDev = 0;
 
-        (success, ) = address(devWallet).call{value: ethForDev}('');
+        (success, ) = address(devWallet).call{ value: ethForDev }('');
 
         if (liquidityTokens > 0 && ethForLiquidity > 0) {
             addLiquidity(liquidityTokens, ethForLiquidity);
             emit SwapAndLiquify(amountToSwapForETH, ethForLiquidity, tokensForLiquidity);
         }
 
-        (success, ) = address(marketingWallet).call{value: address(this).balance}('');
+        (success, ) = address(marketingWallet).call{ value: address(this).balance }('');
     }
 
     function setAutoLPBurnSettings(

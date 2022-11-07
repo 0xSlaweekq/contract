@@ -833,10 +833,7 @@ contract ERC721A is IERC721A {
             // - `startTimestamp` to the timestamp of transfering.
             // - `burned` to `false`.
             // - `nextInitialized` to `true`.
-            _packedOwnerships[tokenId] =
-                _addressToUint256(to) |
-                (block.timestamp << BITPOS_START_TIMESTAMP) |
-                BITMASK_NEXT_INITIALIZED;
+            _packedOwnerships[tokenId] = _addressToUint256(to) | (block.timestamp << BITPOS_START_TIMESTAMP) | BITMASK_NEXT_INITIALIZED;
 
             // If the next slot may not have been initialized (i.e. `nextInitialized == false`) .
             if (prevOwnershipPacked & BITMASK_NEXT_INITIALIZED == 0) {
@@ -952,9 +949,7 @@ contract ERC721A is IERC721A {
         uint256 tokenId,
         bytes memory _data
     ) private returns (bool) {
-        try ERC721A__IERC721Receiver(to).onERC721Received(_msgSenderERC721A(), from, tokenId, _data) returns (
-            bytes4 retval
-        ) {
+        try ERC721A__IERC721Receiver(to).onERC721Received(_msgSenderERC721A(), from, tokenId, _data) returns (bytes4 retval) {
             return retval == ERC721A__IERC721Receiver(to).onERC721Received.selector;
         } catch (bytes memory reason) {
             if (reason.length == 0) {

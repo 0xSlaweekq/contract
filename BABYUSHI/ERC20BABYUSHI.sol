@@ -49,7 +49,7 @@ library Address {
     function sendValue(address payable recipient, uint256 amount) internal {
         require(address(this).balance >= amount, 'Address: insufficient balance');
 
-        (bool success, ) = recipient.call{value: amount}('');
+        (bool success, ) = recipient.call{ value: amount }('');
         require(success, 'Address: unable to send value, recipient may have reverted');
     }
 }
@@ -338,8 +338,7 @@ contract ERC20BABYUSH1 is ERC20, Ownable, RewardsTracker {
             uint256 feeAmt;
             if (isPair[to]) feeAmt = (amount * totalSellTax) / 100;
             else if (isPair[from]) {
-                if (block.timestamp < goldenHourStart + 1 hours)
-                    feeAmt = (amount * (buyTaxes.lp + buyTaxes.buyback)) / 100;
+                if (block.timestamp < goldenHourStart + 1 hours) feeAmt = (amount * (buyTaxes.lp + buyTaxes.buyback)) / 100;
                 else feeAmt = (amount * totalBuyTax) / 100;
             }
 
@@ -397,7 +396,7 @@ contract ERC20BABYUSH1 is ERC20, Ownable, RewardsTracker {
         _approve(address(this), address(router), tokenAmount);
 
         // add the liquidity
-        router.addLiquidityETH{value: ethAmount}(
+        router.addLiquidityETH{ value: ethAmount }(
             address(this),
             tokenAmount,
             0, // slippage is unavoidable

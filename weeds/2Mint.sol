@@ -334,10 +334,7 @@ contract WeedsLab is ERC165, IERC721, IERC721Metadata, Ownable {
         address owner = ownerOf(tokenId);
         require(to != owner, 'ERC721: approval to current owner');
 
-        require(
-            _msgSender() == owner || isApprovedWeed(owner, _msgSender()),
-            'ERC721: approve caller is not owner nor approved for all'
-        );
+        require(_msgSender() == owner || isApprovedWeed(owner, _msgSender()), 'ERC721: approve caller is not owner nor approved for all');
 
         _approve(to, tokenId);
     }
@@ -415,10 +412,7 @@ contract WeedsLab is ERC165, IERC721, IERC721Metadata, Ownable {
         bytes memory _data
     ) internal virtual {
         _mint(to, tokenId);
-        require(
-            _checkOnERC721Received(address(0), to, tokenId, _data),
-            'ERC721: transfer to non ERC721Receiver implementer'
-        );
+        require(_checkOnERC721Received(address(0), to, tokenId, _data), 'ERC721: transfer to non ERC721Receiver implementer');
     }
 
     function _mint(address to, uint256 tokenId) internal virtual {

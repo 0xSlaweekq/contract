@@ -61,20 +61,16 @@ contract WeedsLabTickets is ERC165, IERC721, IERC721Metadata, Ownable {
     string private baseURI;
     string private notRevealedURI;
 
-    uint256 private ticketPrice = 50 * 10**18;
+    uint256 private ticketPrice = 50 * 10 ** 18;
 
     // Address of $wBuds Token
     IERC20 public Token;
 
-    constructor(
-        IERC20 _token,
-        address[] memory _wallets,
-        uint256[] memory _percentages
-    ) {
+    constructor(IERC20 _token, address[] memory _wallets, uint256[] memory _percentages) {
         Token = _token;
         uint256 total;
         require(_wallets.length == _percentages.length, 'Invalid Input');
-        for (uint256 i = 0; i < _wallets.length; i++) {
+        for (uint256 i; i < _wallets.length; i++) {
             claimWallets.push(_wallets[i]);
             claimAmounts[_wallets[i]] = _percentages[i];
             total += _percentages[i];
@@ -84,7 +80,7 @@ contract WeedsLabTickets is ERC165, IERC721, IERC721Metadata, Ownable {
 
     /// @dev Public Functions
     function weeds(uint256 _amount) public onlyOwner {
-        for (uint256 i = 0; i < _amount; i++) {
+        for (uint256 i; i < _amount; i++) {
             _circulatingSupply++;
             _safeMint(_msgSender(), _circulatingSupply);
         }
@@ -102,7 +98,7 @@ contract WeedsLabTickets is ERC165, IERC721, IERC721Metadata, Ownable {
 
     function getUserNFTIds(address user) public view returns (uint256[] memory) {
         uint256[] memory userIds = new uint256[](balanceOf(user));
-        for (uint256 i = 0; i < balanceOf(user); i++) {
+        for (uint256 i; i < balanceOf(user); i++) {
             userIds[i] = _ownedTokens[user][i];
         }
         return userIds;
@@ -129,7 +125,7 @@ contract WeedsLabTickets is ERC165, IERC721, IERC721Metadata, Ownable {
             price = _getCurrentPrice(0);
             Token.safeTransferFrom(_msgSender(), address(this), _amount * price);
         }
-        for (uint256 i = 0; i < _amount; i++) {
+        for (uint256 i; i < _amount; i++) {
             _circulatingSupply++;
             _safeMint(_msgSender(), _circulatingSupply);
         }
@@ -138,7 +134,7 @@ contract WeedsLabTickets is ERC165, IERC721, IERC721Metadata, Ownable {
     function withdrawFunds() external {
         require(claimAmounts[_msgSender()] > 0, 'Contract: Unauthorised call');
         uint256 nBal = address(this).balance;
-        for (uint256 i = 0; i < claimWallets.length; i++) {
+        for (uint256 i; i < claimWallets.length; i++) {
             address to = claimWallets[i];
             if (nBal > 0) {
                 payable(to).transfer((nBal * claimAmounts[to]) / 100);
@@ -256,41 +252,23 @@ contract WeedsLabTickets is ERC165, IERC721, IERC721Metadata, Ownable {
         return _operatorApprovals[owner][operator];
     }
 
-    function transferFrom(
-        address from,
-        address to,
-        uint256 tokenId
-    ) public virtual override {
+    function transferFrom(address from, address to, uint256 tokenId) public virtual override {
         //solhint-disable-next-line max-line-length
         require(_isApprovedOrOwner(_msgSender(), tokenId), 'ERC721: transfer caller is not owner nor approved');
 
         _transfer(from, to, tokenId);
     }
 
-    function safeTransferFrom(
-        address from,
-        address to,
-        uint256 tokenId
-    ) public virtual override {
+    function safeTransferFrom(address from, address to, uint256 tokenId) public virtual override {
         safeTransferFrom(from, to, tokenId, '');
     }
 
-    function safeTransferFrom(
-        address from,
-        address to,
-        uint256 tokenId,
-        bytes memory _data
-    ) public virtual override {
+    function safeTransferFrom(address from, address to, uint256 tokenId, bytes memory _data) public virtual override {
         require(_isApprovedOrOwner(_msgSender(), tokenId), 'ERC721: transfer caller is not owner nor approved');
         _safeTransfer(from, to, tokenId, _data);
     }
 
-    function _safeTransfer(
-        address from,
-        address to,
-        uint256 tokenId,
-        bytes memory _data
-    ) internal virtual {
+    function _safeTransfer(address from, address to, uint256 tokenId, bytes memory _data) internal virtual {
         _transfer(from, to, tokenId);
         require(_checkOnERC721Received(from, to, tokenId, _data), 'ERC721: transfer to non ERC721Receiver implementer');
     }
@@ -309,11 +287,7 @@ contract WeedsLabTickets is ERC165, IERC721, IERC721Metadata, Ownable {
         _safeMint(to, tokenId, '');
     }
 
-    function _safeMint(
-        address to,
-        uint256 tokenId,
-        bytes memory _data
-    ) internal virtual {
+    function _safeMint(address to, uint256 tokenId, bytes memory _data) internal virtual {
         _mint(to, tokenId);
         require(_checkOnERC721Received(address(0), to, tokenId, _data), 'ERC721: transfer to non ERC721Receiver implementer');
     }
@@ -333,11 +307,7 @@ contract WeedsLabTickets is ERC165, IERC721, IERC721Metadata, Ownable {
         emit Transfer(address(0), to, tokenId);
     }
 
-    function _transfer(
-        address from,
-        address to,
-        uint256 tokenId
-    ) internal virtual {
+    function _transfer(address from, address to, uint256 tokenId) internal virtual {
         require(ownerOf(tokenId) == from, 'ERC721: transfer from incorrect owner');
         require(to != address(0), 'ERC721: transfer to the zero address');
 
@@ -358,22 +328,13 @@ contract WeedsLabTickets is ERC165, IERC721, IERC721Metadata, Ownable {
         emit Approval(ownerOf(tokenId), to, tokenId);
     }
 
-    function _setApprovalForAll(
-        address owner,
-        address operator,
-        bool approved
-    ) internal virtual {
+    function _setApprovalForAll(address owner, address operator, bool approved) internal virtual {
         require(owner != operator, 'ERC721: approve to caller');
         _operatorApprovals[owner][operator] = approved;
         emit ApprovalForAll(owner, operator, approved);
     }
 
-    function _checkOnERC721Received(
-        address from,
-        address to,
-        uint256 tokenId,
-        bytes memory _data
-    ) private returns (bool) {
+    function _checkOnERC721Received(address from, address to, uint256 tokenId, bytes memory _data) private returns (bool) {
         if (to.isContract()) {
             try IERC721Receiver(to).onERC721Received(_msgSender(), from, tokenId, _data) returns (bytes4 retval) {
                 return retval == IERC721Receiver.onERC721Received.selector;
@@ -431,11 +392,7 @@ contract WeedsLabTickets is ERC165, IERC721, IERC721Metadata, Ownable {
      *
      * To learn more about hooks, head to xref:ROOT:extending-contracts.adoc#using-hooks[Using Hooks].
      */
-    function _beforeTokenTransfer(
-        address from,
-        address to,
-        uint256 tokenId
-    ) internal virtual {
+    function _beforeTokenTransfer(address from, address to, uint256 tokenId) internal virtual {
         if (from == address(0)) {
             _addTokenToAllTokensEnumeration(tokenId);
         } else if (from != to) {

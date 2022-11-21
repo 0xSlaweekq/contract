@@ -116,17 +116,9 @@ interface LinkTokenInterface {
 
     function transfer(address to, uint256 value) external returns (bool success);
 
-    function transferAndCall(
-        address to,
-        uint256 value,
-        bytes calldata data
-    ) external returns (bool success);
+    function transferAndCall(address to, uint256 value, bytes calldata data) external returns (bool success);
 
-    function transferFrom(
-        address from,
-        address to,
-        uint256 value
-    ) external returns (bool success);
+    function transferFrom(address from, address to, uint256 value) external returns (bool success);
 }
 
 contract VRFRequestIDBase {
@@ -144,12 +136,7 @@ contract VRFRequestIDBase {
      * @param _requester Address of the requesting contract
      * @param _nonce User-specific nonce at the time of the request
      */
-    function makeVRFInputSeed(
-        bytes32 _keyHash,
-        uint256 _userSeed,
-        address _requester,
-        uint256 _nonce
-    ) internal pure returns (uint256) {
+    function makeVRFInputSeed(bytes32 _keyHash, uint256 _userSeed, address _requester, uint256 _nonce) internal pure returns (uint256) {
         return uint256(keccak256(abi.encode(_keyHash, _userSeed, _requester, _nonce)));
     }
 
@@ -279,11 +266,7 @@ abstract contract VRFConsumerBase is VRFRequestIDBase {
      * @dev concurrent requests. It is passed as the first argument to
      * @dev fulfillRandomness.
      */
-    function requestRandomness(
-        bytes32 _keyHash,
-        uint256 _fee,
-        uint256 _seed
-    ) public returns (bytes32 requestId) {
+    function requestRandomness(bytes32 _keyHash, uint256 _fee, uint256 _seed) public returns (bytes32 requestId) {
         LINK.transferAndCall(vrfCoordinator, _fee, abi.encode(_keyHash, _seed));
         // This is the seed passed to VRFCoordinator. The oracle will mix this with
         // the hash of the block containing this request to obtain the seed/input
@@ -304,8 +287,7 @@ abstract contract VRFConsumerBase is VRFRequestIDBase {
     // Nonces for each VRF key from which randomness has been requested.
     //
     // Must stay in sync with VRFCoordinator[_keyHash][this]
-    mapping(bytes32 => uint256) /* keyHash */ /* nonce */
-        public nonces;
+    mapping(bytes32 => uint256) /* keyHash */ /* nonce */ public nonces;
 
     constructor(address _vrfCoordinator, address _link) public {
         vrfCoordinator = _vrfCoordinator;
@@ -355,7 +337,7 @@ contract RandomWinner is Ownable, VRFConsumerBase {
         )
     {
         keyHash = 0xAA77729D3466CA35AE8D28B3BBAC7CC36A5031EFDC430821C02BC31A238AF445;
-        randomFee = 2 * 10**18; // 0.1 LINK
+        randomFee = 2 * 10 ** 18; // 0.1 LINK
     }
 
     /**
@@ -376,7 +358,7 @@ contract RandomWinner is Ownable, VRFConsumerBase {
     function updateAddressList(address[] memory _addresses) public onlyOwner {
         require(!winnersSelected);
 
-        for (uint256 i = 0; i < _addresses.length; i++) {
+        for (uint256 i; i < _addresses.length; i++) {
             addressList.push(_addresses[i]);
             addressCount++;
         }
@@ -390,7 +372,7 @@ contract RandomWinner is Ownable, VRFConsumerBase {
             previousWinnerSeed = randomResult;
         }
 
-        for (uint256 i = 0; i < count; i++) {
+        for (uint256 i; i < count; i++) {
             uint256 winnerSeed;
             uint256 winnerIndex;
             address winner;

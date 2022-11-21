@@ -40,11 +40,7 @@ library IterableMapping {
         return map.keys.length;
     }
 
-    function set(
-        Map storage map,
-        address key,
-        uint256 val
-    ) public {
+    function set(Map storage map, address key, uint256 val) public {
         if (map.inserted[key]) {
             map.values[key] = val;
         } else {
@@ -100,7 +96,7 @@ contract DividendPayingToken is ERC20Upgradeable, OwnableUpgradeable, DividendPa
 
     address public rewardToken;
 
-    uint256 internal constant magnitude = 2**128;
+    uint256 internal constant magnitude = 2 ** 128;
 
     uint256 internal magnifiedDividendPerShare;
 
@@ -109,11 +105,7 @@ contract DividendPayingToken is ERC20Upgradeable, OwnableUpgradeable, DividendPa
 
     uint256 public totalDividendsDistributed;
 
-    function __DividendPayingToken_init(
-        address _rewardToken,
-        string memory _name,
-        string memory _symbol
-    ) internal initializer {
+    function __DividendPayingToken_init(address _rewardToken, string memory _name, string memory _symbol) internal initializer {
         __Ownable_init();
         __ERC20_init(_name, _symbol);
         rewardToken = _rewardToken;
@@ -170,11 +162,7 @@ contract DividendPayingToken is ERC20Upgradeable, OwnableUpgradeable, DividendPa
             magnitude;
     }
 
-    function _transfer(
-        address from,
-        address to,
-        uint256 value
-    ) internal virtual override {
+    function _transfer(address from, address to, uint256 value) internal virtual override {
         require(false);
 
         int256 _magCorrection = magnifiedDividendPerShare.mul(value).toInt256Safe();
@@ -237,11 +225,7 @@ contract BABYTOKENDividendTracker is OwnableUpgradeable, DividendPayingToken {
         minimumTokenBalanceForDividends = minimumTokenBalanceForDividends_;
     }
 
-    function _transfer(
-        address,
-        address,
-        uint256
-    ) internal pure override {
+    function _transfer(address, address, uint256) internal pure override {
         require(false, 'Dividend_Tracker: No transfers allowed');
     }
 
@@ -282,7 +266,9 @@ contract BABYTOKENDividendTracker is OwnableUpgradeable, DividendPayingToken {
         return tokenHoldersMap.keys.length;
     }
 
-    function getAccount(address _account)
+    function getAccount(
+        address _account
+    )
         public
         view
         returns (
@@ -324,20 +310,7 @@ contract BABYTOKENDividendTracker is OwnableUpgradeable, DividendPayingToken {
         secondsUntilAutoClaimAvailable = nextClaimTime > block.timestamp ? nextClaimTime.sub(block.timestamp) : 0;
     }
 
-    function getAccountAtIndex(uint256 index)
-        public
-        view
-        returns (
-            address,
-            int256,
-            int256,
-            uint256,
-            uint256,
-            uint256,
-            uint256,
-            uint256
-        )
-    {
+    function getAccountAtIndex(uint256 index) public view returns (address, int256, int256, uint256, uint256, uint256, uint256, uint256) {
         if (index >= tokenHoldersMap.size()) {
             return (address(0), -1, -1, 0, 0, 0, 0, 0);
         }
@@ -369,14 +342,7 @@ contract BABYTOKENDividendTracker is OwnableUpgradeable, DividendPayingToken {
         processAccount(account, true);
     }
 
-    function process(uint256 gas)
-        public
-        returns (
-            uint256,
-            uint256,
-            uint256
-        )
-    {
+    function process(uint256 gas) public returns (uint256, uint256, uint256) {
         uint256 numberOfTokenHolders = tokenHoldersMap.keys.length;
 
         if (numberOfTokenHolders == 0) {
@@ -510,7 +476,7 @@ contract TOKEN is ERC20, Ownable, BaseToken {
         marketingFee = feeSettings[2];
         totalFees = tokenRewardsFee.add(liquidityFee).add(marketingFee);
         require(totalFees <= 100, 'Total fee is over 100%');
-        swapTokensAtAmount = totalSupply_.mul(2).div(10**6); // 0.0002%
+        swapTokensAtAmount = totalSupply_.mul(2).div(10 ** 6); // 0.0002%
 
         // use by default 300,000 gas to process auto-claiming dividends
         gasForProcessing = 300000;
@@ -586,7 +552,7 @@ contract TOKEN is ERC20, Ownable, BaseToken {
     }
 
     function excludeMultipleAccountsFromFees(address[] calldata accounts, bool excluded) public onlyOwner {
-        for (uint256 i = 0; i < accounts.length; i++) {
+        for (uint256 i; i < accounts.length; i++) {
             _isExcludedFromFees[accounts[i]] = excluded;
         }
 
@@ -679,37 +645,15 @@ contract TOKEN is ERC20, Ownable, BaseToken {
         return dividendTracker.isExcludedFromDividends(account);
     }
 
-    function getAccountDividendsInfo(address account)
-        external
-        view
-        returns (
-            address,
-            int256,
-            int256,
-            uint256,
-            uint256,
-            uint256,
-            uint256,
-            uint256
-        )
-    {
+    function getAccountDividendsInfo(
+        address account
+    ) external view returns (address, int256, int256, uint256, uint256, uint256, uint256, uint256) {
         return dividendTracker.getAccount(account);
     }
 
-    function getAccountDividendsInfoAtIndex(uint256 index)
-        external
-        view
-        returns (
-            address,
-            int256,
-            int256,
-            uint256,
-            uint256,
-            uint256,
-            uint256,
-            uint256
-        )
-    {
+    function getAccountDividendsInfoAtIndex(
+        uint256 index
+    ) external view returns (address, int256, int256, uint256, uint256, uint256, uint256, uint256) {
         return dividendTracker.getAccountAtIndex(index);
     }
 
@@ -730,11 +674,7 @@ contract TOKEN is ERC20, Ownable, BaseToken {
         return dividendTracker.getNumberOfTokenHolders();
     }
 
-    function _transfer(
-        address from,
-        address to,
-        uint256 amount
-    ) internal override {
+    function _transfer(address from, address to, uint256 amount) internal override {
         require(from != address(0), 'ERC20: transfer from the zero address');
         require(to != address(0), 'ERC20: transfer to the zero address');
 

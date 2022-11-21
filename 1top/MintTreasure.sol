@@ -1,14 +1,14 @@
 //SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
-import '@openzeppelin/contracts/access/Ownable.sol';
-import '@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol';
-import '@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol';
 import '@openzeppelin/contracts/utils/Address.sol';
 import '@openzeppelin/contracts/utils/Counters.sol';
 import '@openzeppelin/contracts/utils/Strings.sol';
 import '@openzeppelin/contracts/utils/math/SafeMath.sol';
+import '@openzeppelin/contracts/access/Ownable.sol';
+import '@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol';
+import '@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol';
 
-contract TokenMint is Ownable, ERC721, ERC721Enumerable, ERC721URIStorage {
+contract TokenMint is Ownable, ERC721Enumerable, ERC721URIStorage {
     using SafeMath for uint256;
     using Strings for uint256;
     using Address for address;
@@ -73,11 +73,11 @@ contract TokenMint is Ownable, ERC721, ERC721Enumerable, ERC721URIStorage {
         fees = _fees;
         maxSupply = _maxSupply;
         reservedMaxSupply = _reservedMaxSupply;
-        price = _price.mul(10**16);
+        price = _price.mul(10 ** 16);
         maxMintRequest = _maxMintRequest;
         baseTokenURI = _baseTokenURI;
         funds = _funds;
-        topHolder.withdrawAmount = _withdrawValueTopHolder.mul(10**16);
+        topHolder.withdrawAmount = _withdrawValueTopHolder.mul(10 ** 16);
     }
 
     receive() external payable {}
@@ -86,7 +86,7 @@ contract TokenMint is Ownable, ERC721, ERC721Enumerable, ERC721URIStorage {
         require(_msgSender() != owner(), 'Owner can not claim rewards');
         uint256 count = balanceOf(_msgSender());
         uint256 balance = 0;
-        for (uint256 i = 0; i < count; i++) {
+        for (uint256 i; i < count; i++) {
             uint256 tokenId = tokenOfOwnerByIndex(_msgSender(), i);
             if (tokenId >= reservedMaxSupply) {
                 balance = balance.add(getReflectionBalance(tokenId));
@@ -118,7 +118,7 @@ contract TokenMint is Ownable, ERC721, ERC721Enumerable, ERC721URIStorage {
             require(whitelist[_msgSender()], 'Address is not in whitelist');
         }
         uint256 localfees = 0;
-        for (uint256 i = 0; i < _amount; i++) {
+        for (uint256 i; i < _amount; i++) {
             string memory newTokenURI = string(abi.encodePacked(baseTokenURI, Strings.toString(_circulatingSupply)));
             _safeMint(sender, _circulatingSupply);
             _setTokenURI(_circulatingSupply, newTokenURI);
@@ -143,13 +143,13 @@ contract TokenMint is Ownable, ERC721, ERC721Enumerable, ERC721URIStorage {
     }
 
     function withdrawFunds(uint256 _amount) external onlyOwner returns (bool) {
-        amountFunds = _amount.mul(10**12);
+        amountFunds = _amount.mul(10 ** 12);
         require(amountFunds > 0, 'Available funds is zero');
         require(availableFunds > 0, 'Available funds is zero');
         require(amountFunds <= availableFunds, 'amountFunds better available');
         uint256 shareFund = amountFunds.div(funds.length);
         availableFunds = availableFunds.sub(amountFunds);
-        for (uint256 i = 0; i < funds.length; i++) {
+        for (uint256 i; i < funds.length; i++) {
             payable(funds[i]).transfer(shareFund);
         }
         return true;
@@ -173,19 +173,7 @@ contract TokenMint is Ownable, ERC721, ERC721Enumerable, ERC721URIStorage {
         return ERC721URIStorage._burn(tokenId);
     }
 
-    function _beforeTokenTransfer(
-        address from,
-        address to,
-        uint256 tokenId
-    ) internal virtual override(ERC721, ERC721Enumerable) {
-        super._beforeTokenTransfer(from, to, tokenId);
-    }
-
-    function _transfer(
-        address from,
-        address to,
-        uint256 tokenId
-    ) internal override {
+    function _transfer(address from, address to, uint256 tokenId) internal override {
         super._transfer(from, to, tokenId);
         _setTopHolder(from, to);
     }
@@ -209,7 +197,7 @@ contract TokenMint is Ownable, ERC721, ERC721Enumerable, ERC721URIStorage {
     function getUserInfo() public view returns (uint256) {
         uint256 count = balanceOf(_msgSender());
         uint256 balance = 0;
-        for (uint256 i = 0; i < count; i++) {
+        for (uint256 i; i < count; i++) {
             uint256 tokenId = tokenOfOwnerByIndex(_msgSender(), i);
             if (tokenId >= reservedMaxSupply) {
                 balance = balance.add(getReflectionBalance(tokenId));
@@ -220,7 +208,7 @@ contract TokenMint is Ownable, ERC721, ERC721Enumerable, ERC721URIStorage {
 
     function getUserNFTIds(address owner) public view returns (uint256[] memory) {
         uint256[] memory NFTIDS = new uint256[](balanceOf(owner));
-        for (uint256 i = 0; i < balanceOf(owner); i++) {
+        for (uint256 i; i < balanceOf(owner); i++) {
             NFTIDS[i] = tokenOfOwnerByIndex(owner, i);
         }
         return NFTIDS;
@@ -239,7 +227,7 @@ contract TokenMint is Ownable, ERC721, ERC721Enumerable, ERC721URIStorage {
     }
 
     function addMultipleToWhitelist(address[] memory _addresses) external onlyOwner {
-        for (uint256 i = 0; i < _addresses.length; i++) {
+        for (uint256 i; i < _addresses.length; i++) {
             _addToWhitelist(_addresses[i]);
         }
     }

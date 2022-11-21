@@ -6,7 +6,7 @@ import '@openzeppelin/contracts/access/Ownable.sol';
 import '@openzeppelin/contracts/token/ERC20/ERC20.sol';
 
 contract WeedsToken is ERC20, Ownable {
-    uint256 private _totalSupply = 5 * 10**6 * (10**18);
+    uint256 private _totalSupply = 5 * 10 ** 6 * (10 ** 18);
 
     constructor() ERC20('Weedbuds', 'wBuds') {
         _mint(msg.sender, _totalSupply);

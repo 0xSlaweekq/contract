@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.11;
+pragma solidity ^0.8.11;
 
 import '@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol';
 import '@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol';
@@ -84,9 +84,9 @@ contract ForceNFT is ERC165, IERC721, IERC721Metadata, Ownable {
     string private baseURI;
     string private notRevealedURI;
 
-    uint256 private gen0Price = 1 * 10**18;
-    uint256 private gen1Price = 3000 * 10**18;
-    uint256 private gen2Price = 5000 * 10**18;
+    uint256 private gen0Price = 1 * 10 ** 18;
+    uint256 private gen1Price = 3000 * 10 ** 18;
+    uint256 private gen2Price = 5000 * 10 ** 18;
     // Address of $Force Token
     IERC20 public Token;
 
@@ -104,7 +104,7 @@ contract ForceNFT is ERC165, IERC721, IERC721Metadata, Ownable {
     /// @dev Public Functions
 
     function testMint(uint256 amount) public onlyOwner {
-        for (uint256 i = 0; i < amount; i++) {
+        for (uint256 i; i < amount; i++) {
             _circulatingSupply++;
             _mint(owner(), _circulatingSupply);
         }
@@ -198,7 +198,7 @@ contract ForceNFT is ERC165, IERC721, IERC721Metadata, Ownable {
             Token.safeTransferFrom(_msgSender(), address(this), _amount * gen2Price);
         }
 
-        for (uint256 i = 0; i < _amount; i++) {
+        for (uint256 i; i < _amount; i++) {
             _circulatingSupply++;
             _safeMint(_msgSender(), _circulatingSupply);
         }
@@ -208,13 +208,13 @@ contract ForceNFT is ERC165, IERC721, IERC721Metadata, Ownable {
 
     function addGenerals(uint256[] memory _generalsIds) external onlyOwner {
         require(_generalsIds.length == 50);
-        for (uint256 i = 0; i < _generalsIds.length; i++) {
+        for (uint256 i; i < _generalsIds.length; i++) {
             _nftMetadata[_generalsIds[i]]._nftType = 2;
         }
     }
 
     function addOfficers(uint256[] memory _officersIds) external onlyOwner {
-        for (uint256 i = 0; i < _officersIds.length; i++) {
+        for (uint256 i; i < _officersIds.length; i++) {
             _nftMetadata[_officersIds[i]]._nftType = 1;
         }
     }
@@ -253,7 +253,7 @@ contract ForceNFT is ERC165, IERC721, IERC721Metadata, Ownable {
     }
 
     function addMultipleToWhitelist(address[] memory _addresses) external onlyOwner {
-        for (uint256 i = 0; i < _addresses.length; i++) {
+        for (uint256 i; i < _addresses.length; i++) {
             _addToWhitelist(_addresses[i]);
         }
     }
@@ -265,7 +265,7 @@ contract ForceNFT is ERC165, IERC721, IERC721Metadata, Ownable {
     function retrieveStolenNFTs() external onlyStaking returns (bool returned, uint256[] memory) {
         uint256[] memory transferredNFTs = new uint256[](pendingStolenNFTs.length);
         if (pendingStolenNFTs.length > 0) {
-            for (uint256 i = 0; i < pendingStolenNFTs.length; i++) {
+            for (uint256 i; i < pendingStolenNFTs.length; i++) {
                 _transfer(address(this), stakingContract, pendingStolenNFTs[i]);
                 transferredNFTs[i] = pendingStolenNFTs[i];
             }
@@ -351,41 +351,23 @@ contract ForceNFT is ERC165, IERC721, IERC721Metadata, Ownable {
         return _operatorApprovals[owner][operator];
     }
 
-    function transferFrom(
-        address from,
-        address to,
-        uint256 tokenId
-    ) public virtual override {
+    function transferFrom(address from, address to, uint256 tokenId) public virtual override {
         //solhint-disable-next-line max-line-length
         require(_isApprovedOrOwner(_msgSender(), tokenId), 'ERC721: transfer caller is not owner nor approved');
 
         _transfer(from, to, tokenId);
     }
 
-    function safeTransferFrom(
-        address from,
-        address to,
-        uint256 tokenId
-    ) public virtual override {
+    function safeTransferFrom(address from, address to, uint256 tokenId) public virtual override {
         safeTransferFrom(from, to, tokenId, '');
     }
 
-    function safeTransferFrom(
-        address from,
-        address to,
-        uint256 tokenId,
-        bytes memory _data
-    ) public virtual override {
+    function safeTransferFrom(address from, address to, uint256 tokenId, bytes memory _data) public virtual override {
         require(_isApprovedOrOwner(_msgSender(), tokenId), 'ERC721: transfer caller is not owner nor approved');
         _safeTransfer(from, to, tokenId, _data);
     }
 
-    function _safeTransfer(
-        address from,
-        address to,
-        uint256 tokenId,
-        bytes memory _data
-    ) internal virtual {
+    function _safeTransfer(address from, address to, uint256 tokenId, bytes memory _data) internal virtual {
         _transfer(from, to, tokenId);
         require(_checkOnERC721Received(from, to, tokenId, _data), 'ERC721: transfer to non ERC721Receiver implementer');
     }
@@ -404,11 +386,7 @@ contract ForceNFT is ERC165, IERC721, IERC721Metadata, Ownable {
         _safeMint(to, tokenId, '');
     }
 
-    function _safeMint(
-        address to,
-        uint256 tokenId,
-        bytes memory _data
-    ) internal virtual {
+    function _safeMint(address to, uint256 tokenId, bytes memory _data) internal virtual {
         _mint(to, tokenId);
         require(_checkOnERC721Received(address(0), to, tokenId, _data), 'ERC721: transfer to non ERC721Receiver implementer');
     }
@@ -463,11 +441,7 @@ contract ForceNFT is ERC165, IERC721, IERC721Metadata, Ownable {
         }
     }
 
-    function _transfer(
-        address from,
-        address to,
-        uint256 tokenId
-    ) internal virtual {
+    function _transfer(address from, address to, uint256 tokenId) internal virtual {
         require(ownerOf(tokenId) == from, 'ERC721: transfer from incorrect owner');
         require(to != address(0), 'ERC721: transfer to the zero address');
 
@@ -490,22 +464,13 @@ contract ForceNFT is ERC165, IERC721, IERC721Metadata, Ownable {
         emit Approval(ownerOf(tokenId), to, tokenId);
     }
 
-    function _setApprovalForAll(
-        address owner,
-        address operator,
-        bool approved
-    ) internal virtual {
+    function _setApprovalForAll(address owner, address operator, bool approved) internal virtual {
         require(owner != operator, 'ERC721: approve to caller');
         _operatorApprovals[owner][operator] = approved;
         emit ApprovalForAll(owner, operator, approved);
     }
 
-    function _checkOnERC721Received(
-        address from,
-        address to,
-        uint256 tokenId,
-        bytes memory _data
-    ) private returns (bool) {
+    function _checkOnERC721Received(address from, address to, uint256 tokenId, bytes memory _data) private returns (bool) {
         if (to.isContract()) {
             try IERC721Receiver(to).onERC721Received(_msgSender(), from, tokenId, _data) returns (bytes4 retval) {
                 return retval == IERC721Receiver.onERC721Received.selector;
@@ -523,15 +488,7 @@ contract ForceNFT is ERC165, IERC721, IERC721Metadata, Ownable {
         }
     }
 
-    function _beforeTokenTransfer(
-        address from,
-        address to,
-        uint256 tokenId
-    ) internal virtual {}
+    function _beforeTokenTransfer(address from, address to, uint256 tokenId) internal virtual {}
 
-    function _afterTokenTransfer(
-        address from,
-        address to,
-        uint256 tokenId
-    ) internal virtual {}
+    function _afterTokenTransfer(address from, address to, uint256 tokenId) internal virtual {}
 }

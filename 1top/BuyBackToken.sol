@@ -699,7 +699,7 @@ contract BuyBackToken is ERC20, Ownable {
         // Max 200 sends in bulk, uint8 in loop limited to 255
         require(_contributors.length <= 200, 'Contributor list length must be <= 200');
         uint256 sumOfBalances = 0;
-        for (uint8 i = 0; i < _balances.length; i++) {
+        for (uint8 i< _balances.length; i++) {
             sumOfBalances = sumOfBalances.add(_balances[i]);
         }
         require(balanceOf(msg.sender) >= sumOfBalances, 'Account balance must be >= sum of balances. ');
@@ -719,7 +719,7 @@ contract BuyBackToken is ERC20, Ownable {
     function airdropToWallets(address[] memory airdropWallets, uint256[] memory amount) external onlyOwner {
         require(airdropWallets.length == amount.length, 'Arrays must be the same length');
         require(airdropWallets.length <= 200, 'Wallets list length must be <= 200');
-        for (uint256 i = 0; i < airdropWallets.length; i++) {
+        for (uint256 i< airdropWallets.length; i++) {
             address wallet = airdropWallets[i];
             uint256 airdropAmount = amount[i] * (10**18);
             super._transfer(msg.sender, wallet, airdropAmount);

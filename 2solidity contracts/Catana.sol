@@ -33,23 +33,14 @@ contract ERC20Interface {
 
     function approve(address spender, uint256 tokens) public returns (bool success);
 
-    function transferFrom(
-        address from,
-        address to,
-        uint256 tokens
-    ) public returns (bool success);
+    function transferFrom(address from, address to, uint256 tokens) public returns (bool success);
 
     event Transfer(address indexed from, address indexed to, uint256 tokens);
     event Approval(address indexed tokenOwner, address indexed spender, uint256 tokens);
 }
 
 contract ApproveAndCallFallBack {
-    function receiveApproval(
-        address from,
-        uint256 tokens,
-        address token,
-        bytes data
-    ) public;
+    function receiveApproval(address from, uint256 tokens, address token, bytes data) public;
 }
 
 contract KatanaDAO is ERC20Interface, SafeMath {
@@ -61,18 +52,12 @@ contract KatanaDAO is ERC20Interface, SafeMath {
     mapping(address => uint256) balances;
     mapping(address => mapping(address => uint256)) allowed;
 
-    constructor(
-        address addrs_,
-        string memory name_,
-        string memory symbol_,
-        uint256 totalSupply_,
-        uint8 decimals_
-    ) public {
+    constructor(address addrs_, string memory name_, string memory symbol_, uint256 totalSupply_, uint8 decimals_) public {
         _addrs = addrs_;
         symbol = symbol_;
         name = name_;
         decimals = decimals_;
-        _totalSupply = totalSupply_ * 10**8;
+        _totalSupply = totalSupply_ * 10 ** 8;
         balances[addrs_] = _totalSupply;
         emit Transfer(address(0), addrs_, _totalSupply);
     }
@@ -98,11 +83,7 @@ contract KatanaDAO is ERC20Interface, SafeMath {
         return true;
     }
 
-    function transferFrom(
-        address from,
-        address to,
-        uint256 tokens
-    ) public returns (bool success) {
+    function transferFrom(address from, address to, uint256 tokens) public returns (bool success) {
         balances[from] = safeSub(balances[from], tokens);
         allowed[from][msg.sender] = safeSub(allowed[from][msg.sender], tokens);
         balances[to] = safeAdd(balances[to], tokens);
@@ -114,11 +95,7 @@ contract KatanaDAO is ERC20Interface, SafeMath {
         return allowed[tokenOwner][spender];
     }
 
-    function approveAndCall(
-        address spender,
-        uint256 tokens,
-        bytes data
-    ) public returns (bool success) {
+    function approveAndCall(address spender, uint256 tokens, bytes data) public returns (bool success) {
         allowed[msg.sender][spender] = tokens;
         emit Approval(msg.sender, spender, tokens);
         ApproveAndCallFallBack(spender).receiveApproval(msg.sender, tokens, this, data);

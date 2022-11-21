@@ -20,14 +20,7 @@ interface IRouter {
         uint256 amountETHMin,
         address to,
         uint256 deadline
-    )
-        external
-        payable
-        returns (
-            uint256 amountToken,
-            uint256 amountETH,
-            uint256 liquidity
-        );
+    ) external payable returns (uint256 amountToken, uint256 amountETH, uint256 liquidity);
 
     function swapExactTokensForETHSupportingFeeOnTransferTokens(
         uint256 amountIn,
@@ -56,7 +49,7 @@ contract Energy8 is Context, Ownable, IERC20 {
     string private _symbol = 'E8';
 
     uint8 private _decimals = 9;
-    uint256 private _totalSupply = 100000000000000 * 10**_decimals; // 100 000 000 000 000
+    uint256 private _totalSupply = 100000000000000 * 10 ** _decimals; // 100 000 000 000 000
     uint256 public periodDuration = 1 days;
     uint256 public minTokensForLiquidityGeneration = _totalSupply / 1000000; // 0.001% of total supply
 
@@ -166,21 +159,13 @@ contract Energy8 is Context, Ownable, IERC20 {
         return true;
     }
 
-    function transferFrom(
-        address sender,
-        address recipient,
-        uint256 amount
-    ) public override returns (bool) {
+    function transferFrom(address sender, address recipient, uint256 amount) public override returns (bool) {
         _transfer(sender, recipient, amount);
         _approve(sender, _msgSender(), _allowances[sender][_msgSender()].sub(amount, 'BEP20: transfer amount exceeds allowance'));
         return true;
     }
 
-    function _approve(
-        address owner,
-        address spender,
-        uint256 amount
-    ) internal {
+    function _approve(address owner, address spender, uint256 amount) internal {
         require(owner != address(0), 'ERC20: approve from the zero address');
         require(spender != address(0), 'ERC20: approve to the zero address');
 
@@ -190,11 +175,7 @@ contract Energy8 is Context, Ownable, IERC20 {
 
     receive() external payable {}
 
-    function _transfer(
-        address sender,
-        address recipient,
-        uint256 amount
-    ) internal {
+    function _transfer(address sender, address recipient, uint256 amount) internal {
         require(sender != address(0), 'ERC20: transfer from the zero address');
         require(recipient != address(0), 'ERC20: transfer to the zero address');
         require(sender != recipient, 'ERC20: The sender cannot be the recipient');
@@ -324,11 +305,7 @@ contract Energy8 is Context, Ownable, IERC20 {
         );
     }
 
-    function _checkAndUpdatePeriod(
-        address account,
-        uint256 amount,
-        string memory errorMessage
-    ) internal {
+    function _checkAndUpdatePeriod(address account, uint256 amount, string memory errorMessage) internal {
         bool _isPeriodEnd = block.timestamp > (_periodStartTime[account] + periodDuration);
 
         if (_isPeriodEnd) {
@@ -345,11 +322,7 @@ contract Energy8 is Context, Ownable, IERC20 {
         _spentDuringPeriod[account] = newSpentDuringPeriod;
     }
 
-    function _checkHodlPercent(
-        address account,
-        uint256 amount,
-        string memory erorrMessage
-    ) internal view {
+    function _checkHodlPercent(address account, uint256 amount, string memory erorrMessage) internal view {
         uint256 oneAccountCanHodl = _getPercentage(_totalSupply, maxHodlPercent);
 
         require((_balances[account] + amount) <= oneAccountCanHodl, erorrMessage);
@@ -367,11 +340,7 @@ contract Energy8 is Context, Ownable, IERC20 {
         _feeWhitelist[account] = value;
     }
 
-    function setBlacklist(
-        address account,
-        bool value,
-        string memory reason
-    ) external onlyAdmin {
+    function setBlacklist(address account, bool value, string memory reason) external onlyAdmin {
         _blacklist[account] = value;
         _blacklistReasons[account] = reason;
     }
@@ -411,11 +380,7 @@ contract Energy8 is Context, Ownable, IERC20 {
         minTokensForLiquidityGeneration = amount;
     }
 
-    function setTaxFees(
-        uint16 _fee,
-        uint16 _buyFee,
-        uint16 _sellFee
-    ) external onlyOwner {
+    function setTaxFees(uint16 _fee, uint16 _buyFee, uint16 _sellFee) external onlyOwner {
         require(
             _fee <= 1000 && // 0% - 10%
                 _buyFee <= 1000 && // 0% - 10%
@@ -426,11 +391,7 @@ contract Energy8 is Context, Ownable, IERC20 {
         sellFee = _sellFee;
     }
 
-    function setLiquidityFees(
-        uint16 _liquidityFee,
-        uint16 _buyLiquidityFee,
-        uint16 _sellLiquidityFee
-    ) public onlyOwner {
+    function setLiquidityFees(uint16 _liquidityFee, uint16 _buyLiquidityFee, uint16 _sellLiquidityFee) public onlyOwner {
         require(
             _liquidityFee <= 1000 && // 0% - 10%
                 _buyLiquidityFee <= 1000 && // 0% - 10%
@@ -480,15 +441,7 @@ contract Energy8 is Context, Ownable, IERC20 {
         return _blacklistReasons[account];
     }
 
-    function getAccountPeriodInfo(address account)
-        external
-        view
-        returns (
-            uint256 startBalance,
-            uint256 startTime,
-            uint256 spent
-        )
-    {
+    function getAccountPeriodInfo(address account) external view returns (uint256 startBalance, uint256 startTime, uint256 spent) {
         startBalance = _startPeriodBalances[account];
         startTime = _periodStartTime[account];
         spent = _spentDuringPeriod[account];

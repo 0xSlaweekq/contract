@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.10;
+pragma solidity ^0.8.10;
 import '@openzeppelin/contracts/access/Ownable.sol';
 import '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
@@ -324,11 +324,7 @@ contract MasterChef is Ownable, ReentrancyGuard {
     }
 
     // Safe transfer token function, just in case if rounding error causes pool to not have enough tokens.
-    function safeTransferTokenFromThis(
-        IERC20 _token,
-        address _to,
-        uint256 _amount
-    ) internal {
+    function safeTransferTokenFromThis(IERC20 _token, address _to, uint256 _amount) internal {
         uint256 bal = _token.balanceOf(address(this));
         if (_amount > bal) {
             _token.safeTransfer(_to, bal);
@@ -338,11 +334,7 @@ contract MasterChef is Ownable, ReentrancyGuard {
     }
 
     // Add reward for pool from the current block or start block
-    function addRewardForPool(
-        uint256 _pid,
-        uint256 _addTokenPerBlock,
-        bool _withTokenTransfer
-    ) external validatePoolByPid(_pid) onlyOwner {
+    function addRewardForPool(uint256 _pid, uint256 _addTokenPerBlock, bool _withTokenTransfer) external validatePoolByPid(_pid) onlyOwner {
         require(_addTokenPerBlock > ZERO, 'add token must be greater than zero!');
         PoolInfo storage pool = poolInfo[_pid];
         require(block.number < pool.endBlock, 'this pool has ended!');

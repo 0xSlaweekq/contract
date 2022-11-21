@@ -45,7 +45,7 @@ contract Staking is Ownable, IERC721Receiver {
 
     uint256[] private stakedSols;
 
-    uint256 private solReward = 5 * 10**18;
+    uint256 private solReward = 5 * 10 ** 18;
 
     uint256 private DAY = 60 * 60 * 24;
 
@@ -98,7 +98,7 @@ contract Staking is Ownable, IERC721Receiver {
     }
 
     function stakeMultiple(uint256[] calldata tokenIds) external {
-        for (uint256 i = 0; i < tokenIds.length; i++) {
+        for (uint256 i; i < tokenIds.length; i++) {
             _stake(tokenIds[i]);
         }
     }
@@ -108,7 +108,7 @@ contract Staking is Ownable, IERC721Receiver {
         uint256 length = user.stakedSols.length;
         uint256[] memory tokenIds = new uint256[](length);
         uint256 counter;
-        for (uint256 i = 0; i < user.stakedSols.length; i++) {
+        for (uint256 i; i < user.stakedSols.length; i++) {
             tokenIds[counter] = user.stakedSols[i];
             counter++;
         }
@@ -120,7 +120,7 @@ contract Staking is Ownable, IERC721Receiver {
     }
 
     function unstakeMultiple(uint256[] calldata tokenIds) external {
-        for (uint256 i = 0; i < tokenIds.length; i++) {
+        for (uint256 i; i < tokenIds.length; i++) {
             _unstake(tokenIds[i]);
         }
     }
@@ -131,7 +131,7 @@ contract Staking is Ownable, IERC721Receiver {
 
     function harvestAll() external {
         UserInfo storage user = userInfo[_msgSender()];
-        for (uint256 i = 0; i < user.stakedSols.length; i++) {
+        for (uint256 i; i < user.stakedSols.length; i++) {
             _harvestNormal(user.stakedSols[i]);
         }
     }
@@ -174,7 +174,7 @@ contract Staking is Ownable, IERC721Receiver {
         require(nft.owner == _msgSender(), 'Caller is not the owner');
         bool found;
         if (nft.nftType == 0) {
-            for (uint256 i = 0; i < user.stakedSols.length; i++) {
+            for (uint256 i; i < user.stakedSols.length; i++) {
                 if (user.stakedSols[i] == tokenId) {
                     for (uint256 x = i; x < user.stakedSols.length - 1; x++) {
                         user.stakedSols[x] = user.stakedSols[x + 1];
@@ -183,7 +183,7 @@ contract Staking is Ownable, IERC721Receiver {
                     found = true;
                 }
             }
-            for (uint256 i = 0; i < stakedSols.length; i++) {
+            for (uint256 i; i < stakedSols.length; i++) {
                 if (stakedSols[i] == tokenId) {
                     for (uint256 x = i; x < stakedSols.length - 1; x++) {
                         stakedSols[x] = stakedSols[x + 1];
@@ -249,7 +249,7 @@ contract Staking is Ownable, IERC721Receiver {
     function _pendingReward(address _address) internal view returns (uint256 pendingReward_) {
         UserInfo storage user = userInfo[_address];
         if (user.stakedSols.length > 0) {
-            for (uint256 i = 0; i < user.stakedSols.length; i++) {
+            for (uint256 i; i < user.stakedSols.length; i++) {
                 pendingReward_ += _pendingSolsReward(user.stakedSols[i]);
             }
         }
@@ -275,12 +275,7 @@ contract Staking is Ownable, IERC721Receiver {
 
     event Received();
 
-    function onERC721Received(
-        address _operator,
-        address _from,
-        uint256 _tokenId,
-        bytes calldata _data
-    ) external override returns (bytes4) {
+    function onERC721Received(address _operator, address _from, uint256 _tokenId, bytes calldata _data) external override returns (bytes4) {
         _operator;
         _from;
         _tokenId;

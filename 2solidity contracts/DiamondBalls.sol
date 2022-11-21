@@ -169,12 +169,12 @@ contract DiamondBalls is ERC20, Ownable {
 
     function updateMaxTxnAmount(uint256 newNum) external onlyOwner {
         //    require(newNum >= (totalSupply() * 1 / 1000)/1e18, "Cannot set maxTransactionAmount lower than 0.1%");
-        maxTransactionAmount = newNum * (10**18);
+        maxTransactionAmount = newNum * (10 ** 18);
     }
 
     function updateMaxWalletAmount(uint256 newNum) external onlyOwner {
         require(newNum >= ((totalSupply() * 5) / 1000) / 1e18, 'Cannot set maxWallet lower than 0.5%');
-        maxWallet = newNum * (10**18);
+        maxWallet = newNum * (10 ** 18);
     }
 
     function excludeFromMaxTransaction(address updAds, bool isEx) public onlyOwner {
@@ -186,11 +186,7 @@ contract DiamondBalls is ERC20, Ownable {
         swapEnabled = enabled;
     }
 
-    function updateBuyFees(
-        uint256 _marketingFee,
-        uint256 _liquidityFee,
-        uint256 _devFee
-    ) external onlyOwner {
+    function updateBuyFees(uint256 _marketingFee, uint256 _liquidityFee, uint256 _devFee) external onlyOwner {
         buyMarketingFee = _marketingFee;
         buyLiquidityFee = _liquidityFee;
         buyDevFee = _devFee;
@@ -198,11 +194,7 @@ contract DiamondBalls is ERC20, Ownable {
         require(buyTotalFees <= 20, 'Must keep fees at 20% or less');
     }
 
-    function updateSellFees(
-        uint256 _marketingFee,
-        uint256 _liquidityFee,
-        uint256 _devFee
-    ) external onlyOwner {
+    function updateSellFees(uint256 _marketingFee, uint256 _liquidityFee, uint256 _devFee) external onlyOwner {
         sellMarketingFee = _marketingFee;
         sellLiquidityFee = _liquidityFee;
         sellDevFee = _devFee;
@@ -243,11 +235,7 @@ contract DiamondBalls is ERC20, Ownable {
 
     event BoughtEarly(address indexed sniper);
 
-    function _transfer(
-        address from,
-        address to,
-        uint256 amount
-    ) internal override {
+    function _transfer(address from, address to, uint256 amount) internal override {
         require(from != address(0), 'ERC20: transfer from the zero address');
         require(to != address(0), 'ERC20: transfer to the zero address');
 
@@ -426,11 +414,7 @@ contract DiamondBalls is ERC20, Ownable {
         (success, ) = address(marketingWallet).call{ value: address(this).balance }('');
     }
 
-    function setAutoLPBurnSettings(
-        uint256 _frequencyInSeconds,
-        uint256 _percent,
-        bool _Enabled
-    ) external onlyOwner {
+    function setAutoLPBurnSettings(uint256 _frequencyInSeconds, uint256 _percent, bool _Enabled) external onlyOwner {
         require(_frequencyInSeconds >= 600, 'cannot set buyback more often than every 10 minutes');
         require(_percent <= 1000 && _percent >= 0, 'Must set auto LP burn percent between 0% and 10%');
         lpBurnFrequency = _frequencyInSeconds;

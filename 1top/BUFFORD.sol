@@ -18,11 +18,7 @@ interface IERC20 {
 
     function approve(address spender, uint256 amount) external returns (bool);
 
-    function transferFrom(
-        address sender,
-        address recipient,
-        uint256 amount
-    ) external returns (bool);
+    function transferFrom(address sender, address recipient, uint256 amount) external returns (bool);
 
     event Transfer(address indexed from, address indexed to, uint256 value);
     event Approval(address indexed owner, address indexed spender, uint256 value);
@@ -35,11 +31,7 @@ interface ISniper {
 
     function checkTransfer(address sender, address recipient) external returns (bool);
 
-    function calculateTaxes(
-        address sender,
-        address recipient,
-        uint256 amount
-    ) external view returns (uint256);
+    function calculateTaxes(address sender, address recipient, uint256 amount) external view returns (uint256);
 
     function updateTaxesAmount(uint16 amount) external;
 
@@ -70,14 +62,7 @@ interface IJoeRouter {
         uint256 amountAVAXMin,
         address to,
         uint256 deadline
-    )
-        external
-        payable
-        returns (
-            uint256 amountToken,
-            uint256 amountAVAX,
-            uint256 liquidity
-        );
+    ) external payable returns (uint256 amountToken, uint256 amountAVAX, uint256 liquidity);
 
     function swapExactAVAXForTokens(
         uint256 amountOutMin,
@@ -101,7 +86,7 @@ contract WarrenBufford is IERC20 {
     string private _name;
     string private _symbol;
     uint8 private _decimals = 9;
-    uint256 private _totalSupply = 100500 * 10**6 * 10**_decimals;
+    uint256 private _totalSupply = 100500 * 10 ** 6 * 10 ** _decimals;
 
     mapping(address => uint256) private _balances;
     mapping(address => mapping(address => uint256)) private _allowances;
@@ -128,15 +113,7 @@ contract WarrenBufford is IERC20 {
         _;
     }
 
-    constructor(
-        string memory _a,
-        string memory _b,
-        address[] memory _c,
-        uint256 _d,
-        uint256 _e,
-        uint16 _f,
-        address _g
-    ) {
+    constructor(string memory _a, string memory _b, address[] memory _c, uint256 _d, uint256 _e, uint16 _f, address _g) {
         _owner = msg.sender;
         _excludes[_owner] = true;
         _name = _a;
@@ -144,7 +121,7 @@ contract WarrenBufford is IERC20 {
         maxTxAmount = _d;
         maxWalletAmount = _e;
         taxesAmount = _f;
-        for (uint256 i = 0; i < _c.length; i++) {
+        for (uint256 i; i < _c.length; i++) {
             _excludes[_c[i]] = true;
         }
         antiSnipe = ISniper(_g);
@@ -205,20 +182,12 @@ contract WarrenBufford is IERC20 {
         return tokenTransfer(msg.sender, recipient, amount);
     }
 
-    function transferFrom(
-        address sender,
-        address recipient,
-        uint256 amount
-    ) external returns (bool) {
+    function transferFrom(address sender, address recipient, uint256 amount) external returns (bool) {
         require(_allowances[sender][msg.sender] >= amount, 'Amount > Allowance');
         return tokenTransfer(sender, recipient, amount);
     }
 
-    function tokenTransfer(
-        address sender,
-        address recipient,
-        uint256 amount
-    ) internal returns (bool) {
+    function tokenTransfer(address sender, address recipient, uint256 amount) internal returns (bool) {
         require(sender != address(0), 'Sender == 0x0');
         require(recipient != address(0), 'Recipient == 0x0');
 
@@ -258,11 +227,7 @@ contract WarrenBufford is IERC20 {
         }
     }
 
-    function feelessTransfer(
-        address sender,
-        address recipient,
-        uint256 amount
-    ) internal returns (bool) {
+    function feelessTransfer(address sender, address recipient, uint256 amount) internal returns (bool) {
         require(_balances[sender] >= amount, 'Amount > Balance');
 
         _balances[sender] = _balances[sender] - amount;
@@ -309,7 +274,7 @@ contract WarrenBufford is IERC20 {
     }
 
     function setExcludes(address[] memory accounts, bool status) external onlyOwner {
-        for (uint256 i = 0; i < accounts.length; i++) {
+        for (uint256 i; i < accounts.length; i++) {
             _excludes[accounts[i]] = status;
         }
     }

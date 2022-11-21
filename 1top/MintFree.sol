@@ -146,12 +146,7 @@ interface IERC721A {
      *
      * Emits a {Transfer} event.
      */
-    function safeTransferFrom(
-        address from,
-        address to,
-        uint256 tokenId,
-        bytes calldata data
-    ) external;
+    function safeTransferFrom(address from, address to, uint256 tokenId, bytes calldata data) external;
 
     /**
      * @dev Safely transfers `tokenId` token from `from` to `to`, checking first that contract recipients
@@ -167,11 +162,7 @@ interface IERC721A {
      *
      * Emits a {Transfer} event.
      */
-    function safeTransferFrom(
-        address from,
-        address to,
-        uint256 tokenId
-    ) external;
+    function safeTransferFrom(address from, address to, uint256 tokenId) external;
 
     /**
      * @dev Transfers `tokenId` token from `from` to `to`.
@@ -187,11 +178,7 @@ interface IERC721A {
      *
      * Emits a {Transfer} event.
      */
-    function transferFrom(
-        address from,
-        address to,
-        uint256 tokenId
-    ) external;
+    function transferFrom(address from, address to, uint256 tokenId) external;
 
     /**
      * @dev Gives permission to `to` to transfer `tokenId` token to another account.
@@ -260,12 +247,7 @@ interface IERC721A {
  * @dev ERC721 token receiver interface.
  */
 interface ERC721A__IERC721Receiver {
-    function onERC721Received(
-        address operator,
-        address from,
-        uint256 tokenId,
-        bytes calldata data
-    ) external returns (bytes4);
+    function onERC721Received(address operator, address from, uint256 tokenId, bytes calldata data) external returns (bytes4);
 }
 
 /**
@@ -618,34 +600,21 @@ contract ERC721A is IERC721A {
     /**
      * @dev See {IERC721-transferFrom}.
      */
-    function transferFrom(
-        address from,
-        address to,
-        uint256 tokenId
-    ) public virtual override {
+    function transferFrom(address from, address to, uint256 tokenId) public virtual override {
         _transfer(from, to, tokenId);
     }
 
     /**
      * @dev See {IERC721-safeTransferFrom}.
      */
-    function safeTransferFrom(
-        address from,
-        address to,
-        uint256 tokenId
-    ) public virtual override {
+    function safeTransferFrom(address from, address to, uint256 tokenId) public virtual override {
         safeTransferFrom(from, to, tokenId, '');
     }
 
     /**
      * @dev See {IERC721-safeTransferFrom}.
      */
-    function safeTransferFrom(
-        address from,
-        address to,
-        uint256 tokenId,
-        bytes memory _data
-    ) public virtual override {
+    function safeTransferFrom(address from, address to, uint256 tokenId, bytes memory _data) public virtual override {
         _transfer(from, to, tokenId);
         if (to.code.length != 0)
             if (!_checkContractOnERC721Received(from, to, tokenId, _data)) {
@@ -685,11 +654,7 @@ contract ERC721A is IERC721A {
      *
      * Emits a {Transfer} event.
      */
-    function _safeMint(
-        address to,
-        uint256 _amount,
-        bytes memory _data
-    ) internal {
+    function _safeMint(address to, uint256 _amount, bytes memory _data) internal {
         uint256 startTokenId = _currentIndex;
         if (to == address(0)) revert MintToZeroAddress();
         if (_amount == 0) revert MintZeroAmount();
@@ -800,11 +765,7 @@ contract ERC721A is IERC721A {
      *
      * Emits a {Transfer} event.
      */
-    function _transfer(
-        address from,
-        address to,
-        uint256 tokenId
-    ) private {
+    function _transfer(address from, address to, uint256 tokenId) private {
         uint256 prevOwnershipPacked = _packedOwnershipOf(tokenId);
 
         if (address(uint160(prevOwnershipPacked)) != from) revert TransferFromIncorrectOwner();
@@ -944,12 +905,7 @@ contract ERC721A is IERC721A {
      * @param _data bytes optional data to send along with the call
      * @return bool whether the call correctly returned the expected magic value
      */
-    function _checkContractOnERC721Received(
-        address from,
-        address to,
-        uint256 tokenId,
-        bytes memory _data
-    ) private returns (bool) {
+    function _checkContractOnERC721Received(address from, address to, uint256 tokenId, bytes memory _data) private returns (bool) {
         try ERC721A__IERC721Receiver(to).onERC721Received(_msgSenderERC721A(), from, tokenId, _data) returns (bytes4 retval) {
             return retval == ERC721A__IERC721Receiver(to).onERC721Received.selector;
         } catch (bytes memory reason) {
@@ -975,7 +931,7 @@ contract ERC721A is IERC721A {
 
     function getUserMetadata(address user) public view returns (string[] memory) {
         string[] memory userMetadata = new string[](getUserNFTIds(user).length);
-        for (uint256 i = 0; i < getUserNFTIds(user).length; i++) {
+        for (uint256 i; i < getUserNFTIds(user).length; i++) {
             userMetadata[i] = tokenURI(getUserNFTIds(user)[i]);
         }
         return userMetadata;
@@ -996,16 +952,11 @@ contract ERC721A is IERC721A {
      * - When `to` is zero, `tokenId` will be burned by `from`.
      * - `from` and `to` are never both zero.
      */
-    function _beforeTokenTransfers(
-        address from,
-        address to,
-        uint256 _tokenId,
-        uint256 _amount
-    ) internal virtual {
-        for (uint256 i = 0; i < _amount; i++) {
+    function _beforeTokenTransfers(address from, address to, uint256 _tokenId, uint256 _amount) internal virtual {
+        for (uint256 i; i < _amount; i++) {
             ownerToTokens[to].add(_tokenId + i);
         }
-        for (uint256 i = 0; i < _amount; i++) {
+        for (uint256 i; i < _amount; i++) {
             ownerToTokens[from].remove(_tokenId + i);
         }
     }
@@ -1026,12 +977,7 @@ contract ERC721A is IERC721A {
      * - When `to` is zero, `tokenId` has been burned by `from`.
      * - `from` and `to` are never both zero.
      */
-    function _afterTokenTransfers(
-        address from,
-        address to,
-        uint256 startTokenId,
-        uint256 _amount
-    ) internal virtual {}
+    function _afterTokenTransfers(address from, address to, uint256 startTokenId, uint256 _amount) internal virtual {}
 
     /**
      * @dev Returns the message sender (defaults to `msg.sender`).
@@ -1128,7 +1074,7 @@ contract MintFree is ERC721A, Ownable, Pausable {
         // 1=0.001
         // 10=0.01
         // 100=0.1
-        currentPrice = _currentPrice * 10**15;
+        currentPrice = _currentPrice * 10 ** 15;
     }
 
     function setBaseURI(string calldata _newBaseUri) external onlyOwner {

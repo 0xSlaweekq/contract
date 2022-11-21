@@ -258,11 +258,7 @@ contract BuybackBabyToken is IERC20, Auth, BaseToken {
         return _transferFrom(msg.sender, recipient, amount);
     }
 
-    function transferFrom(
-        address sender,
-        address recipient,
-        uint256 amount
-    ) external override returns (bool) {
+    function transferFrom(address sender, address recipient, uint256 amount) external override returns (bool) {
         if (_allowances[sender][msg.sender] != _totalSupply) {
             _allowances[sender][msg.sender] = _allowances[sender][msg.sender].sub(amount, 'Insufficient Allowance');
         }
@@ -270,11 +266,7 @@ contract BuybackBabyToken is IERC20, Auth, BaseToken {
         return _transferFrom(sender, recipient, amount);
     }
 
-    function _transferFrom(
-        address sender,
-        address recipient,
-        uint256 amount
-    ) internal returns (bool) {
+    function _transferFrom(address sender, address recipient, uint256 amount) internal returns (bool) {
         if (inSwap) {
             return _basicTransfer(sender, recipient, amount);
         }
@@ -305,11 +297,7 @@ contract BuybackBabyToken is IERC20, Auth, BaseToken {
         return true;
     }
 
-    function _basicTransfer(
-        address sender,
-        address recipient,
-        uint256 amount
-    ) internal returns (bool) {
+    function _basicTransfer(address sender, address recipient, uint256 amount) internal returns (bool) {
         _balances[sender] = _balances[sender].sub(amount, 'Insufficient Balance');
         _balances[recipient] = _balances[recipient].add(amount);
         emit Transfer(sender, recipient, amount);
@@ -336,11 +324,7 @@ contract BuybackBabyToken is IERC20, Auth, BaseToken {
         return totalFee;
     }
 
-    function takeFee(
-        address sender,
-        address receiver,
-        uint256 amount
-    ) internal returns (uint256) {
+    function takeFee(address sender, address receiver, uint256 amount) internal returns (uint256) {
         uint256 feeAmount = amount.mul(getTotalFee(receiver == pair)).div(feeDenominator);
 
         _balances[address(this)] = _balances[address(this)].add(feeAmount);
@@ -427,12 +411,7 @@ contract BuybackBabyToken is IERC20, Auth, BaseToken {
         router.swapExactETHForTokensSupportingFeeOnTransferTokens{ value: amount }(0, path, to, block.timestamp);
     }
 
-    function setAutoBuybackSettings(
-        bool _enabled,
-        uint256 _cap,
-        uint256 _amount,
-        uint256 _period
-    ) external authorized {
+    function setAutoBuybackSettings(bool _enabled, uint256 _cap, uint256 _amount, uint256 _period) external authorized {
         autoBuybackEnabled = _enabled;
         autoBuybackCap = _cap;
         autoBuybackAccumulator = 0;
@@ -441,11 +420,7 @@ contract BuybackBabyToken is IERC20, Auth, BaseToken {
         autoBuybackBlockLast = block.number;
     }
 
-    function setBuybackMultiplierSettings(
-        uint256 numerator,
-        uint256 denominator,
-        uint256 length
-    ) external authorized {
+    function setBuybackMultiplierSettings(uint256 numerator, uint256 denominator, uint256 length) external authorized {
         require(numerator / denominator <= 2 && numerator > denominator);
         buybackMultiplierNumerator = numerator;
         buybackMultiplierDenominator = denominator;

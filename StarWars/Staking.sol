@@ -60,19 +60,14 @@ contract Staking is Ownable, IERC721Receiver {
     uint256[] private stakedOfficers; // array of staked officers TokenIDs
     uint256[] private stakedGenerals;
 
-    uint256 private soldierReward = 1000 * 10**18;
-    uint256 private generalReward = 5000 * 10**18;
-    uint256 private stealPrice = 5 * 10**18;
+    uint256 private soldierReward = 1000 * 10 ** 18;
+    uint256 private generalReward = 5000 * 10 ** 18;
+    uint256 private stealPrice = 5 * 10 ** 18;
     uint256 private DAY = 60 * 60 * 24;
 
     uint256 private farmStartDate;
 
-    constructor(
-        address _token,
-        address _nftContract,
-        address _stableCoin,
-        address _marketing
-    ) {
+    constructor(address _token, address _nftContract, address _stableCoin, address _marketing) {
         nftContract = IForceNFT(_nftContract);
         token = IERC20(_token);
         stableCoin = IERC20(_stableCoin);
@@ -127,7 +122,7 @@ contract Staking is Ownable, IERC721Receiver {
 
     function stakeMultiple(uint256[] calldata tokenIds) external {
         _retrieveStolenNFTs();
-        for (uint256 i = 0; i < tokenIds.length; i++) {
+        for (uint256 i; i < tokenIds.length; i++) {
             _stake(tokenIds[i]);
         }
     }
@@ -137,15 +132,15 @@ contract Staking is Ownable, IERC721Receiver {
         uint256 length = user.stakedSoldiers.length + user.stakedOfficers.length + user.stakedGenerals.length;
         uint256[] memory tokenIds = new uint256[](length);
         uint256 counter;
-        for (uint256 i = 0; i < user.stakedSoldiers.length; i++) {
+        for (uint256 i; i < user.stakedSoldiers.length; i++) {
             tokenIds[counter] = user.stakedSoldiers[i];
             counter++;
         }
-        for (uint256 i = 0; i < user.stakedOfficers.length; i++) {
+        for (uint256 i; i < user.stakedOfficers.length; i++) {
             tokenIds[counter] = user.stakedOfficers[i];
             counter++;
         }
-        for (uint256 i = 0; i < user.stakedGenerals.length; i++) {
+        for (uint256 i; i < user.stakedGenerals.length; i++) {
             tokenIds[counter] = user.stakedGenerals[i];
             counter++;
         }
@@ -159,7 +154,7 @@ contract Staking is Ownable, IERC721Receiver {
 
     function unstakeMultiple(uint256[] calldata tokenIds) external {
         _retrieveStolenNFTs();
-        for (uint256 i = 0; i < tokenIds.length; i++) {
+        for (uint256 i; i < tokenIds.length; i++) {
             _unstake(tokenIds[i]);
         }
     }
@@ -172,13 +167,13 @@ contract Staking is Ownable, IERC721Receiver {
     function harvestAll() external {
         _retrieveStolenNFTs();
         UserInfo storage user = userInfo[_msgSender()];
-        for (uint256 i = 0; i < user.stakedSoldiers.length; i++) {
+        for (uint256 i; i < user.stakedSoldiers.length; i++) {
             _harvestNormal(user.stakedSoldiers[i]);
         }
-        for (uint256 i = 0; i < user.stakedOfficers.length; i++) {
+        for (uint256 i; i < user.stakedOfficers.length; i++) {
             _harvestNormal(user.stakedOfficers[i]);
         }
-        for (uint256 i = 0; i < user.stakedGenerals.length; i++) {
+        for (uint256 i; i < user.stakedGenerals.length; i++) {
             _harvestNormal(user.stakedGenerals[i]);
         }
     }
@@ -249,7 +244,7 @@ contract Staking is Ownable, IERC721Receiver {
         bool found;
         if (nft.nftType == 0) {
             require(block.timestamp >= nft.depositTime + 2 * DAY, '2 days have not passed');
-            for (uint256 i = 0; i < user.stakedSoldiers.length; i++) {
+            for (uint256 i; i < user.stakedSoldiers.length; i++) {
                 if (user.stakedSoldiers[i] == tokenId) {
                     for (uint256 x = i; x < user.stakedSoldiers.length - 1; x++) {
                         user.stakedSoldiers[x] = user.stakedSoldiers[x + 1];
@@ -258,7 +253,7 @@ contract Staking is Ownable, IERC721Receiver {
                     found = true;
                 }
             }
-            for (uint256 i = 0; i < stakedSoldiers.length; i++) {
+            for (uint256 i; i < stakedSoldiers.length; i++) {
                 if (stakedSoldiers[i] == tokenId) {
                     for (uint256 x = i; x < stakedSoldiers.length - 1; x++) {
                         stakedSoldiers[x] = stakedSoldiers[x + 1];
@@ -269,7 +264,7 @@ contract Staking is Ownable, IERC721Receiver {
             nft.lastSteal = 0;
             nft.numberOfSteals = 0;
         } else if (nft.nftType == 1) {
-            for (uint256 i = 0; i < user.stakedOfficers.length; i++) {
+            for (uint256 i; i < user.stakedOfficers.length; i++) {
                 if (user.stakedOfficers[i] == tokenId) {
                     for (uint256 x = i; x < user.stakedOfficers.length - 1; x++) {
                         user.stakedOfficers[x] = user.stakedOfficers[x + 1];
@@ -278,7 +273,7 @@ contract Staking is Ownable, IERC721Receiver {
                     found = true;
                 }
             }
-            for (uint256 i = 0; i < stakedOfficers.length; i++) {
+            for (uint256 i; i < stakedOfficers.length; i++) {
                 if (stakedOfficers[i] == tokenId) {
                     for (uint256 x = i; x < stakedOfficers.length - 1; x++) {
                         stakedOfficers[x] = stakedOfficers[x + 1];
@@ -288,7 +283,7 @@ contract Staking is Ownable, IERC721Receiver {
             }
             _remove(tokenId);
         } else if (nft.nftType == 2) {
-            for (uint256 i = 0; i < user.stakedGenerals.length; i++) {
+            for (uint256 i; i < user.stakedGenerals.length; i++) {
                 if (user.stakedGenerals[i] == tokenId) {
                     for (uint256 x = i; x < user.stakedGenerals.length - 1; x++) {
                         user.stakedGenerals[x] = user.stakedGenerals[x + 1];
@@ -297,7 +292,7 @@ contract Staking is Ownable, IERC721Receiver {
                     found = true;
                 }
             }
-            for (uint256 i = 0; i < stakedGenerals.length; i++) {
+            for (uint256 i; i < stakedGenerals.length; i++) {
                 if (stakedGenerals[i] == tokenId) {
                     for (uint256 x = i; x < stakedGenerals.length - 1; x++) {
                         stakedGenerals[x] = stakedGenerals[x + 1];
@@ -388,17 +383,17 @@ contract Staking is Ownable, IERC721Receiver {
     function _pendingReward(address _address) internal view returns (uint256 pendingReward_) {
         UserInfo storage user = userInfo[_address];
         if (user.stakedSoldiers.length > 0) {
-            for (uint256 i = 0; i < user.stakedSoldiers.length; i++) {
+            for (uint256 i; i < user.stakedSoldiers.length; i++) {
                 pendingReward_ += _pendingSoldiersReward(user.stakedSoldiers[i]);
             }
         }
         if (user.stakedOfficers.length > 0) {
-            for (uint256 i = 0; i < user.stakedOfficers.length; i++) {
+            for (uint256 i; i < user.stakedOfficers.length; i++) {
                 pendingReward_ += _pendingOfficersReward(user.stakedOfficers[i]);
             }
         }
         if (user.stakedGenerals.length > 0) {
-            for (uint256 i = 0; i < user.stakedGenerals.length; i++) {
+            for (uint256 i; i < user.stakedGenerals.length; i++) {
                 pendingReward_ += _pendingGeneralsReward(user.stakedGenerals[i]);
             }
         }
@@ -448,7 +443,7 @@ contract Staking is Ownable, IERC721Receiver {
         if (stakedOfficers.length > 0) {
             (bool returned, uint256[] memory _stolenNFTs) = nftContract.retrieveStolenNFTs();
             if (returned) {
-                for (uint256 i = 0; i < _stolenNFTs.length; i++) {
+                for (uint256 i; i < _stolenNFTs.length; i++) {
                     uint256 _luckyWinner = uint256(keccak256(abi.encodePacked(blockhash(block.number), tx.origin, block.timestamp, i))) %
                         stakedOfficers.length;
                     uint256 winId = stakedOfficers[_luckyWinner];
@@ -477,7 +472,7 @@ contract Staking is Ownable, IERC721Receiver {
 
     /// @dev Officers Staking
 
-    uint256 internal constant magnitude = 2**128;
+    uint256 internal constant magnitude = 2 ** 128;
 
     uint256 internal magnifiedDividendPerShare;
 
@@ -525,12 +520,7 @@ contract Staking is Ownable, IERC721Receiver {
 
     event Received();
 
-    function onERC721Received(
-        address _operator,
-        address _from,
-        uint256 _tokenId,
-        bytes calldata _data
-    ) external override returns (bytes4) {
+    function onERC721Received(address _operator, address _from, uint256 _tokenId, bytes calldata _data) external override returns (bytes4) {
         _operator;
         _from;
         _tokenId;

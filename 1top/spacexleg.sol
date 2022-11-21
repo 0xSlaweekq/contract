@@ -25,12 +25,7 @@ contract BnbSpaceXMiner is Context, Ownable {
     mapping(address => uint256) private totalClaimed;
     uint256 private marketCoins;
 
-    constructor(
-        uint256 _PSNH,
-        uint256 _devFeeVal,
-        uint256 _refPercent,
-        address _boost
-    ) {
+    constructor(uint256 _PSNH, uint256 _devFeeVal, uint256 _refPercent, address _boost) {
         recAdd = payable(msg.sender);
         boost = payable(_boost);
         PSNH = _PSNH;
@@ -100,11 +95,7 @@ contract BnbSpaceXMiner is Context, Ownable {
         hatchCoins(ref);
     }
 
-    function calculateTrade(
-        uint256 rt,
-        uint256 rs,
-        uint256 bs
-    ) private view returns (uint256) {
+    function calculateTrade(uint256 rt, uint256 rs, uint256 bs) private view returns (uint256) {
         uint256 one = PSNH.mul(rt);
         uint256 two = PSN.mul(rs);
         uint256 three = two.add(one);

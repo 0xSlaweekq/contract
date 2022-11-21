@@ -6,10 +6,8 @@ import '@openzeppelin/contracts/access/Ownable.sol';
 import '@openzeppelin/contracts/token/ERC20/ERC20.sol';
 
 contract ForceToken is ERC20, Ownable {
-    uint256 private _totalSupply = 1 * 10**8 * (10**18);
-
     constructor() ERC20('Force', 'FORCE') {
-        _mint(msg.sender, _totalSupply);
+        _mint(msg.sender, 10e8 * (10 ** 18));
     }
 
     receive() external payable {

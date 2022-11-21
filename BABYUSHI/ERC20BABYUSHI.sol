@@ -39,20 +39,8 @@
 
 pragma solidity ^0.8.14;
 
+import '@openzeppelin/contracts/utils/Address.sol';
 import './interfaces/RewardsTracker.sol';
-import './interfaces/Ownable.sol';
-import './interfaces/IDex.sol';
-import './interfaces/IERC20.sol';
-import './interfaces/ERC20.sol';
-
-library Address {
-    function sendValue(address payable recipient, uint256 amount) internal {
-        require(address(this).balance >= amount, 'Address: insufficient balance');
-
-        (bool success, ) = recipient.call{ value: amount }('');
-        require(success, 'Address: unable to send value, recipient may have reverted');
-    }
-}
 
 contract ERC20BABYUSH1 is ERC20, Ownable, RewardsTracker {
     using Address for address payable;
@@ -67,8 +55,8 @@ contract ERC20BABYUSH1 is ERC20, Ownable, RewardsTracker {
     address public marketingWallet = 0xdE747aeF6E223601352aD01A9115D34b7a333c04;
     address public buybackWallet = 0x5e901ca79A5CDe2804772910Fa3eC7eAC651F147;
 
-    uint256 public swapTokensAtAmount = 10_000_000 * 10**18;
-    uint256 public maxWalletAmount = 105_000_000 * 10**18;
+    uint256 public swapTokensAtAmount = 10_000_000 * 10 ** 18;
+    uint256 public maxWalletAmount = 105_000_000 * 10 ** 18;
     uint256 public gasLimit = 300_000;
     uint256 public goldenHourStart;
 
@@ -113,7 +101,7 @@ contract ERC20BABYUSH1 is ERC20, Ownable, RewardsTracker {
 
         isPair[pair] = true;
 
-        minBalanceForRewards = 210_000 * 10**18;
+        minBalanceForRewards = 210_000 * 10 ** 18;
         claimDelay = 1 hours;
 
         // exclude from receiving dividends
@@ -137,7 +125,7 @@ contract ERC20BABYUSH1 is ERC20, Ownable, RewardsTracker {
 
         // _mint is an internal function in ERC20.sol that is only called here,
         // and CANNOT be called ever again
-        _mint(owner(), 21e9 * (10**18));
+        _mint(owner(), 21e9 * (10 ** 18));
     }
 
     receive() external payable {}
@@ -171,7 +159,7 @@ contract ERC20BABYUSH1 is ERC20, Ownable, RewardsTracker {
     }
 
     function excludeMultipleAccountsFromFees(address[] calldata accounts, bool excluded) public onlyOwner {
-        for (uint256 i = 0; i < accounts.length; i++) {
+        for (uint256 i; i < accounts.length; i++) {
             _isExcludedFromFees[accounts[i]] = excluded;
         }
         emit ExcludeMultipleAccountsFromFees(accounts, excluded);
@@ -202,25 +190,15 @@ contract ERC20BABYUSH1 is ERC20, Ownable, RewardsTracker {
     }
 
     function setSwapTokensAtAmount(uint256 amount) external onlyOwner {
-        swapTokensAtAmount = amount * 10**18;
+        swapTokensAtAmount = amount * 10 ** 18;
     }
 
-    function setBuyTaxes(
-        uint64 _rewards,
-        uint64 _marketing,
-        uint64 _buyback,
-        uint64 _lp
-    ) external onlyOwner {
+    function setBuyTaxes(uint64 _rewards, uint64 _marketing, uint64 _buyback, uint64 _lp) external onlyOwner {
         buyTaxes = Taxes(_rewards, _marketing, _buyback, _lp);
         totalBuyTax = _rewards + _marketing + _buyback + _lp;
     }
 
-    function setSellTaxes(
-        uint64 _rewards,
-        uint64 _marketing,
-        uint64 _buyback,
-        uint64 _lp
-    ) external onlyOwner {
+    function setSellTaxes(uint64 _rewards, uint64 _marketing, uint64 _buyback, uint64 _lp) external onlyOwner {
         sellTaxes = Taxes(_rewards, _marketing, _buyback, _lp);
         totalSellTax = _rewards + _marketing + _buyback + _lp;
     }
@@ -239,7 +217,7 @@ contract ERC20BABYUSH1 is ERC20, Ownable, RewardsTracker {
     }
 
     function setMinBalanceForRewards(uint256 minBalance) external onlyOwner {
-        minBalanceForRewards = minBalance * 10**18;
+        minBalanceForRewards = minBalance * 10 ** 18;
     }
 
     function setAntiBotStatus(bool value) external onlyOwner {
@@ -255,7 +233,7 @@ contract ERC20BABYUSH1 is ERC20, Ownable, RewardsTracker {
     }
 
     function addMultipleAntiBot(address[] memory _addresses) external onlyOwner {
-        for (uint256 i = 0; i < _addresses.length; i++) {
+        for (uint256 i; i < _addresses.length; i++) {
             _addAntiBot(_addresses[i]);
         }
     }
@@ -265,7 +243,7 @@ contract ERC20BABYUSH1 is ERC20, Ownable, RewardsTracker {
     }
 
     function removeMultipleAntiBot(address[] memory _addresses) external onlyOwner {
-        for (uint256 i = 0; i < _addresses.length; i++) {
+        for (uint256 i; i < _addresses.length; i++) {
             _removeAntiBot(_addresses[i]);
         }
     }
@@ -291,11 +269,7 @@ contract ERC20BABYUSH1 is ERC20, Ownable, RewardsTracker {
     // Transfer Functions //
     ////////////////////////
 
-    function _transfer(
-        address from,
-        address to,
-        uint256 amount
-    ) internal override {
+    function _transfer(address from, address to, uint256 amount) internal override {
         require(from != address(0), 'ERC20: transfer from the zero address');
         require(to != address(0), 'ERC20: transfer to the zero address');
         require(amount > 0, 'Transfer amount must be greater than zero');

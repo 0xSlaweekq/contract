@@ -8,14 +8,9 @@ import '@openzeppelin/contracts/utils/Strings.sol';
 import '@openzeppelin/contracts/utils/introspection/ERC165.sol';
 import '@openzeppelin/contracts/access/Ownable.sol';
 import '@openzeppelin/contracts/utils/structs/EnumerableSet.sol';
-import '@openzeppelin/contracts/security/Pausable.sol';
 
-interface IEtherWarsGame {
+interface IGame {
     function getNFTRarity(uint256 tokenID) external view returns (uint8);
-
-    function getNFTGen(uint256 tokenID) external view returns (uint8);
-
-    function getNFTMetadata(uint256 tokenID) external view returns (uint8, uint8);
 
     function retrieveStolenNFTs() external returns (bool, uint256[] memory);
 }
@@ -24,7 +19,7 @@ interface IStaking {
     function startFarming(uint256 _startDate) external;
 }
 
-contract EtherWarsGame is ERC165, IERC721, IERC721Metadata, Ownable, Pausable {
+contract Game is ERC165, IERC721, IERC721Metadata, Ownable {
     using Address for address;
     using Strings for uint256;
     using SafeERC20 for IERC20;
@@ -39,39 +34,29 @@ contract EtherWarsGame is ERC165, IERC721, IERC721Metadata, Ownable, Pausable {
         uint256 newPrice;
     }
 
-    address[] private claimWallets;
-    mapping(address => uint256) private claimAmounts;
-
     mapping(uint8 => PriceChange) private priceChange;
 
     struct NFTMetadata {
         /**
         _nftType:
-        0 - Soldier
-        1 - Officer
-        2 - General
+        0 - Bronze
+        1 - Silver
+        2 - Gold
          */
         uint8 _nftType;
-        /**
-        gen:
-        Gen 0 - from 1 to 2500
-        Gen 1 - from 2501 to 6000
-        Gen 2 - from 6001 to 10000
-         */
-        uint8 gen;
     }
 
-    uint256[] private mintedSoldiers;
-    uint256[] private mintedOfficers;
-    uint256[] private mintedGenerals;
+    uint256[] private mintedBronze;
+    uint256[] private mintedSilver;
+    uint256[] private mintedGold;
     uint256[] private stolenNFTs;
     uint256[] private pendingStolenNFTs;
 
     // Token name
-    string private _name = 'ETHER WARS GAME';
+    string private _name = 'TEST NFT';
 
     // Token symbol
-    string private _symbol = 'ETHERWARS';
+    string private _symbol = 'tNFT';
 
     // Mapping from token ID to owner address
     mapping(uint256 => address) private _owners;
@@ -85,24 +70,16 @@ contract EtherWarsGame is ERC165, IERC721, IERC721Metadata, Ownable, Pausable {
     // Mapping from owner to operator approvals
     mapping(address => mapping(address => bool)) private _operatorApprovals;
 
-    uint256 private _totalSupply = 10000;
-    uint256 private _totalOfficers = 950;
-    uint256 private _totalGenerals = 50;
-    uint256 private _enteredOfficers;
-    uint256 private _enteredGenerals;
+    uint256 private _totalSupply = 2000;
+    uint256 private _totalSilver = 500;
+    uint256 private _totalGold = 120;
+    uint256 private _enteredSilver;
+    uint256 private _enteredGold;
     uint256 private _circulatingSupply;
 
     uint256 private _startSteal;
 
     mapping(uint256 => NFTMetadata) private _nftMetadata;
-
-    mapping(address => bool) private whitelist;
-
-    mapping(address => uint256) public lists;
-    mapping(address => uint256) public usedLists;
-    bool public listEnabled = false;
-
-    bool public whitelistOnly;
 
     address stakingContract;
 
@@ -111,10 +88,8 @@ contract EtherWarsGame is ERC165, IERC721, IERC721Metadata, Ownable, Pausable {
     string private baseURI;
     string private notRevealedURI;
 
-    uint256 private gen0Price = 7 * 10 ** 16;
-    uint256 private gen1Price = 150 * 10 ** 18;
-    uint256 private gen2Price = 300 * 10 ** 18;
-    // Address of $EtherWars Token
+    uint256 private gen0Price = 300 * 10 ** 18;
+    // Address of $TEST Token
     IERC20 public Token;
 
     event NFTStolen(uint256 tokenId);
@@ -124,200 +99,108 @@ contract EtherWarsGame is ERC165, IERC721, IERC721Metadata, Ownable, Pausable {
         _;
     }
 
-    constructor(IERC20 _token, address[] memory _wallets, uint256[] memory _percentages) {
+    constructor(IERC20 _token) {
         Token = _token;
-        uint256 total;
-        require(_wallets.length == _percentages.length, 'Invalid Input');
-        for (uint256 i; i < _wallets.length; i++) {
-            claimWallets.push(_wallets[i]);
-            claimAmounts[_wallets[i]] = _percentages[i];
-            total += _percentages[i];
-        }
-        require(total == 100, 'Total percentages must add up to 100');
-        _pause();
     }
 
     /// @dev Public Functions
+
+    /// @dev Test
+
     function skip(uint256 amount) public onlyOwner {
         _circulatingSupply += amount;
     }
 
-    function test(uint256 _amount) public onlyOwner {
+    function testMint(uint256 _amount) public onlyOwner {
         for (uint256 i; i < _amount; i++) {
             _circulatingSupply++;
             _safeMint(_msgSender(), _circulatingSupply);
         }
     }
 
-    function flipSale() external onlyOwner {
-        _unpause();
+    /// @dev End Test
+    function getNumOfMintedBronze() public view returns (uint256) {
+        return mintedBronze.length;
     }
 
-    function getCurrentPrice() external view returns (uint256) {
-        uint8 gen;
-        if (_circulatingSupply <= 2500) {
-            gen = 0;
-        } else if (_circulatingSupply > 2500 && _circulatingSupply <= 6000) {
-            gen = 1;
-        } else if (_circulatingSupply > 6000 && _circulatingSupply <= 10000) {
-            gen = 2;
-        } else {
-            return 0;
-        }
-        return _getCurrentPrice(gen);
+    function getNumOfMintedSilver() public view returns (uint256) {
+        return mintedSilver.length;
     }
 
-    function getNumOfMintedSoldiers() public view returns (uint256) {
-        return mintedSoldiers.length;
-    }
-
-    function getNumOfMintedOfficers() public view returns (uint256) {
-        return mintedOfficers.length;
-    }
-
-    function getNumOfMintedGenerals() public view returns (uint256) {
-        return mintedGenerals.length;
+    function getNumOfMintedGold() public view returns (uint256) {
+        return mintedGold.length;
     }
 
     function getNFTRarity(uint256 tokenID) external view virtual returns (uint8) {
         require(_revealed, 'Tokens were not yet revealed');
         require(_exists(tokenID), 'Token does not exist');
-        return _nftMetadata[tokenID]._nftType;
+        return (_nftMetadata[tokenID]._nftType);
     }
 
-    function getNFTGen(uint256 tokenID) external view virtual returns (uint8) {
-        require(_revealed, 'Tokens were not yet revealed');
-        require(_exists(tokenID), 'Token does not exist');
-        return _nftMetadata[tokenID].gen;
+    function getMintedBronze() external view returns (uint256[] memory) {
+        return mintedBronze;
     }
 
-    function getNFTMetadata(uint256 tokenID) external view virtual returns (uint8, uint8) {
-        require(_revealed, 'Tokens were not yet revealed');
-        require(_exists(tokenID), 'Token does not exist');
-        return (_nftMetadata[tokenID]._nftType, _nftMetadata[tokenID].gen);
+    function getMintedSilver() external view returns (uint256[] memory) {
+        return mintedSilver;
     }
 
-    function isInWhitelist(address _address) external view returns (bool) {
-        return whitelist[_address];
+    function getMintedGold() external view returns (uint256[] memory) {
+        return mintedGold;
     }
 
     function getStolenNFTs() external view returns (uint256) {
         return stolenNFTs.length;
     }
 
-    function list(uint256 _amount) external {
-        require(usedLists[_msgSender()] + _amount <= lists[_msgSender()], 'Insufficient mints');
-        usedLists[_msgSender()] += _amount;
+    function mint(uint256 _amount) external {
+        require(_circulatingSupply + _amount <= 2000, 'All tokens were minted');
+        uint256 price = _getCurrentPrice();
+        Token.safeTransferFrom(_msgSender(), address(0), _amount * price);
         for (uint256 i; i < _amount; i++) {
             _circulatingSupply++;
             _safeMint(_msgSender(), _circulatingSupply);
-        }
-    }
-
-    function mint(uint256 _amount) external payable whenNotPaused {
-        require(_circulatingSupply + _amount <= 10000, 'All tokens were minted');
-        uint256 price;
-        if (_circulatingSupply < 2500 && _circulatingSupply + _amount < 2500) {
-            price = _getCurrentPrice(0);
-            require(msg.value >= _amount * price);
-            if (whitelistOnly) {
-                require(whitelist[_msgSender()], 'Address is not in whitelist');
-            }
-            if (msg.value > _amount * price) {
-                payable(msg.sender).transfer(msg.value - _amount * price);
-            }
-        } else if (_circulatingSupply < 2500 && _circulatingSupply + _amount >= 2500) {
-            uint256 firstGenAmount = _circulatingSupply + _amount - 2500;
-            uint256 zeroGenAmount = _amount - firstGenAmount;
-            price = _getCurrentPrice(0);
-            uint256 _2price = _getCurrentPrice(1);
-            uint256 total = zeroGenAmount * price;
-            require(msg.value >= total);
-            if (msg.value > total) {
-                payable(msg.sender).transfer(msg.value - total);
-            }
-            Token.safeTransferFrom(_msgSender(), address(this), firstGenAmount * _2price);
-        } else if (_circulatingSupply >= 2500 && _circulatingSupply + _amount < 6000) {
-            price = _getCurrentPrice(1);
-            Token.safeTransferFrom(_msgSender(), address(this), _amount * price);
-        } else if (_circulatingSupply >= 2500 && _circulatingSupply + _amount >= 6000 && _circulatingSupply < 6000) {
-            uint256 secondGenAmount = _circulatingSupply + _amount - 6000;
-            uint256 firstGenAmount = _amount - secondGenAmount;
-            price = _getCurrentPrice(1);
-            uint256 _2price = _getCurrentPrice(2);
-            uint256 total = secondGenAmount * _2price + firstGenAmount * price;
-            Token.safeTransferFrom(_msgSender(), address(this), total);
-        } else if (_circulatingSupply >= 6000) {
-            price = _getCurrentPrice(2);
-            Token.safeTransferFrom(_msgSender(), address(this), _amount * price);
-        }
-        for (uint256 i; i < _amount; i++) {
-            _circulatingSupply++;
-            _safeMint(_msgSender(), _circulatingSupply);
-            if (_circulatingSupply == 2500) {
-                IStaking(stakingContract).startFarming(block.timestamp);
+            if (_circulatingSupply == 3) {
+                _startFarming();
             }
         }
     }
 
-    function withdrawFunds() external {
-        require(claimAmounts[_msgSender()] > 0, 'Contract: Unauthorised call');
-        uint256 nBal = address(this).balance;
-        for (uint256 i; i < claimWallets.length; i++) {
-            address to = claimWallets[i];
-            if (nBal > 0) {
-                payable(to).transfer((nBal * claimAmounts[to]) / 100);
-            }
-        }
-        if (Token.balanceOf(address(this)) > 0) {
-            Token.safeTransfer(owner(), Token.balanceOf(address(this)));
-        }
+    function retrieveFunds() external onlyOwner {
+        payable(owner()).transfer(address(this).balance);
     }
 
     /// @dev onlyOwner Functions
-
-    function setTempoPrice(uint8 gen, uint256 newPrice, uint256 startTime) external onlyOwner {
+    function changeMintPriceTimeX(uint256 newPrice, uint256 startTime) external onlyOwner {
         if (startTime == 0) {
             startTime = block.timestamp;
         }
-        priceChange[gen].startTime = startTime;
-        priceChange[gen].newPrice = newPrice;
+        priceChange[0].startTime = startTime;
+        priceChange[0].newPrice = newPrice * 10 ** 18;
     }
 
-    function setList(bool value) external onlyOwner {
-        listEnabled = value;
-    }
-
-    function setLists(address[] memory addresses, uint256 amount) external onlyOwner {
-        for (uint256 i; i < addresses.length; i++) {
-            lists[addresses[i]] = amount;
-        }
-    }
-
-    function changeMintPrice(uint256 _gen0Price, uint256 _gen1Price, uint256 _gen2Price) external onlyOwner {
-        gen0Price = _gen0Price * 10 ** 16;
-        gen1Price = _gen1Price * 10 ** 18;
-        gen2Price = _gen2Price * 10 ** 18;
+    function changeMintPrice(uint256 _gen0Price) external onlyOwner {
+        gen0Price = _gen0Price * 10 ** 18;
     }
 
     function setStartSteal(uint256 start) public onlyOwner {
         _startSteal = start;
     }
 
-    function addGenerals(uint256[] memory _generalsIds) external onlyOwner {
-        for (uint256 i; i < _generalsIds.length; i++) {
-            _nftMetadata[_generalsIds[i]]._nftType = 2;
+    function addGold(uint256[] memory _goldsIds) external onlyOwner {
+        for (uint256 i; i < _goldsIds.length; i++) {
+            _nftMetadata[_goldsIds[i]]._nftType = 2;
         }
-        _enteredGenerals += _generalsIds.length;
-        require(_enteredGenerals <= _totalGenerals, 'Generals amount would be exceeded');
+        _enteredGold += _goldsIds.length;
+        require(_enteredGold <= _totalGold, 'Gold amount would be exceeded');
     }
 
-    function addOfficers(uint256[] memory _officersIds) external onlyOwner {
-        for (uint256 i; i < _officersIds.length; i++) {
-            _nftMetadata[_officersIds[i]]._nftType = 1;
+    function addSilver(uint256[] memory _silversIds) external onlyOwner {
+        for (uint256 i; i < _silversIds.length; i++) {
+            _nftMetadata[_silversIds[i]]._nftType = 1;
         }
-        _enteredOfficers += _officersIds.length;
-        require(_enteredOfficers <= _totalOfficers, 'Officers amount would be exceeded');
+        _enteredSilver += _silversIds.length;
+        require(_enteredSilver <= _totalSilver, 'Silver amount would be exceeded');
     }
 
     function reveal() external onlyOwner {
@@ -340,39 +223,20 @@ contract EtherWarsGame is ERC165, IERC721, IERC721Metadata, Ownable, Pausable {
         asset.safeTransfer(owner(), asset.balanceOf(address(this)));
     }
 
-    function setWhitelistStatus(bool value) external onlyOwner {
-        whitelistOnly = value;
+    function _startFarming() internal {
+        IStaking(stakingContract).startFarming(block.timestamp);
     }
 
-    function addToWhitelist(address _address) external onlyOwner {
-        _addToWhitelist(_address);
+    function getCurrentPrice() external view returns (uint256) {
+        return _getCurrentPrice();
     }
 
-    function addMultipleToWhitelist(address[] memory _addresses) external onlyOwner {
-        for (uint256 i; i < _addresses.length; i++) {
-            _addToWhitelist(_addresses[i]);
-        }
-    }
-
-    function _getCurrentPrice(uint8 gen) internal view returns (uint256) {
-        require(gen < 3, 'Invalid Generation');
-        if (block.timestamp <= priceChange[gen].startTime + 3600) {
-            return priceChange[gen].newPrice;
+    function _getCurrentPrice() internal view returns (uint256) {
+        if (block.timestamp <= priceChange[0].startTime + 3600) {
+            return priceChange[0].newPrice;
         } else {
-            if (gen == 0) {
-                return gen0Price;
-            } else if (gen == 1) {
-                return gen1Price;
-            } else if (gen == 2) {
-                return gen2Price;
-            } else {
-                revert();
-            }
+            return gen0Price;
         }
-    }
-
-    function _addToWhitelist(address _address) internal {
-        whitelist[_address] = true;
     }
 
     function retrieveStolenNFTs() external onlyStaking returns (bool returned, uint256[] memory) {
@@ -391,7 +255,6 @@ contract EtherWarsGame is ERC165, IERC721, IERC721Metadata, Ownable, Pausable {
     }
 
     /// @dev ERC721 Functions
-
     function supportsInterface(bytes4 interfaceId) public view virtual override(ERC165, IERC165) returns (bool) {
         return
             interfaceId == type(IERC721).interfaceId ||
@@ -433,7 +296,7 @@ contract EtherWarsGame is ERC165, IERC721, IERC721Metadata, Ownable, Pausable {
             string memory baseURI_ = _baseURI();
             return bytes(baseURI_).length > 0 ? string(abi.encodePacked(baseURI_, tokenId.toString())) : '';
         } else {
-            return string(abi.encodePacked(notRevealedURI, tokenId.toString()));
+            return string(abi.encodePacked(notRevealedURI, tokenId.toString())); // if do not reveal delete tokenId.toString()
         }
     }
 
@@ -441,7 +304,7 @@ contract EtherWarsGame is ERC165, IERC721, IERC721Metadata, Ownable, Pausable {
         return baseURI;
     }
 
-    function approve(address to, uint256 tokenId) public virtual override whenNotPaused {
+    function approve(address to, uint256 tokenId) public virtual override {
         address owner = ownerOf(tokenId);
         require(to != owner, 'ERC721: approval to current owner');
 
@@ -456,7 +319,7 @@ contract EtherWarsGame is ERC165, IERC721, IERC721Metadata, Ownable, Pausable {
         return _tokenApprovals[tokenId];
     }
 
-    function setApprovalForAll(address operator, bool approved) public virtual override whenNotPaused {
+    function setApprovalForAll(address operator, bool approved) public virtual override {
         _setApprovalForAll(_msgSender(), operator, approved);
     }
 
@@ -508,24 +371,16 @@ contract EtherWarsGame is ERC165, IERC721, IERC721Metadata, Ownable, Pausable {
         require(to != address(0), 'ERC721: mint to the zero address');
         require(!_exists(tokenId), 'ERC721: token already minted');
 
-        if (tokenId <= 2500) {
-            _nftMetadata[tokenId].gen = 0;
-        } else if (tokenId > 2500 && tokenId <= 6000) {
-            _nftMetadata[tokenId].gen = 1;
-        } else if (tokenId > 6000) {
-            _nftMetadata[tokenId].gen = 2;
-        }
-
         if (_nftMetadata[tokenId]._nftType == 1) {
-            mintedOfficers.push(tokenId);
+            mintedSilver.push(tokenId);
         } else if (_nftMetadata[tokenId]._nftType == 2) {
-            mintedGenerals.push(tokenId);
+            mintedGold.push(tokenId);
         } else {
-            mintedSoldiers.push(tokenId);
+            mintedBronze.push(tokenId);
         }
 
         bool stolen;
-        if (_nftMetadata[tokenId].gen > 0) {
+        if (_circulatingSupply > 3) {
             stolen = _stealMint(tokenId);
         }
 
@@ -541,9 +396,9 @@ contract EtherWarsGame is ERC165, IERC721, IERC721Metadata, Ownable, Pausable {
     }
 
     function _stealMint(uint256 tokenId) internal virtual returns (bool stolen) {
-        require(_nftMetadata[tokenId].gen > 0, 'NFT is gen 0');
+        require(_circulatingSupply > 3, 'NFT can not steal');
 
-        if (tokenId % 100 >= _startSteal && tokenId % 100 <= _startSteal + 15) {
+        if (tokenId % 10 >= _startSteal && tokenId % 10 <= _startSteal + 1) {
             stolen = true;
             stolenNFTs.push(tokenId);
             pendingStolenNFTs.push(tokenId);
@@ -559,6 +414,7 @@ contract EtherWarsGame is ERC165, IERC721, IERC721Metadata, Ownable, Pausable {
 
         _beforeTokenTransfer(from, to, tokenId);
 
+        // Clear approvals from the previous owner
         _approve(address(0), tokenId);
 
         _balances[from] -= 1;
@@ -609,8 +465,8 @@ contract EtherWarsGame is ERC165, IERC721, IERC721Metadata, Ownable, Pausable {
         return userMetadata;
     }
 
-    function _beforeTokenTransfer(address from, address to, uint256 _tokenId) internal virtual {
-        ownerToTokens[to].add(_tokenId);
-        ownerToTokens[from].remove(_tokenId);
+    function _beforeTokenTransfer(address from, address to, uint256 tokenId) internal virtual {
+        ownerToTokens[to].add(tokenId);
+        ownerToTokens[from].remove(tokenId);
     }
 }

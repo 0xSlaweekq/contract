@@ -103,9 +103,9 @@ contract CyberBank is Ownable, ReentrancyGuard {
             massUpdatePools();
         }
         if (_rewardToken != IERC20(address(0))) {
-            _totalReward = _totalReward * 10**uint256(_rewardToken.decimals());
+            _totalReward = _totalReward * 10 ** uint256(_rewardToken.decimals());
         } else {
-            _totalReward = _totalReward * 10**18;
+            _totalReward = _totalReward * 10 ** 18;
         }
         uint256 _rewardForEachBlock = _totalReward.div(_endBlock.sub(_startBlock));
 
@@ -113,7 +113,7 @@ contract CyberBank is Ownable, ReentrancyGuard {
             PoolInfo({
                 lpToken: _lpToken,
                 rewardToken: _rewardToken,
-                acc_token_precision: 10**uint256(_rewardToken.decimals()),
+                acc_token_precision: 10 ** uint256(_rewardToken.decimals()),
                 amount: ZERO,
                 rewardForEachBlock: _rewardForEachBlock,
                 lastRewardBlock: block.number > _startBlock ? block.number : _startBlock,
@@ -174,7 +174,7 @@ contract CyberBank is Ownable, ReentrancyGuard {
     /// @return APR for 1 year
     function getAPR(uint256 _pid) public view validatePoolByPid(_pid) returns (uint256) {
         PoolInfo storage pool = poolInfo[_pid];
-        return (pool.rewardForEachBlock * 20 * 60 * 24 * 365 * 10**18) / pool.amount;
+        return (pool.rewardForEachBlock * 20 * 60 * 24 * 365 * 10 ** 18) / pool.amount;
     }
 
     // Update reward variables of the given pool to be up-to-date.
@@ -251,10 +251,10 @@ contract CyberBank is Ownable, ReentrancyGuard {
         UserInfo storage user = userInfo[_pid][msg.sender];
         harvest(_pid, msg.sender);
         if (pool.lpToken != IERC20(address(0))) {
-            _amount = _amount * 10**uint256(pool.lpToken.decimals());
+            _amount = _amount * 10 ** uint256(pool.lpToken.decimals());
             pool.lpToken.safeTransferFrom(msg.sender, address(this), _amount);
         } else {
-            _amount = _amount * 10**18;
+            _amount = _amount * 10 ** 18;
             require(_amount == msg.value, 'msg.value must be equals to amount!');
         }
         pool.amount = pool.amount.add(_amount);
@@ -273,9 +273,9 @@ contract CyberBank is Ownable, ReentrancyGuard {
         UserInfo storage user = userInfo[_pid][msg.sender];
         require(block.number >= pool.startBlock, 'this pool has not started!');
         if (pool.lpToken != IERC20(address(0))) {
-            _amount = _amount * 10**uint256(pool.lpToken.decimals());
+            _amount = _amount * 10 ** uint256(pool.lpToken.decimals());
         } else if (pool.lpToken == IERC20(address(0))) {
-            _amount = _amount * 10**18;
+            _amount = _amount * 10 ** 18;
         }
         require(user.amount >= _amount, 'withdraw: not good');
         harvest(_pid, msg.sender);
@@ -346,11 +346,7 @@ contract CyberBank is Ownable, ReentrancyGuard {
     }
 
     // Safe transfer token function, just in case if rounding error causes pool to not have enough tokens.
-    function safeTransferTokenFromThis(
-        IERC20 _token,
-        address _to,
-        uint256 _amount
-    ) internal {
+    function safeTransferTokenFromThis(IERC20 _token, address _to, uint256 _amount) internal {
         uint256 bal = _token.balanceOf(address(this));
         if (_amount > bal) {
             _token.safeTransfer(_to, bal);
@@ -359,20 +355,16 @@ contract CyberBank is Ownable, ReentrancyGuard {
         }
     }
 
-    function addRewardForPool(
-        uint256 _pid,
-        uint256 _addTotalTokens,
-        bool _withTokenTransfer
-    ) external validatePoolByPid(_pid) onlyOwner {
+    function addRewardForPool(uint256 _pid, uint256 _addTotalTokens, bool _withTokenTransfer) external validatePoolByPid(_pid) onlyOwner {
         require(_addTotalTokens > ZERO, 'add token must be greater than zero!');
         PoolInfo storage pool = poolInfo[_pid];
         require(block.number < pool.endBlock, 'this pool has ended!');
         updatePool(_pid);
 
         if (pool.rewardToken != IERC20(address(0))) {
-            _addTotalTokens = _addTotalTokens * 10**uint256((pool.rewardToken.decimals()));
+            _addTotalTokens = _addTotalTokens * 10 ** uint256((pool.rewardToken.decimals()));
         } else {
-            _addTotalTokens = _addTotalTokens * 10**18;
+            _addTotalTokens = _addTotalTokens * 10 ** 18;
         }
 
         uint256 addTokenPerBlock;

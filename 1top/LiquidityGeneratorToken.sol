@@ -89,7 +89,7 @@ contract LiquidityGeneratorToken is IERC20, Ownable, BaseToken {
         if (charityAddress_ == address(0)) {
             require(charityFeeBps_ == 0, 'Cant set both charity address to address 0 and charity percent more than 0');
         }
-        require(taxFeeBps_ + liquidityFeeBps_ + charityFeeBps_ <= 10**4, 'Total fee is over 25%');
+        require(taxFeeBps_ + liquidityFeeBps_ + charityFeeBps_ <= 10 ** 4, 'Total fee is over 25%');
 
         _name = name_;
         _symbol = symbol_;
@@ -108,7 +108,7 @@ contract LiquidityGeneratorToken is IERC20, Ownable, BaseToken {
         _charityFee = charityFeeBps_;
         _previousCharityFee = _charityFee;
 
-        numTokensSellToAddToLiquidity = totalSupply_.mul(5).div(10**4); // 0.05%
+        numTokensSellToAddToLiquidity = totalSupply_.mul(5).div(10 ** 4); // 0.05%
 
         swapAndLiquifyEnabled = true;
 
@@ -165,11 +165,7 @@ contract LiquidityGeneratorToken is IERC20, Ownable, BaseToken {
         return true;
     }
 
-    function transferFrom(
-        address sender,
-        address recipient,
-        uint256 amount
-    ) public override returns (bool) {
+    function transferFrom(address sender, address recipient, uint256 amount) public override returns (bool) {
         _transfer(sender, recipient, amount);
         _approve(sender, _msgSender(), _allowances[sender][_msgSender()].sub(amount, 'ERC20: transfer amount exceeds allowance'));
         return true;
@@ -231,7 +227,7 @@ contract LiquidityGeneratorToken is IERC20, Ownable, BaseToken {
 
     function includeInReward(address account) external onlyOwner {
         require(_isExcluded[account], 'Account is already excluded');
-        for (uint256 i = 0; i < _excluded.length; i++) {
+        for (uint256 i; i < _excluded.length; i++) {
             if (_excluded[i] == account) {
                 _excluded[i] = _excluded[_excluded.length - 1];
                 _tOwned[account] = 0;
@@ -242,11 +238,7 @@ contract LiquidityGeneratorToken is IERC20, Ownable, BaseToken {
         }
     }
 
-    function _transferBothExcluded(
-        address sender,
-        address recipient,
-        uint256 tAmount
-    ) private {
+    function _transferBothExcluded(address sender, address recipient, uint256 tAmount) private {
         (
             uint256 rAmount,
             uint256 rTransferAmount,
@@ -276,12 +268,12 @@ contract LiquidityGeneratorToken is IERC20, Ownable, BaseToken {
 
     function setTaxFeePercent(uint256 taxFeeBps) external onlyOwner {
         _taxFee = taxFeeBps;
-        require(_taxFee + _liquidityFee + _charityFee <= 10**4, 'Total fee is over 25%');
+        require(_taxFee + _liquidityFee + _charityFee <= 10 ** 4, 'Total fee is over 25%');
     }
 
     function setLiquidityFeePercent(uint256 liquidityFeeBps) external onlyOwner {
         _liquidityFee = liquidityFeeBps;
-        require(_taxFee + _liquidityFee + _charityFee <= 10**4, 'Total fee is over 25%');
+        require(_taxFee + _liquidityFee + _charityFee <= 10 ** 4, 'Total fee is over 25%');
     }
 
     function setSwapAndLiquifyEnabled(bool _enabled) public onlyOwner {
@@ -297,34 +289,13 @@ contract LiquidityGeneratorToken is IERC20, Ownable, BaseToken {
         _tFeeTotal = _tFeeTotal.add(tFee);
     }
 
-    function _getValues(uint256 tAmount)
-        private
-        view
-        returns (
-            uint256,
-            uint256,
-            uint256,
-            uint256,
-            uint256,
-            uint256,
-            uint256
-        )
-    {
+    function _getValues(uint256 tAmount) private view returns (uint256, uint256, uint256, uint256, uint256, uint256, uint256) {
         (uint256 tTransferAmount, uint256 tFee, uint256 tLiquidity, uint256 tCharity) = _getTValues(tAmount);
         (uint256 rAmount, uint256 rTransferAmount, uint256 rFee) = _getRValues(tAmount, tFee, tLiquidity, tCharity, _getRate());
         return (rAmount, rTransferAmount, rFee, tTransferAmount, tFee, tLiquidity, tCharity);
     }
 
-    function _getTValues(uint256 tAmount)
-        private
-        view
-        returns (
-            uint256,
-            uint256,
-            uint256,
-            uint256
-        )
-    {
+    function _getTValues(uint256 tAmount) private view returns (uint256, uint256, uint256, uint256) {
         uint256 tFee = calculateTaxFee(tAmount);
         uint256 tLiquidity = calculateLiquidityFee(tAmount);
         uint256 tCharityFee = calculateCharityFee(tAmount);
@@ -338,15 +309,7 @@ contract LiquidityGeneratorToken is IERC20, Ownable, BaseToken {
         uint256 tLiquidity,
         uint256 tCharity,
         uint256 currentRate
-    )
-        private
-        pure
-        returns (
-            uint256,
-            uint256,
-            uint256
-        )
-    {
+    ) private pure returns (uint256, uint256, uint256) {
         uint256 rAmount = tAmount.mul(currentRate);
         uint256 rFee = tFee.mul(currentRate);
         uint256 rLiquidity = tLiquidity.mul(currentRate);
@@ -363,7 +326,7 @@ contract LiquidityGeneratorToken is IERC20, Ownable, BaseToken {
     function _getCurrentSupply() private view returns (uint256, uint256) {
         uint256 rSupply = _rTotal;
         uint256 tSupply = _tTotal;
-        for (uint256 i = 0; i < _excluded.length; i++) {
+        for (uint256 i; i < _excluded.length; i++) {
             if (_rOwned[_excluded[i]] > rSupply || _tOwned[_excluded[i]] > tSupply) return (_rTotal, _tTotal);
             rSupply = rSupply.sub(_rOwned[_excluded[i]]);
             tSupply = tSupply.sub(_tOwned[_excluded[i]]);
@@ -390,16 +353,16 @@ contract LiquidityGeneratorToken is IERC20, Ownable, BaseToken {
     }
 
     function calculateTaxFee(uint256 _amount) private view returns (uint256) {
-        return _amount.mul(_taxFee).div(10**4);
+        return _amount.mul(_taxFee).div(10 ** 4);
     }
 
     function calculateLiquidityFee(uint256 _amount) private view returns (uint256) {
-        return _amount.mul(_liquidityFee).div(10**4);
+        return _amount.mul(_liquidityFee).div(10 ** 4);
     }
 
     function calculateCharityFee(uint256 _amount) private view returns (uint256) {
         if (_charityAddress == address(0)) return 0;
-        return _amount.mul(_charityFee).div(10**4);
+        return _amount.mul(_charityFee).div(10 ** 4);
     }
 
     function removeAllFee() private {
@@ -424,11 +387,7 @@ contract LiquidityGeneratorToken is IERC20, Ownable, BaseToken {
         return _isExcludedFromFee[account];
     }
 
-    function _approve(
-        address owner,
-        address spender,
-        uint256 amount
-    ) private {
+    function _approve(address owner, address spender, uint256 amount) private {
         require(owner != address(0), 'ERC20: approve from the zero address');
         require(spender != address(0), 'ERC20: approve to the zero address');
 
@@ -436,11 +395,7 @@ contract LiquidityGeneratorToken is IERC20, Ownable, BaseToken {
         emit Approval(owner, spender, amount);
     }
 
-    function _transfer(
-        address from,
-        address to,
-        uint256 amount
-    ) private {
+    function _transfer(address from, address to, uint256 amount) private {
         require(from != address(0), 'ERC20: transfer from the zero address');
         require(to != address(0), 'ERC20: transfer to the zero address');
         require(amount > 0, 'Transfer amount must be greater than zero');
@@ -527,12 +482,7 @@ contract LiquidityGeneratorToken is IERC20, Ownable, BaseToken {
     }
 
     //this method is responsible for taking all fee, if takeFee is true
-    function _tokenTransfer(
-        address sender,
-        address recipient,
-        uint256 amount,
-        bool takeFee
-    ) private {
+    function _tokenTransfer(address sender, address recipient, uint256 amount, bool takeFee) private {
         if (!takeFee) removeAllFee();
 
         if (_isExcluded[sender] && !_isExcluded[recipient]) {
@@ -550,11 +500,7 @@ contract LiquidityGeneratorToken is IERC20, Ownable, BaseToken {
         if (!takeFee) restoreAllFee();
     }
 
-    function _transferStandard(
-        address sender,
-        address recipient,
-        uint256 tAmount
-    ) private {
+    function _transferStandard(address sender, address recipient, uint256 tAmount) private {
         (
             uint256 rAmount,
             uint256 rTransferAmount,
@@ -572,11 +518,7 @@ contract LiquidityGeneratorToken is IERC20, Ownable, BaseToken {
         emit Transfer(sender, recipient, tTransferAmount);
     }
 
-    function _transferToExcluded(
-        address sender,
-        address recipient,
-        uint256 tAmount
-    ) private {
+    function _transferToExcluded(address sender, address recipient, uint256 tAmount) private {
         (
             uint256 rAmount,
             uint256 rTransferAmount,
@@ -595,11 +537,7 @@ contract LiquidityGeneratorToken is IERC20, Ownable, BaseToken {
         emit Transfer(sender, recipient, tTransferAmount);
     }
 
-    function _transferFromExcluded(
-        address sender,
-        address recipient,
-        uint256 tAmount
-    ) private {
+    function _transferFromExcluded(address sender, address recipient, uint256 tAmount) private {
         (
             uint256 rAmount,
             uint256 rTransferAmount,

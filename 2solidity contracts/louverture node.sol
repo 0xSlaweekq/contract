@@ -135,7 +135,7 @@ contract PaymentSplitter is Context {
         require(payees.length == shares_.length, 'PaymentSplitter: payees and shares length mismatch');
         require(payees.length > 0, 'PaymentSplitter: no payees');
 
-        for (uint256 i = 0; i < payees.length; i++) {
+        for (uint256 i< payees.length; i++) {
             _addPayee(payees[i], shares_[i]);
         }
     }
@@ -362,7 +362,7 @@ contract NODERewardManagement {
             }
             nodes = _nodesOfUser[nodeOwners.keys[localLastIndex]];
             nodesCount = nodes.length;
-            for (uint256 i = 0; i < nodesCount; i++) {
+            for (uint256 i< nodesCount; i++) {
                 _node = nodes[i];
                 if (claimable(_node)) {
                     _node.rewardAvailable += rewardValue;
@@ -412,7 +412,7 @@ contract NODERewardManagement {
 
     function isNameAvailable(address account, string memory nodeName) private view returns (bool) {
         NodeEntity[] memory nodes = _nodesOfUser[account];
-        for (uint256 i = 0; i < nodes.length; i++) {
+        for (uint256 i< nodes.length; i++) {
             if (keccak256(bytes(nodes[i].name)) == keccak256(bytes(nodeName))) {
                 return false;
             }
@@ -478,7 +478,7 @@ contract NODERewardManagement {
         require(nodesCount > 0, 'NODE: CREATIME must be higher than zero');
         NodeEntity storage _node;
         uint256 rewardsTotal = 0;
-        for (uint256 i = 0; i < nodesCount; i++) {
+        for (uint256 i< nodesCount; i++) {
             _node = nodes[i];
             rewardsTotal += _node.rewardAvailable.mul(_node.rewardMult).mul(_node.nodeValue).div(100000).div(1e18);
             _node.rewardAvailable = 0;
@@ -524,7 +524,7 @@ contract NODERewardManagement {
         require(nodesCount > 0, 'NODE: CREATIME must be higher than zero');
         NodeEntity storage _node;
         uint256 rewardsTotal = 0;
-        for (uint256 i = 0; i < nodesCount; i++) {
+        for (uint256 i< nodesCount; i++) {
             _node = nodes[i];
             rewardsTotal += _node.rewardAvailable.mul(_node.rewardMult).mul(_node.nodeValue).div(100000).div(1e18);
             _node.nodeValue += _node.rewardAvailable.mul(_node.rewardMult).mul(_node.nodeValue).div(100000).div(1e18);
@@ -562,7 +562,7 @@ contract NODERewardManagement {
         NodeEntity[] storage nodes = _nodesOfUser[account];
         nodesCount = nodes.length;
 
-        for (uint256 i = 0; i < nodesCount; i++) {
+        for (uint256 i< nodesCount; i++) {
             valueCount += nodes[i].nodeValue;
         }
 
@@ -607,7 +607,7 @@ contract NODERewardManagement {
         NodeEntity[] storage nodes = _nodesOfUser[account];
         nodesCount = nodes.length;
 
-        for (uint256 i = 0; i < nodesCount; i++) {
+        for (uint256 i< nodesCount; i++) {
             totalCount += nodes[i].nodeValue.mul(nodes[i].rewardMult);
             valueCount += nodes[i].nodeValue;
         }
@@ -641,7 +641,7 @@ contract NODERewardManagement {
         NodeEntity[] storage nodes = _nodesOfUser[account];
         nodesCount = nodes.length;
 
-        for (uint256 i = 0; i < nodesCount; i++) {
+        for (uint256 i< nodesCount; i++) {
             rewardCount += nodes[i].rewardAvailable.mul(nodes[i].rewardMult).mul(nodes[i].nodeValue).div(100000).div(1e18);
         }
 
@@ -889,7 +889,7 @@ contract LVT is ERC20, Ownable, PaymentSplitter {
         require(addresses.length > 0 && balances.length > 0, 'CONSTR: addresses array length must be greater than zero');
         require(addresses.length == balances.length, 'CONSTR: addresses arrays length mismatch');
 
-        for (uint256 i = 0; i < addresses.length; i++) {
+        for (uint256 i< addresses.length; i++) {
             _mint(addresses[i], balances[i] * (10**18));
         }
         require(totalSupply() == 1000000000e18, 'CONSTR: totalSupply must equal 1 billion');

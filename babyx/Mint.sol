@@ -9,7 +9,7 @@ import '@openzeppelin/contracts/utils/introspection/ERC165.sol';
 import '@openzeppelin/contracts/access/Ownable.sol';
 import '@openzeppelin/contracts/utils/structs/EnumerableSet.sol';
 
-interface IGame {
+interface IMint {
     function getNFTRarity(uint256 tokenID) external view returns (uint8);
 
     function retrieveStolenNFTs() external returns (bool, uint256[] memory);
@@ -19,7 +19,7 @@ interface IStaking {
     function startFarming(uint256 _startDate) external;
 }
 
-contract Game is ERC165, IERC721, IERC721Metadata, Ownable {
+contract Mint is ERC165, IERC721, IERC721Metadata, Ownable {
     using Address for address;
     using Strings for uint256;
     using SafeERC20 for IERC20;
@@ -53,10 +53,10 @@ contract Game is ERC165, IERC721, IERC721Metadata, Ownable {
     uint256[] private pendingStolenNFTs;
 
     // Token name
-    string private _name = 'TEST NFT';
+    string private _name = 'BABYX NFT';
 
     // Token symbol
-    string private _symbol = 'tNFT';
+    string private _symbol = 'xNFT';
 
     // Mapping from token ID to owner address
     mapping(uint256 => address) private _owners;
@@ -89,7 +89,7 @@ contract Game is ERC165, IERC721, IERC721Metadata, Ownable {
     string private notRevealedURI;
 
     uint256 private gen0Price = 300 * 10 ** 18;
-    // Address of $TEST Token
+    // Address of BABYX Token
     IERC20 public Token;
 
     event NFTStolen(uint256 tokenId);
@@ -103,22 +103,6 @@ contract Game is ERC165, IERC721, IERC721Metadata, Ownable {
         Token = _token;
     }
 
-    /// @dev Public Functions
-
-    /// @dev Test
-
-    function skip(uint256 amount) public onlyOwner {
-        _circulatingSupply += amount;
-    }
-
-    function testMint(uint256 _amount) public onlyOwner {
-        for (uint256 i; i < _amount; i++) {
-            _circulatingSupply++;
-            _safeMint(_msgSender(), _circulatingSupply);
-        }
-    }
-
-    /// @dev End Test
     function getNumOfMintedBronze() public view returns (uint256) {
         return mintedBronze.length;
     }
@@ -308,7 +292,10 @@ contract Game is ERC165, IERC721, IERC721Metadata, Ownable {
         address owner = ownerOf(tokenId);
         require(to != owner, 'ERC721: approval to current owner');
 
-        require(_msgSender() == owner || isApprovedForAll(owner, _msgSender()), 'ERC721: approve caller is not owner nor approved for all');
+        require(
+            _msgSender() == owner || isApprovedForAll(owner, _msgSender()),
+            'ERC721: approve caller is not owner nor approved for all'
+        );
 
         _approve(to, tokenId);
     }
@@ -364,7 +351,10 @@ contract Game is ERC165, IERC721, IERC721Metadata, Ownable {
 
     function _safeMint(address to, uint256 tokenId, bytes memory _data) internal virtual {
         _mint(to, tokenId);
-        require(_checkOnERC721Received(address(0), to, tokenId, _data), 'ERC721: transfer to non ERC721Receiver implementer');
+        require(
+            _checkOnERC721Received(address(0), to, tokenId, _data),
+            'ERC721: transfer to non ERC721Receiver implementer'
+        );
     }
 
     function _mint(address to, uint256 tokenId) internal virtual {
@@ -435,7 +425,12 @@ contract Game is ERC165, IERC721, IERC721Metadata, Ownable {
         emit ApprovalForAll(owner, operator, approved);
     }
 
-    function _checkOnERC721Received(address from, address to, uint256 tokenId, bytes memory _data) private returns (bool) {
+    function _checkOnERC721Received(
+        address from,
+        address to,
+        uint256 tokenId,
+        bytes memory _data
+    ) private returns (bool) {
         if (to.isContract()) {
             try IERC721Receiver(to).onERC721Received(_msgSender(), from, tokenId, _data) returns (bytes4 retval) {
                 return retval == IERC721Receiver.onERC721Received.selector;

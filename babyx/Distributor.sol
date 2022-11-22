@@ -25,7 +25,6 @@ contract Distributor is Ownable {
 
     IRouter public rewardRouter;
     address public rewardToken;
-    address private lpWallet;
 
     uint256 internal constant magnitude = 2 ** 128;
 
@@ -41,10 +40,9 @@ contract Distributor is Ownable {
     event Claim(address indexed account, uint256 amount);
     event DividendWithdrawn(address indexed to, uint256 weiAmount);
 
-    constructor(address _router, address _rewardToken, address _lpWallet) {
+    constructor(address _router, address _rewardToken) {
         rewardRouter = IRouter(_router);
         rewardToken = _rewardToken;
-        lpWallet = _lpWallet;
     }
 
     function excludeFromDividends(address account, bool value) external onlyOwner {
@@ -67,7 +65,12 @@ contract Distributor is Ownable {
     )
         public
         view
-        returns (uint256 withdrawableUserDividends, uint256 totalUserDividends, uint256 lastUserClaimTime, uint256 withdrawnUserDividends)
+        returns (
+            uint256 withdrawableUserDividends,
+            uint256 totalUserDividends,
+            uint256 lastUserClaimTime,
+            uint256 withdrawnUserDividends
+        )
     {
         withdrawableUserDividends = withdrawableDividendOf(account);
         totalUserDividends = accumulativeDividendOf(account);
@@ -112,10 +115,6 @@ contract Distributor is Ownable {
         currentIndex = lastIndex;
     }
 
-    function _distributeLp(uint256 _lpAmt) internal {
-        payable(lpWallet).sendValue(_lpAmt);
-    }
-
     function _processAccount(address account) internal returns (bool) {
         uint256 amount = _withdrawDividendOfUser(account);
 
@@ -147,7 +146,7 @@ contract Distributor is Ownable {
             emit DividendWithdrawn(user, _withdrawableDividend);
             bool success = swapEthForCustomToken(user, _withdrawableDividend);
             if (!success) {
-                (bool secondSuccess, ) = payable(user).call{ value: _withdrawableDividend, gas: 3000 }('');
+                (bool secondSuccess, ) = payable(user).call{value: _withdrawableDividend, gas: 3000}('');
                 if (!secondSuccess) {
                     withdrawnDividends[user] -= _withdrawableDividend;
                     totalDividendsWithdrawn -= _withdrawableDividend;
@@ -164,7 +163,9 @@ contract Distributor is Ownable {
         path[0] = rewardRouter.WETH();
         path[1] = rewardToken;
 
-        try rewardRouter.swapExactETHForTokensSupportingFeeOnTransferTokens{ value: amt }(0, path, user, block.timestamp) {
+        try
+            rewardRouter.swapExactETHForTokensSupportingFeeOnTransferTokens{value: amt}(0, path, user, block.timestamp)
+        {
             return true;
         } catch {
             return false;
@@ -184,21 +185,27 @@ contract Distributor is Ownable {
     }
 
     function accumulativeDividendOf(address _owner) public view returns (uint256) {
-        return uint256(int256(magnifiedDividendPerShare * userShares[_owner]) + magnifiedDividendCorrections[_owner]) / magnitude;
+        return
+            uint256(int256(magnifiedDividendPerShare * userShares[_owner]) + magnifiedDividendCorrections[_owner]) /
+            magnitude;
     }
 
     function addShares(address account, uint256 value) internal {
         userShares[account] += value;
         totalShares += value;
 
-        magnifiedDividendCorrections[account] = magnifiedDividendCorrections[account] - int256(magnifiedDividendPerShare * value);
+        magnifiedDividendCorrections[account] =
+            magnifiedDividendCorrections[account] -
+            int256(magnifiedDividendPerShare * value);
     }
 
     function removeShares(address account, uint256 value) internal {
         userShares[account] -= value;
         totalShares -= value;
 
-        magnifiedDividendCorrections[account] = magnifiedDividendCorrections[account] + int256(magnifiedDividendPerShare * value);
+        magnifiedDividendCorrections[account] =
+            magnifiedDividendCorrections[account] +
+            int256(magnifiedDividendPerShare * value);
     }
 
     function _setBalance(address account, uint256 newBalance) internal {

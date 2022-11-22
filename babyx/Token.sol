@@ -3,7 +3,7 @@ pragma solidity ^0.8.14;
 
 import './Distributor.sol';
 
-contract Test is ERC20, Ownable, Distributor {
+contract Babyx is ERC20, Ownable, Distributor {
     using Address for address payable;
 
     IRouter public router;
@@ -13,11 +13,11 @@ contract Test is ERC20, Ownable, Distributor {
     bool public burnX;
     bool public swapEnabled = true;
 
-    address public _rewardToken = 0x78867BbEeF44f2326bF8DDd1941a4439382EF2A7; //busd
-    address public _router = 0x9Ac64Cc6e4415144C455BD8E4837Fea55603e5c3; //router
-    address public marketingWallet = 0x2Ca4a4C478642661be676ED567A76bdbdC791CC3;
-    address public influenceWallet = 0x2Ca4a4C478642661be676ED567A76bdbdC791CC3;
-    address public buybackWallet = 0x2Ca4a4C478642661be676ED567A76bdbdC791CC3;
+    address public _rewardToken = 0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c; //wbnb
+    address public _router = 0x10ED43C718714eb63d5aA57B78B54704E256024E; //router
+    address public marketingWallet = 0x852aC11295E76F288F0331FA14b915373844C748;
+    address public influenceWallet = 0x852aC11295E76F288F0331FA14b915373844C748;
+    address public buybackWallet = 0xe438C81EeA31e044A3299B528ebf893848027CAb;
 
     uint256 public tHold = 1_000 * 10 ** 18;
     uint256 public gasLimit = 300_000;
@@ -53,7 +53,7 @@ contract Test is ERC20, Ownable, Distributor {
         address indexed processor
     );
 
-    constructor(address _lpWallet) ERC20('TESTT', 'TESTT') Distributor(_router, _rewardToken, _lpWallet) {
+    constructor() ERC20('BABYX', 'BABYX') Distributor(_router, _rewardToken) {
         router = IRouter(_router);
         pair = IFactory(router.factory()).createPair(address(this), router.WETH());
 
@@ -146,7 +146,7 @@ contract Test is ERC20, Ownable, Distributor {
     }
 
     function _setBuyTaxes(uint64 _rewards, uint64 _marketing, uint64 _buyback, uint64 _lp) internal {
-        sellTaxes = Taxes(_rewards, _marketing, _buyback, _lp);
+        buyTaxes = Taxes(_rewards, _marketing, _buyback, _lp);
         totalBuyTax = _rewards + _marketing + _buyback + _lp;
         require(totalBuyTax < 25, 'Taxes must be lower than 25%');
     }
@@ -206,7 +206,8 @@ contract Test is ERC20, Ownable, Distributor {
             uint256 feeAmt;
             if (isPair[to]) feeAmt = (amount * totalSellTax) / 100;
             else if (isPair[from]) {
-                if (block.timestamp < timeXstart + 1 hours) feeAmt = (amount * (buyTaxes.rewards + buyTaxes.lp)) / 100;
+                if (block.timestamp < timeXstart + 1 hours)
+                    feeAmt = (amount * (buyTaxes.rewards + buyTaxes.buyback)) / 100;
                 else feeAmt = (amount * totalBuyTax) / 100;
             }
             uint256 burnAmt;
@@ -234,7 +235,7 @@ contract Test is ERC20, Ownable, Distributor {
     }
 
     function swapAndLiquify(uint256 tokens) private {
-        uint256 denominator = (totalSellTax + 1) * 2;
+        uint256 denominator = totalSellTax * 2;
         uint256 tokensToAddLiquidityWith = (tokens * sellTaxes.lp) / denominator;
         uint256 toSwap = tokens - tokensToAddLiquidityWith;
 
@@ -242,10 +243,9 @@ contract Test is ERC20, Ownable, Distributor {
 
         uint256 unitBalance = address(this).balance / (denominator - sellTaxes.lp);
         uint256 bnbToAddLiquidityWith = unitBalance * sellTaxes.lp;
-        uint256 lpAmt = unitBalance * 2;
 
         // Add liquidity to pancake
-        if (bnbToAddLiquidityWith > 0) addLiquidity(tokensToAddLiquidityWith, bnbToAddLiquidityWith, lpAmt);
+        if (bnbToAddLiquidityWith > 0) addLiquidity(tokensToAddLiquidityWith, bnbToAddLiquidityWith);
 
         // Send ETH to marketing
         uint256 marketingAmt = unitBalance * sellTaxes.marketing;
@@ -263,10 +263,10 @@ contract Test is ERC20, Ownable, Distributor {
         if (dividends > 0) super._distributeDividends(dividends);
     }
 
-    function addLiquidity(uint256 tokenAmount, uint256 ethAmount, uint256 lpAmt) private {
+    function addLiquidity(uint256 tokenAmount, uint256 ethAmount) private {
         _approve(address(this), address(router), tokenAmount);
 
-        router.addLiquidityETH{ value: ethAmount }(
+        router.addLiquidityETH{value: ethAmount}(
             address(this),
             tokenAmount,
             0, // slippage is unavoidable
@@ -274,7 +274,6 @@ contract Test is ERC20, Ownable, Distributor {
             owner(),
             block.timestamp
         );
-        super._distributeLp(lpAmt);
     }
 
     function swapTokensForETH(uint256 tokenAmount) private {

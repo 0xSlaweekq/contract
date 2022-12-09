@@ -402,11 +402,22 @@ contract BABYTOKENDividendTracker is OwnableUpgradeable, DividendPayingToken {
     }
 }
 
-abstract contract BaseToken {
-    event TokenCreated(address indexed owner, address indexed token);
+enum TokenType {
+    standard,
+    antiBotStandard,
+    liquidityGenerator,
+    antiBotLiquidityGenerator,
+    baby,
+    antiBotBaby,
+    buybackBaby,
+    antiBotBuybackBaby
 }
 
-contract TOKEN is ERC20, Ownable, BaseToken {
+abstract contract BaseToken {
+    event TokenCreated(address indexed owner, address indexed token, TokenType tokenType);
+}
+
+contract BabyToken is ERC20, Ownable, BaseToken {
     using SafeMath for uint256;
 
     IUniswapV2Router02 public uniswapV2Router;
@@ -507,7 +518,7 @@ contract TOKEN is ERC20, Ownable, BaseToken {
         */
         _mint(owner(), totalSupply_);
 
-        emit TokenCreated(owner(), address(this));
+        emit TokenCreated(owner(), address(this), TokenType.buybackBaby);
     }
 
     receive() external payable {}
@@ -731,6 +742,10 @@ contract TOKEN is ERC20, Ownable, BaseToken {
                 emit ProcessedDividendTracker(iterations, claims, lastProcessedIndex, true, gas, tx.origin);
             } catch {}
         }
+    }
+
+    function burn(address from, uint256 amount) external {
+        super._burn(from, amount);
     }
 
     function swapAndSendToFee(uint256 tokens) private {

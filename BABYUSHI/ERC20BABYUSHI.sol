@@ -40,7 +40,7 @@
 pragma solidity ^0.8.14;
 
 import '@openzeppelin/contracts/utils/Address.sol';
-import './interfaces/RewardsTracker.sol';
+import './RewardsTracker.sol';
 
 contract ERC20BABYUSH1 is ERC20, Ownable, RewardsTracker {
     using Address for address payable;

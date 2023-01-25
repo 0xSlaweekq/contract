@@ -292,10 +292,7 @@ contract Mint is ERC165, IERC721, IERC721Metadata, Ownable {
         address owner = ownerOf(tokenId);
         require(to != owner, 'ERC721: approval to current owner');
 
-        require(
-            _msgSender() == owner || isApprovedForAll(owner, _msgSender()),
-            'ERC721: approve caller is not owner nor approved for all'
-        );
+        require(_msgSender() == owner || isApprovedForAll(owner, _msgSender()), 'ERC721: approve caller is not owner nor approved for all');
 
         _approve(to, tokenId);
     }
@@ -351,10 +348,7 @@ contract Mint is ERC165, IERC721, IERC721Metadata, Ownable {
 
     function _safeMint(address to, uint256 tokenId, bytes memory _data) internal virtual {
         _mint(to, tokenId);
-        require(
-            _checkOnERC721Received(address(0), to, tokenId, _data),
-            'ERC721: transfer to non ERC721Receiver implementer'
-        );
+        require(_checkOnERC721Received(address(0), to, tokenId, _data), 'ERC721: transfer to non ERC721Receiver implementer');
     }
 
     function _mint(address to, uint256 tokenId) internal virtual {
@@ -425,12 +419,7 @@ contract Mint is ERC165, IERC721, IERC721Metadata, Ownable {
         emit ApprovalForAll(owner, operator, approved);
     }
 
-    function _checkOnERC721Received(
-        address from,
-        address to,
-        uint256 tokenId,
-        bytes memory _data
-    ) private returns (bool) {
+    function _checkOnERC721Received(address from, address to, uint256 tokenId, bytes memory _data) private returns (bool) {
         if (to.isContract()) {
             try IERC721Receiver(to).onERC721Received(_msgSender(), from, tokenId, _data) returns (bytes4 retval) {
                 return retval == IERC721Receiver.onERC721Received.selector;

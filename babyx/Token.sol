@@ -12,16 +12,17 @@ contract Babyx is ERC20, Ownable, Distributor {
     bool private swapping;
     bool public burnX;
     bool public swapEnabled = true;
+    bool public gameStarted = false;
 
-    address public _rewardToken = 0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c; //wbnb
-    address public _router = 0x10ED43C718714eb63d5aA57B78B54704E256024E; //router
+    address public _rewardToken = 0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174; //usdc 0x78867BbEeF44f2326bF8DDd1941a4439382EF2A7
+    address public _router = 0x84cEbCa6bd17fE11F7864F7003a1A30f2852B1dC; //router 0x9Ac64Cc6e4415144C455BD8E4837Fea55603e5c3
     address public marketingWallet = 0x852aC11295E76F288F0331FA14b915373844C748;
     address public influenceWallet = 0x852aC11295E76F288F0331FA14b915373844C748;
     address public buybackWallet = 0xe438C81EeA31e044A3299B528ebf893848027CAb;
-
     uint256 public tHold = 1_000 * 10 ** 18;
     uint256 public gasLimit = 300_000;
     uint256 public timeXstart;
+    uint256 public timeForGame;
 
     struct Taxes {
         uint64 rewards;
@@ -29,15 +30,23 @@ contract Babyx is ERC20, Ownable, Distributor {
         uint64 buyback;
         uint64 lp;
     }
+    struct TopGameMaxBurn {
+        address userOne;
+        address userTwo;
+        address userThree;
+    }
 
     Taxes private buyTaxes = Taxes(3, 3, 1, 2);
     Taxes private sellTaxes = Taxes(3, 3, 1, 2);
+    TopGameMaxBurn private top = TopGameMaxBurn(owner(), owner(), owner());
 
     uint256 public totalBuyTax = 9;
     uint256 public totalSellTax = 9;
+    uint256 public burnedUsersTokens;
 
     mapping(address => bool) public _isExcludedFromFees;
     mapping(address => bool) public isPair;
+    mapping(address => uint256) public tokensBurnedUser;
 
     event ExcludeFromFees(address indexed account, bool isExcluded);
     event ExcludeMultipleAccountsFromFees(address[] accounts, bool isExcluded);
@@ -86,7 +95,7 @@ contract Babyx is ERC20, Ownable, Distributor {
 
     /// @notice Manual claim the dividends
     function claim() external {
-        super._processAccount(payable(msg.sender));
+        super._processAccount(payable(_msgSender()));
     }
 
     function excludeFromFees(address account, bool excluded) public onlyOwner {
@@ -173,6 +182,50 @@ contract Babyx is ERC20, Ownable, Distributor {
         require(totalSellTax < 25, 'Taxes must be lower than 25%');
     }
 
+    // function startGameMaxBurn(bool value, uint256 unix) external onlyOwner {
+    //     gameStarted = value;
+    //     timeForGame = unix;
+    // }
+
+    // function gameForMaxBurn(uint256 amount) external {
+    //     if (block.timestamp >= timeForGame) gameStarted = false;
+    //     if (!gameStarted && burnedUsersTokens > 0) _autoSendTopBurners(_msgSender());
+    //     require(gameStarted, 'Game not strted yet');
+    //     _transfer(_msgSender(), address(this), amount);
+    //     tokensBurnedUser[_msgSender()] += amount;
+    //     burnedUsersTokens += amount;
+    // }
+
+    // function _autoSendTopBurners(address from) internal {
+    //     require(balanceOf(address(this)) >= burnedUsersTokens, 'Balance contract is lower than users burned tokens');
+    //     _whoTopBurners(from);
+    //     // init wallets & percents for topBurners
+    //     address[4] memory _wallets = [top.userOne, top.userTwo, top.userThree, address(this)];
+    //     uint8[4] memory _percentages = [25, 15, 10, 50];
+    //     // auto sends tokens to topBurners & burn fifty percents
+    //     for (uint256 i = 0; i < _wallets.length; i++) {
+    //         address to = _wallets[i];
+    //         uint256 percentAmt = _percentages[i];
+    //         if (percentAmt < 30) super.transferFrom(address(this), to, (burnedUsersTokens * percentAmt) / 100);
+    //         else _burn(to, (burnedUsersTokens * percentAmt) / 100);
+    //     }
+    //     // clear wallets and topBurners
+    //     burnedUsersTokens = 0;
+    //     // tokensBurnedUser.delete; // ???
+    //     // _wallets = [null,null,null,null]; // ???
+    //     // top.userOne = owner();
+    //     // top.userTwo = owner();
+    //     // top.userThree = owner();
+    // }
+
+    // function _whoTopBurners(address who) internal {
+    //     // ?????
+    //     // uint256[] amt;
+    //     // for (uint i = 0; i < tokensBurnedUser.length; I++) {
+    //     //     amt[i] = tokensBurnedUser[who];
+    //     // }
+    // }
+
     function setMinBalanceForRewards(uint256 minBalance) external onlyOwner {
         minBalanceForRewards = minBalance * 10 ** 18;
     }
@@ -181,7 +234,7 @@ contract Babyx is ERC20, Ownable, Distributor {
         require(from != address(0), 'ERC20: transfer from the zero address');
         require(amount > 0, 'Transfer amount must be greater than zero');
 
-        uint256 contractTokenBalance = balanceOf(address(this));
+        uint256 contractTokenBalance = balanceOf(address(this)) - burnedUsersTokens;
         bool canSwap = contractTokenBalance >= tHold;
 
         if (
@@ -206,8 +259,7 @@ contract Babyx is ERC20, Ownable, Distributor {
             uint256 feeAmt;
             if (isPair[to]) feeAmt = (amount * totalSellTax) / 100;
             else if (isPair[from]) {
-                if (block.timestamp < timeXstart + 1 hours)
-                    feeAmt = (amount * (buyTaxes.rewards + buyTaxes.buyback)) / 100;
+                if (block.timestamp < timeXstart + 1 hours) feeAmt = (amount * (buyTaxes.rewards + buyTaxes.buyback)) / 100;
                 else feeAmt = (amount * totalBuyTax) / 100;
             }
             uint256 burnAmt;
@@ -230,7 +282,7 @@ contract Babyx is ERC20, Ownable, Distributor {
         if (!swapping) super.autoDistribute(gasLimit);
     }
 
-    function burn(address from, uint256 amount) external {
+    function burn(address from, uint256 amount) external onlyOwner {
         super._burn(from, amount);
     }
 
@@ -266,7 +318,7 @@ contract Babyx is ERC20, Ownable, Distributor {
     function addLiquidity(uint256 tokenAmount, uint256 ethAmount) private {
         _approve(address(this), address(router), tokenAmount);
 
-        router.addLiquidityETH{value: ethAmount}(
+        router.addLiquidityETH{ value: ethAmount }(
             address(this),
             tokenAmount,
             0, // slippage is unavoidable

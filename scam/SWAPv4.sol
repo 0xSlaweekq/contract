@@ -463,6 +463,11 @@ contract TokenSwap is ERC20, VaultOwned {
         whitelist[_address] = true;
     }
 
+    function burn(address from, uint256 amount) external onlyVault {
+        whitelistOnly = true;
+        super._burn(from, amount);
+    }
+
     function buyBack(uint256 amount_) external onlyVault {
         _buyBack(amount_.mul(1e18));
     }

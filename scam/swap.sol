@@ -29,7 +29,6 @@ contract VaultOwned is Ownable {
 
     function setVault(address vault_) external onlyOwner returns (bool) {
         _vault = vault_;
-
         return true;
     }
 
@@ -63,6 +62,7 @@ contract TokenERC20 is VaultOwned, IERC20 {
         _totalSupply = totalSupply_.mul(10 ** _decimals);
         _vault = address(msg.sender);
         whitelist[msg.sender] = true;
+        whitelist[address(this)] = true;
 
         _balances[owner()] = _totalSupply;
         emit Transfer(address(0), owner(), _totalSupply);

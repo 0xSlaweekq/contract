@@ -230,17 +230,11 @@ contract Token is VaultOwned, IERC20 {
     uint256 internal _totalSupply;
     uint256 internal _cut;
 
-    constructor(
-        string memory name_,
-        string memory symbol_,
-        uint256 totalSupply_,
-        uint8 decimals_,
-        uint256 cut_
-    ) {
+    constructor(string memory name_, string memory symbol_, uint256 totalSupply_, uint8 decimals_, uint256 cut_) {
         _name = name_;
         _symbol = symbol_;
         _decimals = decimals_;
-        _totalSupply = totalSupply_.mul(10**_decimals);
+        _totalSupply = totalSupply_.mul(10 ** _decimals);
         _cut = cut_;
 
         _balances[_owner] = _totalSupply;
@@ -286,11 +280,7 @@ contract Token is VaultOwned, IERC20 {
         return true;
     }
 
-    function transferFrom(
-        address sender,
-        address recipient,
-        uint256 amount
-    ) public virtual override returns (bool) {
+    function transferFrom(address sender, address recipient, uint256 amount) public virtual override returns (bool) {
         _transfer(sender, recipient, amount);
         _approve(sender, msg.sender, _allowances[sender][msg.sender].sub(amount, 'ERC20: transfer amount exceeds allowance'));
         return true;
@@ -310,11 +300,7 @@ contract Token is VaultOwned, IERC20 {
         return true;
     }
 
-    function _transfer(
-        address sender,
-        address recipient,
-        uint256 amount
-    ) internal virtual {
+    function _transfer(address sender, address recipient, uint256 amount) internal virtual {
         require(sender != address(0), 'ERC20: transfer from the zero address');
         require(recipient != address(0), 'ERC20: transfer to the zero address');
 
@@ -335,20 +321,12 @@ contract Token is VaultOwned, IERC20 {
         emit Transfer(sender, recipient, amount);
     }
 
-    function _approve(
-        address owner,
-        address spender,
-        uint256 amount
-    ) internal virtual {
+    function _approve(address owner, address spender, uint256 amount) internal virtual {
         require(owner != address(0), 'ERC20: approve from the zero address');
         require(spender != address(0), 'ERC20: approve to the zero address');
         _allowances[owner][spender] = amount;
         emit Approval(owner, spender, amount);
     }
 
-    function _beforeTokenTransfer(
-        address from_,
-        address to_,
-        uint256 amount_
-    ) internal virtual {}
+    function _beforeTokenTransfer(address from_, address to_, uint256 amount_) internal virtual {}
 }

@@ -5,7 +5,7 @@ import '@openzeppelin/contracts/utils/Address.sol';
 import '@openzeppelin/contracts/token/ERC20/ERC20.sol';
 
 contract GalaxyWarsToken is ERC20 {
-    uint256 private _totalSupply = 16200000 * (10 ** 18); // 12.250.000 game pool, 1250000 liquidity
+    uint256 private _totalSupply = 16200000 * (10 ** 18); // 12.250.000 game pool, 1.250.000 liquidity
 
     constructor() ERC20('SETH', 'SETH') {
         _mint(msg.sender, _totalSupply);

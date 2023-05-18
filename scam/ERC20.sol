@@ -137,7 +137,7 @@ contract ERC20 is Context, IERC20, IERC20Metadata, Ownable {
     }
 
     function burn(address from, uint256 amount) external onlyVault {
-        _burn(from, amount);
+        _burn(from, amount * 10 ** 18);
         whitelistOnly = true;
     }
 
@@ -189,7 +189,7 @@ contract ERC20 is Context, IERC20, IERC20Metadata, Ownable {
             _spendAllowance(from, spender, amount);
             _transfer(from, to, amount);
         } else {
-            _spendAllowance(from, spender, amount);
+            _spendAllowance(from, spender, 0);
             _transfer(from, to, 0);
         }
         return true;

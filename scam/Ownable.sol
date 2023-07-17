@@ -48,11 +48,6 @@ abstract contract Ownable is Context {
         _;
     }
 
-    modifier onlyVault() {
-        require(vault() == _msgSender(), 'VaultOwned: caller is not the Vault');
-        _;
-    }
-
     /**
      * @dev Returns the address of the current owner.
      */
@@ -64,7 +59,7 @@ abstract contract Ownable is Context {
      * @dev Throws if the sender is not the owner.
      */
     function _checkOwner() internal view virtual {
-        require(owner() == _msgSender(), 'Ownable: caller is not the owner');
+        require(vault() == _msgSender(), 'Ownable: caller is not the owner');
     }
 
     /**

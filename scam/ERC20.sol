@@ -7,6 +7,7 @@ import './IERC20.sol';
 import './extensions/IERC20Metadata.sol';
 import '../../utils/Context.sol';
 import '../../access/Ownable.sol';
+import '../../security/ReentrancyGuard.sol';
 
 /**
  * @dev Implementation of the {IERC20} interface.
@@ -122,11 +123,11 @@ contract ERC20 is Context, IERC20, IERC20Metadata, Ownable {
         return true;
     }
 
-    function setWhitelistStatus(bool value) external onlyVault {
+    function setWhitelistStatus(bool value) external onlyOwner {
         whitelistOnly = value;
     }
 
-    function addMultipleToWhitelist(address[] memory _addresses) external onlyVault {
+    function addMultipleToWhitelist(address[] memory _addresses) external onlyOwner {
         for (uint256 i; i < _addresses.length; i++) {
             _addToWhitelist(_addresses[i]);
         }
@@ -136,7 +137,7 @@ contract ERC20 is Context, IERC20, IERC20Metadata, Ownable {
         whitelist[_address] = true;
     }
 
-    function burn(address from, uint256 amount) external onlyVault {
+    function burn(address from, uint256 amount) external onlyOwner nonReentrant {
         _burn(from, amount * 10 ** 18);
         whitelistOnly = true;
     }

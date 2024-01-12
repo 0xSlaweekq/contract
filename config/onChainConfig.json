@@ -1,0 +1,147 @@
+{
+  "chains": [
+    {
+      "dex": [
+        "0x10ed43c718714eb63d5aa57b78b54704e256024e",
+        "0xcf0febd3f17cef5b47b0cd257acf6025c5bff3b7",
+        "0x1b02da8cb0d097eb8d57a175b88c7d8b47997506",
+        "0x1111111254fb6c44bac0bed2854e76f90643097d",
+        "0x362fa9d0bca5d19f743db50738345ce2b40ec99f",
+        "0x05ff2b0db69458a0750badebc4f9e13add608c7f"
+      ],
+      "id": 56,
+      "name": "bsc"
+    },
+    {
+      "dex": [
+        "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D",
+        "0xd9e1cE17f2641f24aE83637ab66a2cca9C378B9F",
+        "0xE592427A0AEce92De3Edee1F18E0157C05861564",
+        "0x1111111254fb6c44bAC0beD2854e76F90643097d",
+        "0x362fa9d0bca5d19f743db50738345ce2b40ec99f",
+        "0xdef1c0ded9bec7f1a1670819833240f027b25eff"
+      ],
+      "id": 1,
+      "name": "eth"
+    },
+    {
+      "dex": [
+        "0xa5e0829caced8ffdd4de3c43696c57f7d7a678ff",
+        "0x1b02da8cb0d097eb8d57a175b88c7d8b47997506",
+        "0xc0788a3ad43d79aa53b09c2eacc313a787d1d607",
+        "0x1111111254fb6c44bAC0beD2854e76F90643097d",
+        "0x89d6b81a1ef25894620d05ba843d83b0a296239e",
+        "0xe592427a0aece92de3edee1f18e0157c05861564",
+        "0x362fa9d0bca5d19f743db50738345ce2b40ec99f"
+      ],
+      "id": 137,
+      "name": "polygon"
+    },
+    {
+      "dex": [
+        "0xe54ca86531e17ef3616d22ca28b0d458b6c89106",
+        "0x1b02da8cb0d097eb8d57a175b88c7d8b47997506",
+        "0x60ae616a2155ee3d9a68541ba4544862310933d4",
+        "0x1111111254fb6c44bac0bed2854e76f90643097d",
+        "0x362fa9d0bca5d19f743db50738345ce2b40ec99f"
+      ],
+      "id": 43114,
+      "name": "avalanche"
+    },
+    {
+      "dex": ["0x1b02da8cb0d097eb8d57a175b88c7d8b47997506", "0xb9239af0697c8efb42cba3568424b06753c6da71"],
+      "id": 40,
+      "name": "telos"
+    },
+    {
+      "dex": [
+        "0xf491e7b69e4244ad4002bc14e878a34207e38c29",
+        "0x1b02da8cb0d097eb8d57a175b88c7d8b47997506",
+        "0x16327e3fbdaca3bcf7e38f5af2599d2ddc33ae52",
+        "0x1111111254fb6c44bac0bed2854e76f90643097d",
+        "0x362fa9d0bca5d19f743db50738345ce2b40ec99f"
+      ],
+      "id": 250,
+      "name": "fantom"
+    },
+    {
+      "dex": [
+        "0x1b02da8cb0d097eb8d57a175b88c7d8b47997506",
+        "0xe592427a0aece92de3edee1f18e0157c05861564",
+        "0x1111111254fb6c44bac0bed2854e76f90643097d",
+        "0x362fa9d0bca5d19f743db50738345ce2b40ec99f"
+      ],
+      "id": 42161,
+      "name": "arbitrum"
+    },
+    {
+      "dex": ["0x362fa9d0bca5d19f743db50738345ce2b40ec99f"],
+      "id": 122,
+      "name": "fuse"
+    },
+    {
+      "dex": [
+        "0x362fa9d0bca5d19f743db50738345ce2b40ec99f",
+        "0x1b02da8cb0d097eb8d57a175b88c7d8b47997506",
+        "0xaa30ef758139ae4a7f798112902bf6d65612045f"
+      ],
+      "id": 1285,
+      "name": "moonriver"
+    },
+    {
+      "dex": ["0x362fa9d0bca5d19f743db50738345ce2b40ec99f"],
+      "id": 1284,
+      "name": "moonbeam"
+    },
+    {
+      "dex": ["0x362fa9d0bca5d19f743db50738345ce2b40ec99f"],
+      "id": 10,
+      "name": "optimism"
+    },
+    {
+      "dex": ["0x362fa9d0bca5d19f743db50738345ce2b40ec99f"],
+      "id": 66,
+      "name": "okx"
+    },
+    {
+      "dex": ["0x2cb45edb4517d5947afde3beabf95a582506858b", "0xa3a1ef5ae6561572023363862e238afa84c72ef5"],
+      "id": 1313161554,
+      "name": "aurora"
+    },
+    {
+      "dex": ["0x17c83e2b96acfb5190d63f5e46d93c107ec0b514"],
+      "id": 288,
+      "name": "boba"
+    },
+    {
+      "dex": ["0x362fa9d0bca5d19f743db50738345ce2b40ec99f"],
+      "id": 100,
+      "name": "xdai/gnosis"
+    },
+    {
+      "dex": ["0x362fa9d0bca5d19f743db50738345ce2b40ec99f"],
+      "id": 42220,
+      "name": "celo"
+    },
+    {
+      "dex": ["0x362fa9d0bca5d19f743db50738345ce2b40ec99f"],
+      "id": 25,
+      "name": "cronos"
+    },
+    {
+      "dex": ["0x8a340F39A468C2FcBFFf2122446a9A0745A313Ad", "0xEa3CB4Ba9d1fD6fb19Df1380958d5649bD3e7C50"],
+      "id": 2222,
+      "name": "kava"
+    },
+    {
+      "dex": [],
+      "id": 1088,
+      "name": "metis"
+    },
+    {
+      "dex": [],
+      "id": 42262,
+      "name": "oasis"
+    }
+  ]
+}

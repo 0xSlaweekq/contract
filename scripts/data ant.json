@@ -1,0 +1,17 @@
+[
+  {
+    "feesAndLimits": ["1000000000000000000000000", 100, 200, 300, 400, 3000, "100000000000000000000", "10001000000000000000000"],
+    "flags": [true, true, true, true],
+    "markAddr": "0x36842cB95ACdcd3bA4ee5B4DAAF80Eb392df0601",
+    "name": "test",
+    "symbol": "test",
+    "token": "0x6754D13B3DD409aEab97a9BDd51Ba0Fd592EB56B"
+  },
+  {
+    "mint": "",
+    "percents": [100],
+    "stake": "",
+    "token": "",
+    "wallets": ["0x9d67E799E179939bF891D3ac66F23dfd513dEeEF"]
+  }
+]

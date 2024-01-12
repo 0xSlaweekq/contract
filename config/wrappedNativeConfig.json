@@ -1,0 +1,104 @@
+{
+  "chains": [
+    {
+      "id": 56,
+      "name": "bsc",
+      "wnative": "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c"
+    },
+    {
+      "id": 1,
+      "name": "eth",
+      "wnative": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"
+    },
+    {
+      "id": 137,
+      "name": "polygon",
+      "wnative": "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270"
+    },
+    {
+      "id": 43114,
+      "name": "avalanche",
+      "wnative": "0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7"
+    },
+    {
+      "id": 40,
+      "name": "telos",
+      "wnative": "0xD102cE6A4dB07D247fcc28F366A623Df0938CA9E"
+    },
+    {
+      "id": 250,
+      "name": "fantom",
+      "wnative": "0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83"
+    },
+    {
+      "id": 42161,
+      "name": "arbitrum",
+      "wnative": "0x82af49447d8a07e3bd95bd0d56f35241523fbab1"
+    },
+    {
+      "id": 122,
+      "name": "fuse",
+      "wnative": "0x0be9e53fd7edac9f859882afdda116645287c629"
+    },
+    {
+      "id": 1285,
+      "name": "moonriver",
+      "wnative": "0x98878B06940aE243284CA214f92Bb71a2b032B8A"
+    },
+    {
+      "id": 1284,
+      "name": "moonbeam",
+      "wnative": "0xacc15dc74880c9944775448304b263d191c6077f"
+    },
+    {
+      "id": 10,
+      "name": "optimism",
+      "wnative": "0x4200000000000000000000000000000000000006"
+    },
+    {
+      "id": 66,
+      "name": "okx",
+      "wnative": "0x8f8526dbfd6e38e3d8307702ca8469bae6c56c15"
+    },
+    {
+      "id": 288,
+      "name": "boba",
+      "wnative": "0xDeadDeAddeAddEAddeadDEaDDEAdDeaDDeAD0000"
+    },
+    {
+      "id": 100,
+      "name": "xdai/gnosis",
+      "wnative": "0xe91d153e0b41518a2ce8dd3d7944fa863463a97d"
+    },
+    {
+      "id": 42220,
+      "name": "celo",
+      "wnative": "0x471EcE3750Da237f93B8E339c536989b8978a438"
+    },
+    {
+      "id": 25,
+      "name": "cronos",
+      "wnative": "0x5C7F8A570d578ED84E63fdFA7b1eE72dEae1AE23"
+    },
+    {
+      "id": 2222,
+      "name": "kava",
+      "wnative": "0xc86c7C0eFbd6A49B35E8714C5f59D99De09A225b"
+    },
+    {
+      "id": 32520,
+      "name": "bitgert",
+      "wnative": "0x0eb9036cbE0f052386f36170c6b07eF0a0E3f710"
+    },
+    {
+      "id": 1088,
+      "name": "metis",
+      "wnative": "0xDeadDeAddeAddEAddeadDEaDDEAdDeaDDeAD0000"
+    },
+    {
+      "id": 42262,
+      "name": "oasis",
+      "wnative": "0x21C718C22D52d0F3a789b752D4c2fD5908a8A733"
+    }
+  ]
+}

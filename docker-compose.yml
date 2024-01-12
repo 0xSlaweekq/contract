@@ -1,0 +1,28 @@
+version: "3"
+services:
+  anvil:
+    container_name: anvil
+    hostname: anvil
+    image: ghcr.io/foundry-rs/foundry:nightly
+    ports:
+      - "8545:8545"
+    restart: on-failure
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+    healthcheck:
+      test: wget http://localhost:8545
+      interval: 2s
+      timeout: 5s
+      retries: 30
+    entrypoint:
+      - anvil
+      - --prune-history
+      - --host=${FORKING_NODE_HOST}
+      - -m=${MNEMONIC}
+      - --order=fifo
+      - -f=${FORKING_URL}
+      - --timeout=3000
+      - --fork-block-number=${FORKING_BLOCKNUMBER}
+      - --fork-chain-id=${FORKING_NETWORK_ID}
+      - --auto-impersonate
+      - --hardfork=shanghai

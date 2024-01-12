@@ -1,0 +1,31 @@
+{
+  "extends": "solhint:recommended",
+  "plugins": ["forge", "prettier"],
+  "rules": {
+    "avoid-low-level-calls": "off",
+    "avoid-tx-origin": "off",
+    "compiler-version": "off",
+    "const-name-snakecase": "off",
+    "contract-name-camelcase": "off",
+    "custom-errors": "off",
+    "explicit-types": "off",
+    "func-name-mixedcase": "off",
+    "func-visibility": [
+      "warn",
+      {
+        "ignoreConstructors": true
+      }
+    ],
+    "max-states-count": "off",
+    "no-console": "off",
+    "no-empty-blocks": "off",
+    "no-global-import": "off",
+    "no-inline-assembly": "off",
+    "not-rely-on-time": "off",
+    "prettier/prettier": "error",
+    "quotes": "off",
+    "reason-string": "off",
+    "state-visibility": "off",
+    "var-name-mixedcase": "off"
+  }
+}

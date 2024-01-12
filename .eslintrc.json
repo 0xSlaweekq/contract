@@ -1,0 +1,124 @@
+{
+  "env": {
+    "browser": true,
+    "commonjs": true,
+    "es6": true,
+    "jest": true,
+    "mocha": true,
+    "node": true
+  },
+  "extends": ["eslint:recommended", "plugin:@typescript-eslint/recommended", "plugin:prettier/recommended", "airbnb-typescript", "prettier"],
+  "overrides": [
+    {
+      "files": [".ts"]
+    }
+  ],
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "ecmaVersion": "latest",
+    "project": "tsconfig.json",
+    "sourceType": "module"
+  },
+  "plugins": ["@typescript-eslint", "prettier", "simple-import-sort", "unused-imports", "import"],
+  "root": true,
+  "rules": {
+    "@typescript-eslint/comma-dangle": ["error", "never"],
+    // "@typescript-eslint/dot-notation": "off",
+    "@typescript-eslint/explicit-module-boundary-types": "off",
+    "@typescript-eslint/naming-convention": "off",
+    "@typescript-eslint/no-empty-function": "off",
+    "@typescript-eslint/no-explicit-any": "off",
+    "@typescript-eslint/no-inferrable-types": "off",
+    "@typescript-eslint/no-magic-numbers": "off",
+    "@typescript-eslint/no-unused-vars": "off",
+    "@typescript-eslint/no-use-before-define": "off",
+    "@typescript-eslint/no-useless-constructor": "off",
+    "@typescript-eslint/no-var-requires": "off",
+    // Styling.
+    "array-bracket-spacing": ["error", "never"],
+    "class-method-use-this": "off",
+    "class-methods-use-this": "off",
+    "comma-dangle": "off",
+    "complexity": "off",
+    "eqeqeq": "off",
+    "import/extensions": "off",
+    // "complexity": ["error", 20],
+    // "eqeqeq": ["error", "always"],
+    // Temporary rules. Remove after full refactoring.
+    "import/no-extraneous-dependencies": "off",
+    "import/no-mutable-exports": "off",
+    "import/no-named-as-default": "off",
+    "import/no-named-as-default-member": "off",
+    "import/no-unresolved": "off",
+    "import/prefer-default-export": "off",
+    "indent": "off",
+    "linebreak-style": ["error", "unix"],
+    // Temporary rules. Remove as fast as it can be.
+    "max-classes-per-file": "off",
+    // "no-console": [
+    //   "warn",
+    //   {
+    //     allow: ["debug", "error", "info"]
+    //   }
+    // ],
+    "no-console": "off",
+    // "@typescript-eslint/no-magic-numbers": [
+    //   "warn",
+    //   {
+    //     ignore: [-1, 0, 1, 2, 10, 100, 1000, 16, 64, 256],
+    //     detectObjects: true,
+    //     ignoreReadonlyClassProperties: true       // "@typescript-eslint/no-magic-numbers": [
+    //   "warn",
+    //   {
+    //     ignore: [-1, 0, 1, 2, 10, 100, 1000, 16, 64, 256],
+    //     detectObjects: true,
+    //     ignoreReadonlyClassProperties: true
+    //   }
+    // ],
+    //   }
+    // ],
+    "no-empty": [
+      "error",
+      {
+        "allowEmptyCatch": true
+      }
+    ],
+    "no-global-import": "off",
+    "no-inferrable-types": "off",
+    "no-magic-numbers": "off",
+    "no-param-reassign": "off",
+    "no-plusplus": "off",
+    "no-prototype-builtins": "off",
+    "no-restricted-globals": "off",
+    "no-restricted-syntax": ["error", "LabeledStatement", "WithStatement"],
+    "no-return-assign": "off",
+    "no-underscore-dangle": "off",
+    "object-curly-spacing": ["error", "always"],
+    "prefer-const": "off",
+    "prefer-destructuring": "off",
+    // "@typescript-eslint/no-unused-vars": [
+    //   "error",
+    //   {
+    //     vars: "all",
+    //     args: "all",
+    //     ignoreRestSiblings: false,
+    //     argsIgnorePattern: "^_"
+    //   }
+    // ],
+    // "@typescript-eslint/naming-convention": [
+    //   "error",
+    //   {
+    //     "format": ["UPPER_CASE"],
+    //     "selector": "enumMember"
+    //   }
+    // ],
+    "quotes": "off",
+    // "quotes": ["error", "single"],
+    "radix": ["warn", "as-needed"],
+    "react/jsx-filename-extension": "off",
+    "semi": ["error", "always"],
+    "simple-import-sort/exports": "error",
+    "simple-import-sort/imports": "error",
+    "unused-imports/no-unused-imports": "error"
+  }
+}

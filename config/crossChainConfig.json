@@ -1,0 +1,265 @@
+{
+  "chains": [
+    {
+      "id": 1,
+      "name": "eth",
+      "routers": [
+        "0x663DC15D3C1aC63ff12E45Ab68FeA3F0a883C251",
+        "0x8EB8a3b98659Cce290402893d0123abb75E3ab28",
+        "0xB9E13785127BFfCc3dc970A55F6c7bF0844a3C15",
+        "0x03B7551EB0162c838a10c2437b60D1f5455b9554",
+        "0x935BbF5c69225E3EDa7C3aA542A7Baa5c5c30094",
+        "0xc30141B657f4216252dc59Af2e7CdB9D8792e1B0",
+        "0x0e3EB2eAB0e524b69C79E24910f4318dB46bAa9c",
+        "0x73Ce60416035B8D7019f6399778c14ccf5C9c7A1",
+        "0xA0c68C638235ee32657e8f720a23ceC1bFc77C77",
+        "0x40ec5B33f54e0E8A33A975908C5BA1c14e5BbbDf",
+        "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+        "0x362fA9D0bCa5D19f743Db50738345ce2b40eC99f",
+        "0x2A5c2568b10A0E826BfA892Cf21BA7218310180b",
+        "0xF9Fb1c508Ff49F78b60d3A96dea99Fa5d7F3A8A6",
+        "0x8731d54E9D02c286767d56ac03e8037C07e01e98",
+        "0x150f94B44927F078737562f0fcF3C95c01Cc2376",
+        "0xe95fD76CF16008c12FF3b3a937CB16Cd9Cc20284",
+        "0x4D9079Bb4165aeb4084c526a32695dCfd2F77381",
+        "0x4Dbd4fc535Ac27206064B68FfCf827b0A60BAB3f",
+        "0xa3A7B6F88361F48403514059F1F16C8E78d60EeC",
+        "0xD3B5b60020504bc3489D6949d545893982BA3011",
+        "0xcEe284F754E854890e311e3280b767F80797180d",
+        "0xd92023E9d9911199a6711321D1277285e6d4e2db",
+        "0x72Ce9c846789fdB6fC1f34aC4AD25Dd9ef7031ef",
+        "0x23Ddd3e3692d1861Ed57EDE224608875809e127f",
+        "0x6BFaD42cFC4EfC96f529D786D643Ff4A8B89FA52",
+        "0x99C9fc46f92E8a1c0deC1b1747d010903E884bE1",
+        "0xaBA2c5F108F7E820C049D5Af70B16ac266c8f128",
+        "0x10E6593CDda8c58a1d0f14C5164B376352a55f2F",
+        "0xC5b1EC605738eF73a4EFc562274c1c0b6609cF59",
+        "0x5427FEFA711Eff984124bFBB1AB6fbf5E3DA1820",
+        "0x3666f603Cc164936C1b87e207F36BEBa4AC5f18a",
+        "0x3E4a3a4796d16c0Cd582C382691998f7c06420B6",
+        "0x22B1Cbb8D98a01a3B71D034BB899775A76Eb1cc2",
+        "0x3d4Cc8A61c7528Fd86C55cfe061a78dCBA48EDd1",
+        "0xb8901acB165ed027E32754E0FFe830802919727f",
+        "0xb98454270065A31D71Bf635F6F7Ee6A518dFb849",
+        "0x92e929d8B2c8430BcAF4cD87654789578BB2b786"
+      ]
+    },
+    {
+      "id": 56,
+      "name": "bsc",
+      "routers": [
+        "0x8D602356c7A6220CDE24BDfB4AB63EBFcb0a9b5d",
+        "0xe2faC824615538C3A9ae704c75582cD1AbdD7cdf",
+        "0x663dc15d3c1ac63ff12e45ab68fea3f0a883c251",
+        "0x4a364f8c717caad9a442737eb7b8a55cc6cf18d8",
+        "0x362fa9d0bca5d19f743db50738345ce2b40ec99f",
+        "0xc30141b657f4216252dc59af2e7cdb9d8792e1b0",
+        "0x50a64d05bb8618d8d96a83cbbb12b3044ec3489a",
+        "0x2a7813412b8da8d18ce56fe763b9eb264d8e28a8",
+        "0x935bbf5c69225e3eda7c3aa542a7baa5c5c30094",
+        "0x94d3e62151b12a12a4976f60edc18459538faf08",
+        "0xd286595d2e3d879596fab51f83a702d10a6db27b",
+        "0xfd53b1b4af84d59b20bf2c20ca89a6beeaa2c628",
+        "0xf9736ec3926703e85c843fc972bd89a7f8e827c0",
+        "0x92c079d3155c2722dbf7e65017a5baf9cd15561c",
+        "0xd1c5966f9f5ee6881ff6b261bbeda45972b1b5f3",
+        "0xabd380327fe66724ffda91a87c772fb8d00be488",
+        "0xdd90e5e87a2081dcf0391920868ebc2ffb81a1af",
+        "0x1ed5685f345b2fa564ea4a670de1fde39e484751"
+      ]
+    },
+    {
+      "id": 43114,
+      "name": "avax",
+      "routers": [
+        "0x663dc15d3c1ac63ff12e45ab68fea3f0a883c251",
+        "0x7f8038682545d52ea4d9462376b77765c20d0812",
+        "0xe5e68630b5b759e6c701b70892aa8324b71e6e20",
+        "0x25821a21c2e3455967229cadca9b6fdd4a80a40b",
+        "0xc4300be7878f42b39bdfb6a57d0f88eb87b842c3",
+        "0x2b42affd4b7c14d9b7c2579229495c052672ccd3",
+        "0x362fa9d0bca5d19f743db50738345ce2b40ec99f",
+        "0x9b17baadf0f21f03e35249e0e59723f34994f806",
+        "0x833f307ac507d47309fd8cdd1f835bef8d702a93",
+        "0xb0731d50c681c45856bfc3f7539d5f61d4be81d8",
+        "0xe5cf1558a1470cb5c166c2e8651ed0f3c5fb8f42",
+        "0x2a5c2568b10a0e826bfa892cf21ba7218310180b",
+        "0xef3c714c9425a8f3697a9c969dc1af30ba82e5d4"
+      ]
+    },
+    {
+      "id": 137,
+      "name": "polygon",
+      "routers": [
+        "0x663dc15d3c1ac63ff12e45ab68fea3f0a883c251",
+        "0x69b5c72837769ef1e7c164abc6515dcff217f920",
+        "0x733d33fa01424f83e9c095af3ece80ed6fa565f1",
+        "0xf3273bd35e4ad4fcd49dabdee33582b41cbb9d77",
+        "0x50a64d05bb8618d8d96a83cbbb12b3044ec3489a",
+        "0x38f7aa5370439e879370e24add063a11bd74610d",
+        "0xc30141b657f4216252dc59af2e7cdb9d8792e1b0",
+        "0x45a01e4e04f14f7a4a6702c74187c5f6222033cd",
+        "0x2a5c2568b10a0e826bfa892cf21ba7218310180b",
+        "0x935bbf5c69225e3eda7c3aa542a7baa5c5c30094",
+        "0x0fd9f11b9c54a9f100234eeef9ee7873d73c2204",
+        "0x2ddf16ba6d0180e5357d5e170ef1917a01b41fc0",
+        "0x362fa9d0bca5d19f743db50738345ce2b40ec99f",
+        "0xafaace7138ab3c2bcb2db4264f8312e1bbb80653",
+        "0x4f3aff3a747fcade12598081e80c6605a8be192f",
+        "0x6ff0609046a38d76bd40c5863b4d1a2dce687f73",
+        "0x88dcdc47d2f83a99cf0000fdf667a468bb958a78",
+        "0x76b22b8c1079a44f1211d867d68b1eda76a635a7",
+        "0x8741ba6225a6bf91f9d73531a98a89807857a2b3",
+        "0x884d1aa15f9957e1aeaa86a82a72e49bc2bfcbe3",
+        "0x28529fec439cff6d7d1d5917e956dee62cd3be5c",
+        "0xc315239cfb05f1e130e7e28e603cea4c014c57f0",
+        "0xcd1d7aefa8055e020db0d0e98bbf3fed1a16aad6",
+        "0x242ea2a8c4a3377a738ed8a0d8cc0fe8b4d6c36e"
+      ]
+    },
+    {
+      "id": 288,
+      "name": "boba",
+      "routers": [
+        "0x663dc15d3c1ac63ff12e45ab68fea3f0a883c251",
+        "0x362fa9d0bca5d19f743db50738345ce2b40ec99f",
+        "0xd2b5945829d8254c40f63f476c9f02cf5762f8df",
+        "0x5ee04643fe2d63f364f77b38c41f15a54930f5c1",
+        "0xe3f5a90f9cb311505cd691a46596599aa1a0ad7d",
+        "0xbbc6009feffc27ce705322832cb2068f8c1e0a58",
+        "0xc9baa8cfdde8e328787e29b4b078abf2dadc2055",
+        "0x841ce48f9446c8e281d3f1444cb859b4a6d0738c"
+      ]
+    },
+    {
+      "id": 1313161554,
+      "name": "aurora",
+      "routers": ["0x663dc15d3c1ac63ff12e45ab68fea3f0a883c251", "0x362fa9d0bca5d19f743db50738345ce2b40ec99f"]
+    },
+    {
+      "id": 40,
+      "name": "telos",
+      "routers": [
+        "0x663DC15D3C1aC63ff12E45Ab68FeA3F0a883C251",
+        "0x362fA9D0bCa5D19f743Db50738345ce2b40eC99f",
+        "0xc2299c4a45b7e44fFC23e6ba7aAC4AeFF0DDbccC",
+        "0xcB9ec7Bfa69c400F97fD667Bf3D8C61359cf50c2"
+      ]
+    },
+    {
+      "id": 42161,
+      "name": "arbitrum",
+      "routers": [
+        "0x663dc15d3c1ac63ff12e45ab68fea3f0a883c251",
+        "0xc30141b657f4216252dc59af2e7cdb9d8792e1b0",
+        "0x74a0eea77e342323aa463098e959612d3fe6e686",
+        "0x0e3eb2eab0e524b69c79e24910f4318db46baa9c",
+        "0x362fa9d0bca5d19f743db50738345ce2b40ec99f",
+        "0x39fde572a18448f8139b7788099f0a0740f51205",
+        "0xb88690461ddbab6f04dfad7df66b7725942feb9c",
+        "0x650af55d5877f289837c30b94af91538a7504b76",
+        "0x0cae51e1032e8461f4806e26332c030e34de3adb",
+        "0x856cb5c3cbbe9e2e21293a644aa1f9363cee11e8",
+        "0x1619de6b6b20ed217a58d00f37b9d47c7663feca",
+        "0xe22d2bedb3eca35e6397e0c6d62857094aa26f52",
+        "0xcb0a4177e0a60247c0ad18be87f8edff6dd30283",
+        "0xe7f40bf16ab09f4a6906ac2caa4094ad2da48cc2",
+        "0x33ceb27b39d2bb7d2e61f7564d3df29344020417",
+        "0xc08055b634d43f2176d721e26a3428d3b7e7ddb5"
+      ]
+    },
+    {
+      "id": 10,
+      "name": "optimism",
+      "routers": [
+        "0x362fa9d0bca5d19f743db50738345ce2b40ec99f",
+        "0x0e3EB2eAB0e524b69C79E24910f4318dB46bAa9c",
+        "0xbDf50eAe568ECef74796ed6022a0d453e8432410",
+        "0xc30141B657f4216252dc59Af2e7CdB9D8792e1B0"
+      ]
+    },
+    {
+      "id": 1285,
+      "name": "moonriver",
+      "routers": ["0x362fa9d0bca5d19f743db50738345ce2b40ec99f"]
+    },
+    {
+      "id": 122,
+      "name": "fuse",
+      "routers": [
+        "0x362fa9d0bca5d19f743db50738345ce2b40ec99f",
+        "0x2c78f1b70ccf63cdee49f9233e9faa99d43aa07e",
+        "0x922d641a426dcffaef11680e5358f34d97d112e1"
+      ]
+    },
+    {
+      "id": 1284,
+      "name": "moonbeam",
+      "routers": [
+        "0x362fa9d0bca5d19f743db50738345ce2b40ec99f",
+        "0x64d5baf5ac030e2b7c435add967f787ae94d0205",
+        "0xabd380327fe66724ffda91a87c772fb8d00be488"
+      ]
+    },
+    {
+      "id": 100,
+      "name": "gnosis",
+      "routers": [
+        "0x565810cbfa3cf1390963e5afa2fb953795686339",
+        "0xc30141b657f4216252dc59af2e7cdb9d8792e1b0",
+        "0x362fa9d0bca5d19f743db50738345ce2b40ec99f",
+        "0x7c598c96d02398d89fbcb9d41eab3df0c16f227d",
+        "0x3795c36e7d12a8c252a20c5a7b455f7c57b60283",
+        "0x76b22b8c1079a44f1211d867d68b1eda76a635a7",
+        "0x49094a1b3463c4e2e82ca41b8e6a023bdd6e222f",
+        "0x86ca30bef97fb651b8d866d45503684b90cb3312",
+        "0x6c928f435d1f3329babb42d69ccf043e3900ecf1",
+        "0x03d7f750777ec48d39d080b020d83eb2cb4e3547",
+        "0x70af36240ec5040f6f9501e8e2d9db8703ec3d45"
+      ]
+    },
+    {
+      "id": 25,
+      "name": "cronos",
+      "routers": [
+        "0x362fa9d0bca5d19f743db50738345ce2b40ec99f",
+        "0x634398cb81b76bfc75ebb434cf7c82036f9e7d78",
+        "0x50a64d05bb8618d8d96a83cbbb12b3044ec3489a"
+      ]
+    },
+    {
+      "id": 42220,
+      "name": "celo",
+      "routers": ["0x362fa9d0bca5d19f743db50738345ce2b40ec99f"]
+    },
+    {
+      "id": 250,
+      "name": "fantom",
+      "routers": [
+        "0x663dc15d3c1ac63ff12e45ab68fea3f0a883c251",
+        "0x935bbf5c69225e3eda7c3aa542a7baa5c5c30094",
+        "0x1b0789910027c3cc58af2391de7228d973c5c46e",
+        "0x2a7813412b8da8d18ce56fe763b9eb264d8e28a8",
+        "0xc30141b657f4216252dc59af2e7cdb9d8792e1b0",
+        "0xaf5191b0de278c7286d6c7cc6ab6bb8a73ba2cd6",
+        "0x362fa9d0bca5d19f743db50738345ce2b40ec99f",
+        "0xf3ce95ec61114a4b1bfc615c16e6726015913ccc",
+        "0x1ccca1ce62c62f7be95d4a67722a8fdbed6eecb4",
+        "0xb576c9403f39829565bd6051695e2ac7ecf850e2",
+        "0x856cb5c3cbbe9e2e21293a644aa1f9363cee11e8",
+        "0x374b8a9f3ec5eb2d97eca84ea27aca45aa1c57ef",
+        "0x8f957ed3f969d7b6e5d6df81e61a5ff45f594dd1"
+      ]
+    },
+    {
+      "id": 66,
+      "name": "okx",
+      "routers": ["0x362fA9D0bCa5D19f743Db50738345ce2b40eC99f"]
+    },
+    {
+      "id": 1088,
+      "name": "metis",
+      "routers": []
+    }
+  ]
+}

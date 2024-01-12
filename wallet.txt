@@ -72,7 +72,7 @@ https://docs.google.com/spreadsheets/d/1wy54EFwLKeLh_DrIiotNPh1CE0_I_yxdOvvt1Ilm
 oldMath.js - Это пример расчета как раз таки 3 варианта сквозного просчета(но снова же это для каждого юзера в частности 3 вариант и при ребалансировке у нас встает вопрос пересчета для всех, как вариант возложить его на бэк)
 math,js - Тут начало расчетов 1 варианта, когда происходит деление по сезонам(но пока до конца не докручены формулы, это только черновик)
 
-Это мой ревардтрекер, но на основе баланса контракта, как вариант, просто перевязать под чек не баланса контракта, а колл накопленных стат активов в юнисвап3
+Это мой ревардтрекер, но на основе баланса контракта, как вариант, просто перевязать под чек не баланса контракта, а колл накопленных стат активов в юнисвап3:
 https://github.com/NarcoNik/contract/blob/main/contracts/BABYUSHI/RewardsTracker.sol
 
 Так же за основу авто реинвестирования можно взять обычный контракт msterChef:
@@ -80,3 +80,8 @@ https://github.com/NarcoNik/contract/blob/main/contracts/BABYUSHI/RewardsTracker
 2) Наипростейший вариант просчета - https://solidity-by-example.org/defi/vault/
 3) Живой пример работы мастершефа на pancakeSwap - https://github.com/pancakeswap/pancake-farm/blob/master/contracts/MasterChef.sol
 4) И пример мастершефа с написанными контрактами и тестами под них - https://github.com/call3hudson/masterchef-example/blob/main/contracts/MasterChef.sol
+
+Так же есть примеры:
+1) Рабочая оптимизированная реализация мастершефа - https://github.com/NarcoNik/Rubic-LP
+2) Yearn Finance, контракт написанный на вайпере, но реализация похожа на ту, что нам нужна - https://github.com/yearn/yearn-vaults-v3/blob/master/contracts/VaultV3.vy#L691 
+3) Адаптированный на sol Yearn Finance - https://github.com/yearn/yearn-protocol/blob/develop/contracts/vaults/yVault.sol#L74

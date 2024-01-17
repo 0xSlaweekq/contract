@@ -64,7 +64,7 @@ const config: HardhatUserConfig = {
   },
   solidity: {
     compilers: [
-      // DEFAULT_COMPILER_SETTINGS,
+      DEFAULT_COMPILER_SETTINGS,
       {
         version: '0.8.16',
         settings: {

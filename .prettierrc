@@ -8,8 +8,9 @@
         "bracketSpacing": false,
         "embeddedLanguageFormatting": "auto",
         "endOfLine": "auto",
-        "printWidth": 145,
+        "printWidth": 120,
         "proseWrap": "always",
+        "semi": true,
         "singleQuote": false,
         "tabWidth": 4,
         "useTabs": false
@@ -23,25 +24,6 @@
         "bracketSpacing": true,
         "embeddedLanguageFormatting": "auto",
         "endOfLine": "auto",
-        "printWidth": 100,
-        "proseWrap": "always",
-        "quoteProps": "as-needed",
-        "semi": true,
-        "singleQuote": true,
-        "tabWidth": 2,
-        "trailingComma": "none",
-        "useTabs": false
-      }
-    },
-    {
-      "files": ["*.jsx", "*.tsx"],
-      "options": {
-        "arrowParens": "avoid",
-        "bracketSameLine": false,
-        "bracketSpacing": true,
-        "embeddedLanguageFormatting": "auto",
-        "endOfLine": "auto",
-        "jsxSingleQuote": true,
         "printWidth": 100,
         "proseWrap": "always",
         "quoteProps": "as-needed",

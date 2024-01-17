@@ -1,6 +1,6 @@
 {
   "extends": "solhint:recommended",
-  "plugins": ["forge", "prettier"],
+  "plugins": ["prettier"],
   "rules": {
     "avoid-low-level-calls": "off",
     "avoid-tx-origin": "off",
@@ -24,7 +24,12 @@
     "not-rely-on-time": "off",
     "prettier/prettier": "error",
     "quotes": "off",
-    "reason-string": "off",
+    "reason-string": [
+      "warn",
+      {
+        "maxLength": 64
+      }
+    ],
     "state-visibility": "off",
     "var-name-mixedcase": "off"
   }

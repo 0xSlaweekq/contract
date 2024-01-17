@@ -20,8 +20,8 @@
     "@nomiclabs/hardhat-ethers": "^2.0.5",
     "@nomiclabs/hardhat-etherscan": "3.1.0",
     "@nomiclabs/hardhat-waffle": "^2.0.1",
-    "@openzeppelin/contracts": "4.5.0",
-    "@openzeppelin/contracts-upgradeable": "4.5.0",
+    "@openzeppelin/contracts": "4.9.2",
+    "@openzeppelin/contracts-upgradeable": "4.9.2",
     "@openzeppelin/hardhat-upgrades": "1.28.0",
     "@openzeppelin/test-helpers": "0.5.16",
     "@solidstate/contracts": "^0.0.58",
@@ -53,6 +53,7 @@
     "eth-gas-reporter": "^0.2.25",
     "ethereum-waffle": "^3.4.4",
     "ethers": "^5.7.2",
+    "forge": "^2.3.0",
     "ganache-cli": "^6.12.2",
     "hardhat-abi-exporter": "^2.4.0",
     "hardhat-contract-sizer": "^2.10.0",
@@ -76,13 +77,13 @@
     "scripts": "scripts",
     "test": "test"
   },
-  "homepage": "https://github.com/NarcoNik/contract#readme",
+  "homepage": "https://github.com/NarcoNik/hardhat#readme",
   "license": "MIT",
   "main": "index.js",
   "name": "hardhat",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/NarcoNik/contract.git"
+    "url": "git+https://github.com/NarcoNik/hardhat.git"
   },
   "scripts": {
     "clean": "rm -r node_modules package-lock.json",
@@ -90,7 +91,7 @@
     "deploy:hardhat": "npx hardhat run scripts/deploy.ts --network hardhat ",
     "deploy:local": "npx hardhat run scripts/deploy.ts --network localhost ",
     "format": "npx prettier --write ./ && eslint --fix ./",
-    "lint": "npx solhint contracts/* contracts/**/* test/**/*.sol ",
+    "lint": "npx solhint contracts/* contracts/**/* test/**/*.sol",
     "ln": "docker compose --file ./docker-compose.yaml up -d",
     "ln-stop": "docker compose --file ./docker-compose.yaml down -v && docker-compose --file ./docker-compose.yaml rm -v",
     "push": "git add ./ && git commit -m 'refactoring' -a && git push origin",

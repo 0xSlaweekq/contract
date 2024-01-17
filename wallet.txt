@@ -58,30 +58,3 @@ Private Key: 0xde9be858da4a475276426320d5e9262ecfc3ba460bfac56360bfa6c4c28b4ee0
 
 Account #19: 0x8626f6940E2eb28930eFb4CeF49B2d1F2C9C1199 (10000 ETH)
 Private Key: 0xdf57089febbacf7ba0bc227dafbffa9fc08a93fdc68e1e42411a14efcf23656e
-
-
-
-
-
-Тут варианты, которые я накидал, 4 вариант получается более подходящий:
-https://docs.google.com/document/d/1Aximmgv84RlrV_t5JCN8YwT0e31QLYOloRTSCtSwj5s/edit?usp=sharing
-
-Тут просчет 3 варианта сквозного просчета:
-https://docs.google.com/spreadsheets/d/1wy54EFwLKeLh_DrIiotNPh1CE0_I_yxdOvvt1IlmhQg/edit?usp=sharing
-
-oldMath.js - Это пример расчета как раз таки 3 варианта сквозного просчета(но снова же это для каждого юзера в частности 3 вариант и при ребалансировке у нас встает вопрос пересчета для всех, как вариант возложить его на бэк)
-math,js - Тут начало расчетов 1 варианта, когда происходит деление по сезонам(но пока до конца не докручены формулы, это только черновик)
-
-Это мой ревардтрекер, но на основе баланса контракта, как вариант, просто перевязать под чек не баланса контракта, а колл накопленных стат активов в юнисвап3:
-https://github.com/NarcoNik/contract/blob/main/contracts/BABYUSHI/RewardsTracker.sol
-
-Так же за основу авто реинвестирования можно взять обычный контракт msterChef:
-1) Описание работы данных стандартов - https://eips.ethereum.org/EIPS/eip-4626
-2) Наипростейший вариант просчета - https://solidity-by-example.org/defi/vault/
-3) Живой пример работы мастершефа на pancakeSwap - https://github.com/pancakeswap/pancake-farm/blob/master/contracts/MasterChef.sol
-4) И пример мастершефа с написанными контрактами и тестами под них - https://github.com/call3hudson/masterchef-example/blob/main/contracts/MasterChef.sol
-
-Так же есть примеры:
-1) Рабочая оптимизированная реализация мастершефа - https://github.com/NarcoNik/Rubic-LP
-2) Yearn Finance, контракт написанный на вайпере, но реализация похожа на ту, что нам нужна - https://github.com/yearn/yearn-vaults-v3/blob/master/contracts/VaultV3.vy#L691 
-3) Адаптированный на sol Yearn Finance - https://github.com/yearn/yearn-protocol/blob/develop/contracts/vaults/yVault.sol#L74

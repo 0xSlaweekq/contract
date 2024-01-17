@@ -2,8 +2,8 @@
 
 pragma solidity ^0.8.0;
 
-import "./libraries/FullMath.sol";
-import "./RubicLP.sol";
+import './libraries/FullMath.sol';
+import './RubicLP.sol';
 
 contract Staking is RubicLP {
     using EnumerableSet for EnumerableSet.UintSet;
@@ -58,14 +58,14 @@ contract Staking is RubicLP {
     /// list all tokens of a user to find a match
     /// @param _tokenId the id of a token
     modifier ownerOfStake(uint256 _tokenId) {
-        require(ownerToTokens[msg.sender].contains(_tokenId), "You need to be an owner");
+        require(ownerToTokens[msg.sender].contains(_tokenId), 'You need to be an owner');
         _;
     }
 
     /// @dev Prevents withdrawing rewards with zero reward
     /// @param _tokenId token id
     modifier positiveRewards(uint256 _tokenId) {
-        require(viewRewards(_tokenId) > 0 && poolUSDC > 0, "You have 0 rewards");
+        require(viewRewards(_tokenId) > 0 && poolUSDC > 0, 'You have 0 rewards');
         _;
     }
 
@@ -74,11 +74,11 @@ contract Staking is RubicLP {
     modifier maxStakeAmount(uint256 _amount, uint256 _maxUSDCAmount) {
         uint256[] memory ownerTokenList = viewTokensByOwner(msg.sender);
         if (ownerTokenList.length == 0) {
-            require(_amount <= _maxUSDCAmount, "Max amount for stake exceeded");
+            require(_amount <= _maxUSDCAmount, 'Max amount for stake exceeded');
         } else {
             for (uint256 i = 0; i < ownerTokenList.length; i++) {
                 _amount += tokensLP[ownerTokenList[i]].USDCAmount;
-                require(_amount <= _maxUSDCAmount, "Max amount for stake exceeded");
+                require(_amount <= _maxUSDCAmount, 'Max amount for stake exceeded');
             }
         }
         _;
@@ -87,27 +87,25 @@ contract Staking is RubicLP {
     /// @dev This modifier prevents transfer of tokens to self and null addresses
     /// @param _to the token reciever
     modifier transferCheck(address _to) {
-        require(_to != msg.sender && _to != address(0), "You cant transfer to yourself or to null address");
+        require(_to != msg.sender && _to != address(0), 'You cant transfer to yourself or to null address');
         _;
     }
 
     modifier onlyWhitelisted() {
-        require(whitelist.contains(msg.sender), "You are not in whitelist");
+        require(whitelist.contains(msg.sender), 'You are not in whitelist');
         _;
     }
 
-    function whitelistStake(uint256 _amountUSDC)
-        external
-        maxStakeAmount(_amountUSDC, maxUSDCAmountWhitelist)
-        onlyWhitelisted
-    {
-        require(block.timestamp >= startTime, "Whitelist period hasnt started");
-        require(block.timestamp < startTime + whitelistTime, "Whitelist staking period ended");
+    function whitelistStake(
+        uint256 _amountUSDC
+    ) external maxStakeAmount(_amountUSDC, maxUSDCAmountWhitelist) onlyWhitelisted {
+        require(block.timestamp >= startTime, 'Whitelist period hasnt started');
+        require(block.timestamp < startTime + whitelistTime, 'Whitelist staking period ended');
         require(
             poolUSDC + _amountUSDC <= maxPoolUSDC && poolBRBC + (_amountUSDC * 4) <= maxPoolBRBC,
-            "Max pool size exceeded"
+            'Max pool size exceeded'
         );
-        require(_amountUSDC >= minUSDCAmount, "Less than minimum stake amount");
+        require(_amountUSDC >= minUSDCAmount, 'Less than minimum stake amount');
         /// Transfer USDC from user to the cross chain, BRBC to this contract, mints LP
         _mintLP(_amountUSDC, true);
     }
@@ -115,13 +113,13 @@ contract Staking is RubicLP {
     /// @dev Main function, which receives deposit, calls _mintLP LP function, freeze funds
     /// @param _amountUSDC the amount in of USDC
     function stake(uint256 _amountUSDC) external maxStakeAmount(_amountUSDC, maxUSDCAmount) {
-        require(block.timestamp >= startTime + whitelistTime, "Staking period hasnt started");
-        require(block.timestamp <= endTime, "Staking period has ended");
+        require(block.timestamp >= startTime + whitelistTime, 'Staking period hasnt started');
+        require(block.timestamp <= endTime, 'Staking period has ended');
         require(
             poolUSDC + _amountUSDC <= maxPoolUSDC && poolBRBC + (_amountUSDC * 4) <= maxPoolBRBC,
-            "Max pool size exceeded"
+            'Max pool size exceeded'
         );
-        require(_amountUSDC >= minUSDCAmount, "Less than minimum stake amount");
+        require(_amountUSDC >= minUSDCAmount, 'Less than minimum stake amount');
         /// Transfer USDC from user to the cross chain, BRBC to this contract, mints LP
         _mintLP(_amountUSDC, false);
     }
@@ -136,7 +134,7 @@ contract Staking is RubicLP {
     /// @dev OnlyManager function, adds rewards for users
     /// @param _amount the USDC amount of comission to the pool
     function addRewards(uint256 _amount) external onlyManager {
-        require(poolUSDC > 0, "Stakes not created");
+        require(poolUSDC > 0, 'Stakes not created');
         USDC.transferFrom(msg.sender, address(this), _amount);
         totalRewardsAddedToday = _amount;
         rewardGrowth = rewardGrowth + FullMath.mulDiv(_amount, 10 ** 29, poolUSDC);
@@ -146,12 +144,9 @@ contract Staking is RubicLP {
     /// @dev Withdraw reward USDC from the contract, checks if the reward is positive,
     /// @dev doesn't give permission to use null token
     /// @param _tokenId token id
-    function claimRewards(uint256 _tokenId)
-        public
-        ownerOfStake(_tokenId)
-        isInStake(_tokenId)
-        positiveRewards(_tokenId)
-    {
+    function claimRewards(
+        uint256 _tokenId
+    ) public ownerOfStake(_tokenId) isInStake(_tokenId) positiveRewards(_tokenId) {
         uint256 _rewardAmount = viewRewards(_tokenId);
         tokensLP[_tokenId].lastRewardGrowth = rewardGrowth;
         collectedRewardsForToken[_tokenId] += _rewardAmount;
@@ -193,9 +188,9 @@ contract Staking is RubicLP {
     /// @dev User withdraw his frozen USDC and BRBC after stake
     /// @param _tokenId the token id
     function withdraw(uint256 _tokenId) external ownerOfStake(_tokenId) {
-        require(tokensLP[_tokenId].isStaked == false, "Request withdraw first");
-        require(tokensLP[_tokenId].deadline < block.timestamp, "Request in process");
-        require(tokensLP[_tokenId].USDCAmount <= USDC.balanceOf(address(this)), "Funds hasnt arrived yet");
+        require(tokensLP[_tokenId].isStaked == false, 'Request withdraw first');
+        require(tokensLP[_tokenId].deadline < block.timestamp, 'Request in process');
+        require(tokensLP[_tokenId].USDCAmount <= USDC.balanceOf(address(this)), 'Funds hasnt arrived yet');
         uint256 _withdrawAmountUSDC = tokensLP[_tokenId].USDCAmount;
         uint256 _withdrawAmountBRBC = tokensLP[_tokenId].BRBCAmount;
         _burnLP(_tokenId);
@@ -205,12 +200,12 @@ contract Staking is RubicLP {
     }
 
     function sweepTokens(address token) external onlyManager {
-        require(token != BRBC_ADDRESS, "Rubic sweep is forbidden");
+        require(token != BRBC_ADDRESS, 'Rubic sweep is forbidden');
         IERC20(token).transfer(msg.sender, IERC20(token).balanceOf(address(this)));
     }
 
     function fundRequests() external onlyManager {
-        require(requestedAmount > 0, "No need to fund");
+        require(requestedAmount > 0, 'No need to fund');
         USDC.transferFrom(msg.sender, address(this), requestedAmount);
         requestedAmount = 0;
     }
@@ -228,9 +223,12 @@ contract Staking is RubicLP {
         if (tokensLP[_tokenId].isStaked == false) {
             return 0;
         } else {
-            return FullMath.mulDiv(
-                tokensLP[_tokenId].USDCAmount, rewardGrowth - tokensLP[_tokenId].lastRewardGrowth, 10 ** 29
-            );
+            return
+                FullMath.mulDiv(
+                    tokensLP[_tokenId].USDCAmount,
+                    rewardGrowth - tokensLP[_tokenId].lastRewardGrowth,
+                    10 ** 29
+                );
         }
     }
 
@@ -297,7 +295,9 @@ contract Staking is RubicLP {
     /// @dev parsed array with all data from token ids
     /// @param _tokenOwner the owner address
     /// returns parsed array with all data from token ids, collected and uncollected rewards
-    function infoAboutDepositsParsed(address _tokenOwner)
+    function infoAboutDepositsParsed(
+        address _tokenOwner
+    )
         external
         view
         returns (
@@ -342,11 +342,9 @@ contract Staking is RubicLP {
     /// @dev shows total information about users and pools USDC
     /// @param _tokenOwner the owner address
     /// returns total amount of users USDC, USDC in pool
-    function stakingProgressParsed(address _tokenOwner)
-        external
-        view
-        returns (uint256 yourTotalUSDC, uint256 totalUSDCInPoolWhitelist, uint256 totalUSDCInPool)
-    {
+    function stakingProgressParsed(
+        address _tokenOwner
+    ) external view returns (uint256 yourTotalUSDC, uint256 totalUSDCInPoolWhitelist, uint256 totalUSDCInPool) {
         uint256 _yourTotalUSDC = viewUSDCAmountOf(_tokenOwner);
         uint256 _totalUSDCInPoolWhitelist;
         uint256 _totalUSDCInPool;
@@ -357,11 +355,9 @@ contract Staking is RubicLP {
     /// @dev shows data about rewards
     /// @param _tokenOwner the owner address
     /// returns total of collected, uncollected rewards, apr
-    function stakingInfoParsed(address _tokenOwner)
-        external
-        view
-        returns (uint256 amountToCollectTotal, uint256 amountCollectedTotal, uint256 aprInfo)
-    {
+    function stakingInfoParsed(
+        address _tokenOwner
+    ) external view returns (uint256 amountToCollectTotal, uint256 amountCollectedTotal, uint256 aprInfo) {
         uint256 _amountToCollectTotal = viewRewardsTotal(_tokenOwner);
         uint256 _amountCollectedTotal = viewCollectedRewardsTotal(_tokenOwner);
         uint256 _apr = apr();
@@ -379,8 +375,9 @@ contract Staking is RubicLP {
     /// @param _tokenId the token id
     function viewApprovedWithdrawToken(uint256 _tokenId) public view returns (bool readyForWithdraw) {
         if (
-            tokensLP[_tokenId].isStaked == false && tokensLP[_tokenId].deadline < block.timestamp
-                && tokensLP[_tokenId].USDCAmount <= USDC.balanceOf(address(this))
+            tokensLP[_tokenId].isStaked == false &&
+            tokensLP[_tokenId].deadline < block.timestamp &&
+            tokensLP[_tokenId].USDCAmount <= USDC.balanceOf(address(this))
         ) {
             return true;
         }

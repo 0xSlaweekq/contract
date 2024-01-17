@@ -1,5 +1,5 @@
-// // SPDX-License-Identifier: NONE
-// pragma solidity ^0.8.17;
+// SPDX-License-Identifier: NONE
+pragma solidity ^0.8.17;
 // import '@openzeppelin/contracts/access/Ownable.sol';
 // import '@openzeppelin/contracts/token/ERC20/ERC20.sol';
 // import '@uniswap/v2-core/contracts/interfaces/IUniswapV2Pair.sol';

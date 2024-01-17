@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.11;
 
-import '../../libs/safemoon/AddressUpgradeable.sol';
-import '../../libs/safemoon/SafeMathUpgradeable.sol';
+import "../../libs/safemoon/AddressUpgradeable.sol";
+import "../../libs/safemoon/SafeMathUpgradeable.sol";
 
 abstract contract Initializable {
     /**

@@ -1,4 +1,3 @@
-import path from 'path';
 import 'hardhat-deploy';
 import 'hardhat-abi-exporter';
 import 'hardhat-gas-reporter';
@@ -10,12 +9,13 @@ import '@typechain/hardhat';
 import 'solidity-coverage';
 import 'hardhat-contract-sizer';
 
-import { SolcUserConfig } from 'hardhat/types';
 import { HardhatUserConfig } from 'hardhat/config';
+import { SolcUserConfig } from 'hardhat/types';
+import path from 'path';
 
-import networks from './config/networks';
-import customChains from './config/customChains';
 import apiKeys from './config/apiKeys';
+import customChains from './config/customChains';
+import networks from './config/networks';
 
 const envConfig = require('dotenv').config({ path: path.resolve(__dirname, '.env') });
 const { REPORT_GAS, TOKEN, GAS_PRICE_API, COINMARKETCAP_API_KEY } = envConfig.parsed || {};

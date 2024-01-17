@@ -14,7 +14,7 @@ abstract contract Auth {
      * Function modifier to require caller to be contract owner
      */
     modifier onlyOwner() {
-        require(isOwner(msg.sender), '!OWNER');
+        require(isOwner(msg.sender), "!OWNER");
         _;
     }
 
@@ -22,7 +22,7 @@ abstract contract Auth {
      * Function modifier to require caller to be authorized
      */
     modifier authorized() {
-        require(isAuthorized(msg.sender), '!AUTHORIZED');
+        require(isAuthorized(msg.sender), "!AUTHORIZED");
         _;
     }
 

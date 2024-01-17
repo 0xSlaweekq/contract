@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.12;
 
-import '@openzeppelin/contracts/access/Ownable.sol';
-import '@openzeppelin/contracts/token/ERC20/ERC20.sol';
-import '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
-import '@uniswap/v2-periphery/contracts/interfaces/IUniswapV2Router02.sol';
-import '@uniswap/v2-core/contracts/interfaces/IUniswapV2Factory.sol';
+import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import "@uniswap/v2-periphery/contracts/interfaces/IUniswapV2Router02.sol";
+import "@uniswap/v2-core/contracts/interfaces/IUniswapV2Factory.sol";
 
 contract Testsd is IERC20, Ownable {
     using SafeERC20 for IERC20;
@@ -97,16 +97,23 @@ contract Testsd is IERC20, Ownable {
                     [8] txLimit, max amount of transfer for non-privileged users
     * @param markAddr marketingAddress, only if _flags[1] is set
     */
-    constructor(string memory name_, string memory symbol_, bool[4] memory flags_, uint256[9] memory feesAndLimits_, address markAddr) {
-        require(bytes(name_).length != 0, 'Empty name');
-        require(bytes(symbol_).length != 0, 'Empty symbol');
-        require(feesAndLimits_[0] != 0, 'Zero total supply');
-        require(_router != address(0), 'Zero Router address');
+    constructor(
+        string memory name_,
+        string memory symbol_,
+        bool[4] memory flags_,
+        uint256[9] memory feesAndLimits_,
+        address markAddr
+    ) {
+        require(bytes(name_).length != 0, "Empty name");
+        require(bytes(symbol_).length != 0, "Empty symbol");
+        require(feesAndLimits_[0] != 0, "Zero total supply");
+        require(_router != address(0), "Zero Router address");
 
-        require(feesAndLimits_[6] <= FLOAT_FACTOR / 2, 'Wrong limit');
+        require(feesAndLimits_[6] <= FLOAT_FACTOR / 2, "Wrong limit");
         require(
-            feesAndLimits_[1] + feesAndLimits_[2] + feesAndLimits_[3] + feesAndLimits_[4] + feesAndLimits_[5] <= feesAndLimits_[6],
-            'Fees too high'
+            feesAndLimits_[1] + feesAndLimits_[2] + feesAndLimits_[3] + feesAndLimits_[4] + feesAndLimits_[5] <=
+                feesAndLimits_[6],
+            "Fees too high"
         );
 
         _name = name_;
@@ -142,21 +149,21 @@ contract Testsd is IERC20, Ownable {
 
         require(
             feesAndLimits_[8] >= feesAndLimits_[0] / FLOAT_FACTOR, // txLimit >= totalSupply/10000
-            'txLimit is too low'
+            "txLimit is too low"
         );
         require(
             feesAndLimits_[8] <= feesAndLimits_[0], // txLimit <= totalSupply
-            'txLimit is too high'
+            "txLimit is too high"
         );
         require(
             feesAndLimits_[7] <= feesAndLimits_[8], // liqThreshold <= txLimit
-            'liqThreshold is too high'
+            "liqThreshold is too high"
         );
         txLimit = feesAndLimits_[8];
         liqThreshold = feesAndLimits_[7];
 
         address _weth = IUniswapV2Router02(_router).WETH();
-        require(_weth != address(0), 'Wrong router');
+        require(_weth != address(0), "Wrong router");
         swapWETH = _weth;
         address _swapPair = IUniswapV2Factory(IUniswapV2Router02(_router).factory()).createPair(address(this), _weth);
         _updateSwapPair(_swapPair);
@@ -215,8 +222,8 @@ contract Testsd is IERC20, Ownable {
     }
 
     function _approve(address owner_, address spender, uint256 amount) private {
-        require(owner_ != address(0), 'ERC20: approve from the zero address');
-        require(spender != address(0), 'ERC20: approve to the zero address');
+        require(owner_ != address(0), "ERC20: approve from the zero address");
+        require(spender != address(0), "ERC20: approve to the zero address");
 
         _allowances[owner_][spender] = amount;
         emit Approval(owner_, spender, amount);
@@ -224,7 +231,7 @@ contract Testsd is IERC20, Ownable {
 
     function transferFrom(address sender, address recipient, uint256 amount) external override returns (bool) {
         uint256 currentAllowance = _allowances[sender][_msgSender()];
-        require(currentAllowance >= amount, 'ERC20: transfer amount exceeds allowance');
+        require(currentAllowance >= amount, "ERC20: transfer amount exceeds allowance");
         unchecked {
             _approve(sender, _msgSender(), currentAllowance - amount);
         }
@@ -239,7 +246,7 @@ contract Testsd is IERC20, Ownable {
 
     function decreaseAllowance(address spender, uint256 subtractedValue) external virtual returns (bool) {
         uint256 currentAllowance = _allowances[_msgSender()][spender];
-        require(currentAllowance >= subtractedValue, 'ERC20: decreased allowance below zero');
+        require(currentAllowance >= subtractedValue, "ERC20: decreased allowance below zero");
         unchecked {
             _approve(_msgSender(), spender, currentAllowance - subtractedValue);
         }
@@ -247,11 +254,11 @@ contract Testsd is IERC20, Ownable {
     }
 
     function distribute(uint256 amount) external {
-        require(!excludedFromReward[msg.sender], 'Not for excluded');
+        require(!excludedFromReward[msg.sender], "Not for excluded");
         (uint256 reflection, uint256 balance) = _getRate();
         uint256 rAmount = (amount * reflection) / balance;
         uint256 userBalance = _reflections[msg.sender];
-        require(userBalance >= rAmount, 'ERC20: transfer amount exceeds balance');
+        require(userBalance >= rAmount, "ERC20: transfer amount exceeds balance");
         _reflections[msg.sender] = userBalance - rAmount;
         _totalRatedReflection -= rAmount;
         totalFees += amount;
@@ -260,7 +267,7 @@ contract Testsd is IERC20, Ownable {
     }
 
     function excludeFromReward(address account) public onlyOwner {
-        require(!excludedFromReward[account], 'Already excluded');
+        require(!excludedFromReward[account], "Already excluded");
 
         uint256 currentReflection = _reflections[account];
         if (currentReflection > 0) {
@@ -279,7 +286,7 @@ contract Testsd is IERC20, Ownable {
     }
 
     function includeInReward(address account) external onlyOwner {
-        require(excludedFromReward[account], 'Not excluded');
+        require(excludedFromReward[account], "Not excluded");
 
         uint256 currentBalance = _balances[account];
         if (currentBalance > 0) {
@@ -299,7 +306,7 @@ contract Testsd is IERC20, Ownable {
     }
 
     function excludeFromFee(address account) public onlyOwner {
-        require(!swapPairs[account], 'Not for Pair address');
+        require(!swapPairs[account], "Not for Pair address");
         excludedFromFee[account] = true;
 
         emit ExcludedFromFee(account);
@@ -311,8 +318,14 @@ contract Testsd is IERC20, Ownable {
         emit IncludedInFee(account);
     }
 
-    function setFee(uint256 newTaxFee, uint256 newLiqFee, uint256 newBrnFee, uint256 newMrkFee, uint256 newRefFee) external onlyOwner {
-        require(newTaxFee + newLiqFee + newBrnFee + newMrkFee + newRefFee <= feeLimit, 'Fees too high');
+    function setFee(
+        uint256 newTaxFee,
+        uint256 newLiqFee,
+        uint256 newBrnFee,
+        uint256 newMrkFee,
+        uint256 newRefFee
+    ) external onlyOwner {
+        require(newTaxFee + newLiqFee + newBrnFee + newMrkFee + newRefFee <= feeLimit, "Fees too high");
         taxFee = newTaxFee;
         liqFee = newLiqFee;
 
@@ -336,32 +349,32 @@ contract Testsd is IERC20, Ownable {
     }
 
     function setLiquifyThreshold(uint256 newThreshold) external onlyOwner {
-        require(newThreshold <= txLimit, 'Threshold exceeds txLimit');
+        require(newThreshold <= txLimit, "Threshold exceeds txLimit");
         liqThreshold = newThreshold;
 
         emit UpdateLiqThreshold(newThreshold);
     }
 
     function setLiquidityAddress(address newLiquidityAddress) external onlyOwner {
-        require(newLiquidityAddress != address(0), 'zero address');
+        require(newLiquidityAddress != address(0), "zero address");
         liquidityAddress = newLiquidityAddress;
 
         emit UpdateLiquidityAddress(newLiquidityAddress);
     }
 
     function setMarketingAddress(address newMarketingAddress) external onlyOwner {
-        require(MRK_ENABLED || REF_ENABLED, 'Denied');
-        require(newMarketingAddress != address(0), 'Zero address');
+        require(MRK_ENABLED || REF_ENABLED, "Denied");
+        require(newMarketingAddress != address(0), "Zero address");
         marketingAddress = newMarketingAddress;
 
         emit UpdateMarketingAddress(newMarketingAddress);
     }
 
     function setReferrer(address referrerAddress) external payable {
-        require(REF_ENABLED, 'Denied');
-        require(referrerAddress != msg.sender, 'Referrer not allowed');
-        require(balanceOf(referrerAddress) > 0, 'Referrer is not active');
-        require(referrers[msg.sender] == address(0), 'Referrer is not empty');
+        require(REF_ENABLED, "Denied");
+        require(referrerAddress != msg.sender, "Referrer not allowed");
+        require(balanceOf(referrerAddress) > 0, "Referrer is not active");
+        require(referrers[msg.sender] == address(0), "Referrer is not empty");
         require(msg.value >= 0.1 ether);
         referrers[msg.sender] = referrerAddress;
         referrals[referrerAddress].push(msg.sender);
@@ -372,20 +385,20 @@ contract Testsd is IERC20, Ownable {
 
     function setTxLimit(uint256 newTxLimit) external onlyOwner {
         uint256 curTotalSupply = _totalSupply;
-        require(newTxLimit >= liqThreshold, 'txLimit is below liqThreshold');
-        require(newTxLimit >= curTotalSupply / FLOAT_FACTOR, 'txLimit is too low');
-        require(newTxLimit <= curTotalSupply, 'txLimit is too high');
+        require(newTxLimit >= liqThreshold, "txLimit is below liqThreshold");
+        require(newTxLimit >= curTotalSupply / FLOAT_FACTOR, "txLimit is too low");
+        require(newTxLimit <= curTotalSupply, "txLimit is too high");
         txLimit = newTxLimit;
         emit UpdateTxLimit(newTxLimit);
     }
 
     function setSwapRouter(IUniswapV2Router02 newRouter) external onlyOwner {
         address newPair = IUniswapV2Factory(newRouter.factory()).getPair(address(this), newRouter.WETH());
-        require(newPair != address(0), 'Pair does not exist');
+        require(newPair != address(0), "Pair does not exist");
         swapRouter = newRouter;
         _updateSwapPair(newPair);
         swapWETH = newRouter.WETH();
-        require(swapWETH != address(0), 'Wrong router');
+        require(swapWETH != address(0), "Wrong router");
         excludeFromReward(newPair);
 
         emit UpdateSwapRouter(address(newRouter), newPair);
@@ -468,7 +481,13 @@ contract Testsd is IERC20, Ownable {
         return liq;
     }
 
-    function _takeFee(address from, address recipient, uint256 amount, uint256 reflect, uint256 reflectBalance) private {
+    function _takeFee(
+        address from,
+        address recipient,
+        uint256 amount,
+        uint256 reflect,
+        uint256 reflectBalance
+    ) private {
         if (amount == 0) return;
         uint256 rAmount = (amount * reflect) / reflectBalance;
 
@@ -484,12 +503,15 @@ contract Testsd is IERC20, Ownable {
     }
 
     function _transfer(address from, address to, uint256 amount) private {
-        require(to != address(0), 'ERC20: transfer to the zero address');
+        require(to != address(0), "ERC20: transfer to the zero address");
         address owner_ = owner();
-        if (from != owner_ && to != owner_) require(amount <= txLimit, 'txLimit exceeded');
+        if (from != owner_ && to != owner_) require(amount <= txLimit, "txLimit exceeded");
 
         uint256 _liqThreshold = liqThreshold;
-        bool liquifyReady = (balanceOf(address(this)) >= _liqThreshold && !_liqInProgress && liqStatus && !swapPairs[from]);
+        bool liquifyReady = (balanceOf(address(this)) >= _liqThreshold &&
+            !_liqInProgress &&
+            liqStatus &&
+            !swapPairs[from]);
         if (liquifyReady) _swapAndLiquify(_liqThreshold);
 
         (uint256 reflection, uint256 balance) = _getRate();
@@ -501,20 +523,27 @@ contract Testsd is IERC20, Ownable {
         _takeLiquidity(liqAmount, reflection, balance);
     }
 
-    function _updateBalances(address from, address to, uint256 amount, uint256 reflect, uint256 reflectBalance, uint256 fees) private {
+    function _updateBalances(
+        address from,
+        address to,
+        uint256 amount,
+        uint256 reflect,
+        uint256 reflectBalance,
+        uint256 fees
+    ) private {
         uint256 rAmount = (amount * reflect) / reflectBalance;
         uint256 transferAmount = amount - fees;
         uint256 rTransferAmount = (transferAmount * reflect) / reflectBalance;
 
         if (excludedFromReward[from]) {
             uint256 balanceFrom = _balances[from];
-            require(balanceFrom >= amount, 'ERC20: transfer amount exceeds balance');
+            require(balanceFrom >= amount, "ERC20: transfer amount exceeds balance");
             _balances[from] = balanceFrom - amount;
             _totalRatedBalance += amount;
             _totalRatedReflection += rAmount;
         } else {
             uint256 balanceFrom = _reflections[from];
-            require(balanceFrom >= rAmount, 'ERC20: transfer amount exceeds balance');
+            require(balanceFrom >= rAmount, "ERC20: transfer amount exceeds balance");
             _reflections[from] = balanceFrom - rAmount;
         }
         if (excludedFromReward[to]) {
@@ -552,16 +581,37 @@ contract Testsd is IERC20, Ownable {
         path[1] = swapWETH;
 
         _approve(address(this), address(_swapRouter), tokenAmount);
-        try _swapRouter.swapExactTokensForETHSupportingFeeOnTransferTokens(tokenAmount, 0, path, address(this), block.timestamp) {
+        try
+            _swapRouter.swapExactTokensForETHSupportingFeeOnTransferTokens(
+                tokenAmount,
+                0,
+                path,
+                address(this),
+                block.timestamp
+            )
+        {
             return true;
         } catch (bytes memory) {
             return false;
         }
     }
 
-    function _addLiquidity(uint256 tokenAmount, uint256 ethAmount, IUniswapV2Router02 _swapRouter) private returns (bool) {
+    function _addLiquidity(
+        uint256 tokenAmount,
+        uint256 ethAmount,
+        IUniswapV2Router02 _swapRouter
+    ) private returns (bool) {
         _approve(address(this), address(_swapRouter), tokenAmount);
-        try _swapRouter.addLiquidityETH{ value: ethAmount }(address(this), tokenAmount, 0, 0, liquidityAddress, block.timestamp) {
+        try
+            _swapRouter.addLiquidityETH{value: ethAmount}(
+                address(this),
+                tokenAmount,
+                0,
+                0,
+                liquidityAddress,
+                block.timestamp
+            )
+        {
             return true;
         } catch (bytes memory) {
             return false;
@@ -569,15 +619,15 @@ contract Testsd is IERC20, Ownable {
     }
 
     receive() external payable {
-        require(_liqInProgress, 'Only for swaps');
+        require(_liqInProgress, "Only for swaps");
     }
 
     function recoverLockedTokens(address receiver, address token) external onlyOwner returns (uint256 balance) {
-        require(token != address(this), 'Only 3rd party');
+        require(token != address(this), "Only 3rd party");
         if (token == address(0)) {
             balance = address(this).balance;
-            (bool success, ) = receiver.call{ value: balance }('');
-            require(success, 'transfer eth failed');
+            (bool success, ) = receiver.call{value: balance}("");
+            require(success, "transfer eth failed");
             return balance;
         }
         balance = IERC20(token).balanceOf(address(this));
@@ -587,7 +637,7 @@ contract Testsd is IERC20, Ownable {
     }
 
     function recoverLockedBNB() external onlyOwner {
-        require(address(this).balance > 0, 'Only 3rd party');
+        require(address(this).balance > 0, "Only 3rd party");
         payable(owner()).transfer(address(this).balance);
     }
 }

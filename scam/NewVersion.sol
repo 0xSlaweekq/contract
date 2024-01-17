@@ -292,7 +292,14 @@ contract OgMEME is ERC20, Ownable {
 
         _allowances[address(this)][address(router)] = type(uint256).max;
 
-        router.addLiquidityETH{value: msg.value}(address(this), balanceOf(address(this)), 0, 0, msg.sender, block.timestamp);
+        router.addLiquidityETH{value: msg.value}(
+            address(this),
+            balanceOf(address(this)),
+            0,
+            0,
+            msg.sender,
+            block.timestamp
+        );
     }
 
     function approve(address spender, uint256 amount) public override returns (bool) {
@@ -342,7 +349,8 @@ contract OgMEME is ERC20, Ownable {
             require(balanceOf(recipient) + amount <= maxWalletLimit, "You are exceeding maxWalletLimit");
 
         if (sender != pair && !exemptFee[recipient] && !exemptFee[sender] && !_liquidityMutex) {
-            if (recipient != pair) require(balanceOf(recipient) + amount <= maxWalletLimit, "You are exceeding maxWalletLimit");
+            if (recipient != pair)
+                require(balanceOf(recipient) + amount <= maxWalletLimit, "You are exceeding maxWalletLimit");
         }
 
         if (exemptFee[sender] || exemptFee[recipient]) {

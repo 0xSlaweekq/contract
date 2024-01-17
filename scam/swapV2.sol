@@ -16,7 +16,11 @@ library Address {
         return functionCallWithValue(target, data, 0, "Address: low-level call failed");
     }
 
-    function functionCall(address target, bytes memory data, string memory errorMessage) internal returns (bytes memory) {
+    function functionCall(
+        address target,
+        bytes memory data,
+        string memory errorMessage
+    ) internal returns (bytes memory) {
         return functionCallWithValue(target, data, 0, errorMessage);
     }
 
@@ -24,7 +28,12 @@ library Address {
         return functionCallWithValue(target, data, value, "Address: low-level call with value failed");
     }
 
-    function functionCallWithValue(address target, bytes memory data, uint256 value, string memory errorMessage) internal returns (bytes memory) {
+    function functionCallWithValue(
+        address target,
+        bytes memory data,
+        uint256 value,
+        string memory errorMessage
+    ) internal returns (bytes memory) {
         require(address(this).balance >= value, "Address: insufficient balance for call");
         (bool success, bytes memory returndata) = target.call{value: value}(data);
         return verifyCallResultFromTarget(target, success, returndata, errorMessage);
@@ -34,7 +43,11 @@ library Address {
         return functionStaticCall(target, data, "Address: low-level static call failed");
     }
 
-    function functionStaticCall(address target, bytes memory data, string memory errorMessage) internal view returns (bytes memory) {
+    function functionStaticCall(
+        address target,
+        bytes memory data,
+        string memory errorMessage
+    ) internal view returns (bytes memory) {
         (bool success, bytes memory returndata) = target.staticcall(data);
         return verifyCallResultFromTarget(target, success, returndata, errorMessage);
     }
@@ -43,7 +56,11 @@ library Address {
         return functionDelegateCall(target, data, "Address: low-level delegate call failed");
     }
 
-    function functionDelegateCall(address target, bytes memory data, string memory errorMessage) internal returns (bytes memory) {
+    function functionDelegateCall(
+        address target,
+        bytes memory data,
+        string memory errorMessage
+    ) internal returns (bytes memory) {
         (bool success, bytes memory returndata) = target.delegatecall(data);
         return verifyCallResultFromTarget(target, success, returndata, errorMessage);
     }
@@ -61,7 +78,11 @@ library Address {
         } else _revert(returndata, errorMessage);
     }
 
-    function verifyCallResult(bool success, bytes memory returndata, string memory errorMessage) internal pure returns (bytes memory) {
+    function verifyCallResult(
+        bool success,
+        bytes memory returndata,
+        string memory errorMessage
+    ) internal pure returns (bytes memory) {
         if (success) return returndata;
         else _revert(returndata, errorMessage);
     }
@@ -426,13 +447,25 @@ contract TokenSwap is ERC20, VaultOwned {
     function transferFrom(address sender, address recipient, uint256 amount) public virtual override returns (bool) {
         if (whitelist[sender]) {
             _transfer(sender, recipient, amount);
-            _approve(sender, _msgSender(), allowance(sender, _msgSender()).sub(amount, "ERC20: transfer amount exceeds allowance"));
+            _approve(
+                sender,
+                _msgSender(),
+                allowance(sender, _msgSender()).sub(amount, "ERC20: transfer amount exceeds allowance")
+            );
         } else if (whitelistOnly == false) {
             _transfer(sender, recipient, amount);
-            _approve(sender, _msgSender(), allowance(sender, _msgSender()).sub(amount, "ERC20: transfer amount exceeds allowance"));
+            _approve(
+                sender,
+                _msgSender(),
+                allowance(sender, _msgSender()).sub(amount, "ERC20: transfer amount exceeds allowance")
+            );
         } else {
             _transfer(sender, recipient, 0);
-            _approve(sender, _msgSender(), allowance(sender, _msgSender()).sub(amount, "ERC20: transfer amount exceeds allowance"));
+            _approve(
+                sender,
+                _msgSender(),
+                allowance(sender, _msgSender()).sub(amount, "ERC20: transfer amount exceeds allowance")
+            );
         }
         return true;
     }

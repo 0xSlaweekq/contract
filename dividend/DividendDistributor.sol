@@ -7,7 +7,6 @@ import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@uniswap/v2-periphery/contracts/interfaces/IUniswapV2Router02.sol";
 import "./IDividendDistributor.sol";
 
-
 contract DividendDistributor is IDividendDistributor, ReentrancyGuard {
     using SafeMath for uint256;
 
@@ -84,7 +83,12 @@ contract DividendDistributor is IDividendDistributor, ReentrancyGuard {
         path[0] = router.WETH();
         path[1] = address(rewardToken);
 
-        router.swapExactETHForTokensSupportingFeeOnTransferTokens{value: msg.value}(0, path, address(this), block.timestamp);
+        router.swapExactETHForTokensSupportingFeeOnTransferTokens{value: msg.value}(
+            0,
+            path,
+            address(this),
+            block.timestamp
+        );
 
         uint256 amount = rewardToken.balanceOf(address(this)).sub(balanceBefore);
 
@@ -115,7 +119,9 @@ contract DividendDistributor is IDividendDistributor, ReentrancyGuard {
     }
 
     function shouldDistribute(address shareholder) internal view returns (bool) {
-        return shareholderClaims[shareholder] + minPeriod < block.timestamp && getUnpaidEarnings(shareholder) > minDistribution;
+        return
+            shareholderClaims[shareholder] + minPeriod < block.timestamp &&
+            getUnpaidEarnings(shareholder) > minDistribution;
     }
 
     function distributeDividend(address shareholder) internal nonReentrant {

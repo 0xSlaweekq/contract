@@ -1,5 +1,5 @@
-// // SPDX-License-Identifier: MIT
-// pragma solidity ^0.8.11;
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.11;
 
 // import '@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol';
 // import '@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol';
@@ -409,7 +409,6 @@
 //     _tokenApprovals[tokenId] = to;
 //     emit Approval(ownerOf(tokenId), to, tokenId);
 //   }
-
 
 //   function _setApprovalWeed(address owner, address operator, bool approved) internal virtual {
 //     require(owner != operator, 'ERC721: approve to caller');

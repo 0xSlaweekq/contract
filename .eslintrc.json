@@ -35,14 +35,15 @@
     "@typescript-eslint/no-empty-function": "off",
     "@typescript-eslint/no-explicit-any": "off",
     "@typescript-eslint/no-inferrable-types": "off",
-    "@typescript-eslint/no-magic-numbers": [
-      "warn",
-      {
-        "detectObjects": true,
-        "ignore": [-1, 0, 1, 2, 10, 100, 1000, 16, 64, 256],
-        "ignoreReadonlyClassProperties": true
-      }
-    ],
+    "@typescript-eslint/no-magic-numbers": "off",
+    // "@typescript-eslint/no-magic-numbers": [
+    //   "warn",
+    //   {
+    //     "detectObjects": true,
+    //     "ignore": [-1, 0, 1, 2, 10, 100, 1000, 16, 64, 256],
+    //     "ignoreReadonlyClassProperties": true
+    //   }
+    // ],
     "@typescript-eslint/no-unused-vars": "off",
     "@typescript-eslint/no-use-before-define": "off",
     "@typescript-eslint/no-useless-constructor": "off",
@@ -67,13 +68,13 @@
     "linebreak-style": ["error", "unix"],
     // Temporary rules. Remove as fast as it can be.
     "max-classes-per-file": "off",
-    "no-console": [
-      "warn",
-      {
-        "allow": ["debug", "error", "info"]
-      }
-    ],
-    // "no-console": "off",
+    // "no-console": [
+    //   "warn",
+    //   {
+    //     "allow": ["debug", "error", "info"]
+    //   }
+    // ],
+    "no-console": "off",
     "no-empty": [
       "error",
       {
@@ -112,6 +113,7 @@
     "quotes": "off",
     // "quotes": ["error", "single"],
     "radix": ["warn", "as-needed"],
+    "react/jsx-filename-extension": "off",
     "semi": ["error", "always"],
     "simple-import-sort/exports": "error",
     "simple-import-sort/imports": "error",

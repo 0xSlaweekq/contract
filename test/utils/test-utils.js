@@ -5,24 +5,41 @@ const { assert } = chai;
 
 const verifyBalance = async ({ token, address, expectedBalance }) => {
   const balance = await token.balanceOf(address);
-  assert.equal(balance.toString(), expectedBalance.toString(), `token balance incorrect for ${token.address} with ${address}`);
+  assert.equal(
+    balance.toString(),
+    expectedBalance.toString(),
+    `token balance incorrect for ${token.address} with ${address}`
+  );
 };
 
 const verifyInternalBalance = async ({ moloch, token, user, expectedBalance }) => {
   const balance = await moloch.userTokenBalances.call(user, token.address);
-  assert.equal(balance.toString(), expectedBalance.toString(), `internal token balance incorrect for user ${user} and token ${token.address}`);
+  assert.equal(
+    balance.toString(),
+    expectedBalance.toString(),
+    `internal token balance incorrect for user ${user} and token ${token.address}`
+  );
 };
 
 const verifyInternalBalances = async ({ moloch, token, userBalances }) => {
   const users = Object.keys(userBalances);
   for (i = 0; i < users.length; i++) {
-    await verifyInternalBalance({ moloch, token, user: users[i], expectedBalance: userBalances[users[i]] });
+    await verifyInternalBalance({
+      moloch,
+      token,
+      user: users[i],
+      expectedBalance: userBalances[users[i]]
+    });
   }
 };
 
 const verifyAllowance = async ({ token, owner, spender, expectedAllowance }) => {
   const allowance = await token.allowance(owner, spender);
-  assert.equal(+allowance, expectedAllowance, `allowance incorrect for ${token.address} owner ${owner} spender ${spender}`);
+  assert.equal(
+    +allowance,
+    expectedAllowance,
+    `allowance incorrect for ${token.address} owner ${owner} spender ${spender}`
+  );
 };
 
 const verifyProposal = async ({
@@ -47,19 +64,39 @@ const verifyProposal = async ({
   assert.equal(proposalData.proposer, proposer, 'proposers does not match');
   assert.equal(proposalData.sponsor, sponsor, 'sponsor does not match');
 
-  assert.equal(proposalData.sharesRequested, proposal.sharesRequested, 'sharesRequested does not match');
+  assert.equal(
+    proposalData.sharesRequested,
+    proposal.sharesRequested,
+    'sharesRequested does not match'
+  );
 
-  assert.equal(proposalData.tributeOffered.toString(), proposal.tributeOffered.toString(), 'tributeOffered does not match');
+  assert.equal(
+    proposalData.tributeOffered.toString(),
+    proposal.tributeOffered.toString(),
+    'tributeOffered does not match'
+  );
   assert.equal(proposalData.tributeToken, proposal.tributeToken, 'tributeToken does not match');
 
-  assert.equal(proposalData.paymentRequested, proposal.paymentRequested, 'paymentRequested does not match');
+  assert.equal(
+    proposalData.paymentRequested,
+    proposal.paymentRequested,
+    'paymentRequested does not match'
+  );
   assert.equal(proposalData.paymentToken, proposal.paymentToken, 'paymentToken does not match');
 
-  assert.equal(+proposalData.startingPeriod, expectedStartingPeriod, 'startingPeriod does not match');
+  assert.equal(
+    +proposalData.startingPeriod,
+    expectedStartingPeriod,
+    'startingPeriod does not match'
+  );
   assert.equal(proposalData.yesVotes, 0, 'yesVotes does not match');
   assert.equal(proposalData.noVotes, 0, 'noVotes does not match');
   assert.equal(proposalData.details, proposal.details, 'details does not match');
-  assert.equal(proposalData.maxTotalSharesAndLootAtYesVote, 0, 'maxTotalSharesAndLootAtYesVote invalid');
+  assert.equal(
+    proposalData.maxTotalSharesAndLootAtYesVote,
+    0,
+    'maxTotalSharesAndLootAtYesVote invalid'
+  );
 };
 
 const verifyFlags = async ({ moloch, proposalId, expectedFlags }) => {
@@ -83,7 +120,11 @@ const verifyBalances = async ({
 }) => {
   const molochBalance = await token.balanceOf(moloch);
 
-  assert.equal(molochBalance.toString(), expectedMolochBalance.toString(), `moloch token balance incorrect for ${token.address} with ${moloch}`);
+  assert.equal(
+    molochBalance.toString(),
+    expectedMolochBalance.toString(),
+    `moloch token balance incorrect for ${token.address} with ${moloch}`
+  );
 
   const applicantBalance = await token.balanceOf(applicant);
   assert.equal(
@@ -128,7 +169,11 @@ const verifyProcessProposal = async ({
 
   assert.equal(+proposalData.yesVotes, expectedYesVotes, 'proposal yes votes incorrect');
   assert.equal(+proposalData.noVotes, expectedNoVotes, 'proposal no votes incorrect');
-  assert.equal(+proposalData.maxTotalSharesAndLootAtYesVote, expectedMaxSharesAndLootAtYesVote, 'total shares at yes vote incorrect');
+  assert.equal(
+    +proposalData.maxTotalSharesAndLootAtYesVote,
+    expectedMaxSharesAndLootAtYesVote,
+    'total shares at yes vote incorrect'
+  );
 
   const totalShares = await moloch.totalShares();
   assert.equal(+totalShares, expectedTotalShares, 'total shares incorrect');
@@ -154,10 +199,20 @@ const verifyMember = async ({
   assert.equal(+memberData.loot, expectedLoot, 'expected loot incorrect');
   assert.equal(memberData.exists, expectedExists, 'exists incorrect');
   assert.equal(+memberData.jailed, expectedJailed, 'jailed incorrect');
-  assert.equal(+memberData.highestIndexYesVote, expectedHighestIndexYesVote, 'highest index yes vote incorrect');
+  assert.equal(
+    +memberData.highestIndexYesVote,
+    expectedHighestIndexYesVote,
+    'highest index yes vote incorrect'
+  );
 
-  const newMemberAddressByDelegateKey = await moloch.memberAddressByDelegateKey(expectedDelegateKey);
-  assert.equal(newMemberAddressByDelegateKey, expectedMemberAddressByDelegateKey, 'member address by delegate key incorrect');
+  const newMemberAddressByDelegateKey = await moloch.memberAddressByDelegateKey(
+    expectedDelegateKey
+  );
+  assert.equal(
+    newMemberAddressByDelegateKey,
+    expectedMemberAddressByDelegateKey,
+    'member address by delegate key incorrect'
+  );
 };
 
 Object.assign(exports, {

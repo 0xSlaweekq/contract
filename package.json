@@ -91,7 +91,7 @@
     "deploy:hardhat": "npx hardhat run scripts/deploy.ts --network hardhat ",
     "deploy:local": "npx hardhat run scripts/deploy.ts --network localhost ",
     "format": "npx prettier --write ./ && eslint --fix ./",
-    "lint": "npx solhint contracts/* contracts/**/* test/**/*.sol",
+    "lint": "npx solhint contracts/*.sol contracts/**/*.sol abstract/*.sol abstract/**/*.sol interfaces/*.sol interfaces/**/*.sol dividend/*.sol  dividend/**/*.sol libs/*.sol  libs/**/*.sol test/**/*.sol",
     "ln": "docker compose --file ./docker-compose.yaml up -d",
     "ln-stop": "docker compose --file ./docker-compose.yaml down -v && docker-compose --file ./docker-compose.yaml rm -v",
     "push": "git add ./ && git commit -m 'refactoring' -a && git push origin",

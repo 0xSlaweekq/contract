@@ -134,7 +134,10 @@
     {
       "id": 1313161554,
       "name": "aurora",
-      "routers": ["0x663dc15d3c1ac63ff12e45ab68fea3f0a883c251", "0x362fa9d0bca5d19f743db50738345ce2b40ec99f"]
+      "routers": [
+        "0x663dc15d3c1ac63ff12e45ab68fea3f0a883c251",
+        "0x362fa9d0bca5d19f743db50738345ce2b40ec99f"
+      ]
     },
     {
       "id": 40,

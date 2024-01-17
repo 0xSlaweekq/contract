@@ -1,10 +1,7 @@
 [
   {
     "mint": "0xB48D4c156F0b51934ef11bAED0B023b023d7f96F",
-    "percents": [
-      90,
-      10
-    ],
+    "percents": [90, 10],
     "stake": "0x2B4286bB96a13Da0df4b117E9753D5D3C0f26ad0",
     "token": "0x2f5f98B59C0E4c1243C58a15d8A76d7a7c8Bc4C5",
     "wallets": [

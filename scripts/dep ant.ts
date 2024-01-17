@@ -7,7 +7,13 @@ async function main() {
   // let Data = JSON.parse(fs.readFileSync(`./data.json`));
   //deploy token
   const Token = await ethers.getContractFactory('Test');
-  const token = await Token.deploy(Data[0].name, Data[0].symbol, Data[0].flags, Data[0].feesAndLimits, Data[0].markAddr);
+  const token = await Token.deploy(
+    Data[0].name,
+    Data[0].symbol,
+    Data[0].flags,
+    Data[0].feesAndLimits,
+    Data[0].markAddr
+  );
   await token.deployed();
   console.log('deployed to:', token.address);
 
@@ -15,7 +21,13 @@ async function main() {
   await new Promise(r => setTimeout(r, 3000));
   await run('verify:verify', {
     address: token.address,
-    constructorArguments: [Data[0].name, Data[0].symbol, Data[0].flags, Data[0].feesAndLimits, Data[0].markAddr]
+    constructorArguments: [
+      Data[0].name,
+      Data[0].symbol,
+      Data[0].flags,
+      Data[0].feesAndLimits,
+      Data[0].markAddr
+    ]
   });
   const newData = await Data.map(obj => {
     return {

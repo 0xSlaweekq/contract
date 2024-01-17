@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.9;
 
-import '@openzeppelin/contracts/utils/math/SafeMath.sol';
+import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 
 abstract contract MinerBasic {
     event Hire(address indexed adr, uint256 greens, uint256 amount);

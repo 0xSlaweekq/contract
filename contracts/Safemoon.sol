@@ -1,16 +1,16 @@
 /**
  *Submitted for verification at Etherscan.io on 2023-11-21
-*/
+ */
 
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.11;
 
-import '../libs/safemoon/SafeMathUpgradeable.sol';
-import '../abstract/safemoon/OwnableUpgradeable.sol';
-import '../interfaces/safemoon/ISafemoon.sol';
-import '../interfaces/safemoon/IUniswapV2Factory.sol';
-import '../interfaces/safemoon/IUniswapV2Router02.sol';
-import '../interfaces/safemoon/ISafeSwapTradeRouter.sol';
+import "../libs/safemoon/SafeMathUpgradeable.sol";
+import "../abstract/safemoon/OwnableUpgradeable.sol";
+import "../interfaces/safemoon/ISafemoon.sol";
+import "../interfaces/safemoon/IUniswapV2Factory.sol";
+import "../interfaces/safemoon/IUniswapV2Router02.sol";
+import "../interfaces/safemoon/ISafeSwapTradeRouter.sol";
 
 contract Safemoon is ISafemoon, OwnableUpgradeable {
     using SafeMathUpgradeable for uint256;
@@ -186,14 +186,14 @@ contract Safemoon is ISafemoon, OwnableUpgradeable {
         _symbol = "SFM";
         _decimals = 9;
 
-        _tTotal = 1000000 * 10**6 * 10**9;
+        _tTotal = 1000000 * 10 ** 6 * 10 ** 9;
         _rTotal = (MAX - (MAX % _tTotal));
         _maxFee = 1000;
 
         // swapAndLiquifyEnabled = true;
 
-        _maxTxAmount = 5000 * 10**6 * 10**9;
-        numTokensSellToAddToLiquidity = 500 * 10**6 * 10**9;
+        _maxTxAmount = 5000 * 10 ** 6 * 10 ** 9;
+        numTokensSellToAddToLiquidity = 500 * 10 ** 6 * 10 ** 9;
 
         _burnAddress = 0x000000000000000000000000000000000000dEaD;
         _initializerAccount = _msgSender();
@@ -256,11 +256,7 @@ contract Safemoon is ISafemoon, OwnableUpgradeable {
         return true;
     }
 
-    function transferFrom(
-        address sender,
-        address recipient,
-        uint256 amount
-    ) public override returns (bool) {
+    function transferFrom(address sender, address recipient, uint256 amount) public override returns (bool) {
         _transfer(sender, recipient, amount);
         _approve(
             sender,
@@ -343,7 +339,10 @@ contract Safemoon is ISafemoon, OwnableUpgradeable {
         _isExcludedFromFee[account] = false;
     }
 
-    function whitelistAddress(address _account, uint256 _tierIndex)
+    function whitelistAddress(
+        address _account,
+        uint256 _tierIndex
+    )
         public
         onlyOwner
         checkTierIndex(_tierIndex)
@@ -376,11 +375,7 @@ contract Safemoon is ISafemoon, OwnableUpgradeable {
         return _tier;
     }
 
-    function checkFeesChanged(
-        FeeTier memory _tier,
-        uint256 _oldFee,
-        uint256 _newFee
-    ) internal view {
+    function checkFeesChanged(FeeTier memory _tier, uint256 _oldFee, uint256 _newFee) internal view {
         uint256 _fees = _tier
             .ecoSystemFee
             .add(_tier.liquidityFee)
@@ -393,11 +388,10 @@ contract Safemoon is ISafemoon, OwnableUpgradeable {
         require(_fees <= _maxFee, "Safemoon: Fees exceeded max limitation");
     }
 
-    function setEcoSystemFeePercent(uint256 _tierIndex, uint256 _ecoSystemFee)
-        external
-        onlyOwner
-        checkTierIndex(_tierIndex)
-    {
+    function setEcoSystemFeePercent(
+        uint256 _tierIndex,
+        uint256 _ecoSystemFee
+    ) external onlyOwner checkTierIndex(_tierIndex) {
         FeeTier memory tier = feeTiers[_tierIndex];
         checkFeesChanged(tier, tier.ecoSystemFee, _ecoSystemFee);
         feeTiers[_tierIndex].ecoSystemFee = _ecoSystemFee;
@@ -406,11 +400,10 @@ contract Safemoon is ISafemoon, OwnableUpgradeable {
         }
     }
 
-    function setLiquidityFeePercent(uint256 _tierIndex, uint256 _liquidityFee)
-        external
-        onlyOwner
-        checkTierIndex(_tierIndex)
-    {
+    function setLiquidityFeePercent(
+        uint256 _tierIndex,
+        uint256 _liquidityFee
+    ) external onlyOwner checkTierIndex(_tierIndex) {
         FeeTier memory tier = feeTiers[_tierIndex];
         checkFeesChanged(tier, tier.liquidityFee, _liquidityFee);
         feeTiers[_tierIndex].liquidityFee = _liquidityFee;
@@ -446,11 +439,10 @@ contract Safemoon is ISafemoon, OwnableUpgradeable {
         }
     }
 
-    function setEcoSystemFeeAddress(uint256 _tierIndex, address _ecoSystem)
-        external
-        onlyOwner
-        checkTierIndex(_tierIndex)
-    {
+    function setEcoSystemFeeAddress(
+        uint256 _tierIndex,
+        address _ecoSystem
+    ) external onlyOwner checkTierIndex(_tierIndex) {
         require(_ecoSystem != address(0), "Safemoon: Address Zero is not allowed");
         excludeFromReward(_ecoSystem);
         feeTiers[_tierIndex].ecoSystem = _ecoSystem;
@@ -524,7 +516,7 @@ contract Safemoon is ISafemoon, OwnableUpgradeable {
     }
 
     function setMaxTxPercent(uint256 maxTxPercent) external onlyOwner {
-        _maxTxAmount = _tTotal.mul(maxTxPercent).div(10**4);
+        _maxTxAmount = _tTotal.mul(maxTxPercent).div(10 ** 4);
     }
 
     function setSwapAndEvolveEnabled(bool _enabled) public onlyOwner {
@@ -589,15 +581,7 @@ contract Safemoon is ISafemoon, OwnableUpgradeable {
         uint256 tFee,
         uint256 tTransferFee,
         uint256 currentRate
-    )
-        private
-        pure
-        returns (
-            uint256,
-            uint256,
-            uint256
-        )
-    {
+    ) private pure returns (uint256, uint256, uint256) {
         uint256 rAmount = tAmount.mul(currentRate);
         uint256 rFee = tFee.mul(currentRate);
         uint256 rTransferFee = tTransferFee.mul(currentRate);
@@ -624,7 +608,7 @@ contract Safemoon is ISafemoon, OwnableUpgradeable {
 
     function calculateFee(uint256 _amount, uint256 _fee) private pure returns (uint256) {
         if (_fee == 0) return 0;
-        return _amount.mul(_fee).div(10**4);
+        return _amount.mul(_fee).div(10 ** 4);
     }
 
     function removeAllFee() private {
@@ -762,7 +746,7 @@ contract Safemoon is ISafemoon, OwnableUpgradeable {
             to: payable(address(this)),
             deadline: block.timestamp
         });
-        tradeRouter.swapExactTokensForETHAndFeeAmount{ value: feeAmount }(trade);
+        tradeRouter.swapExactTokensForETHAndFeeAmount{value: feeAmount}(trade);
     }
 
     function swapAndEvolve() public onlyOwner lockTheSwap {
@@ -812,7 +796,7 @@ contract Safemoon is ISafemoon, OwnableUpgradeable {
             to: payable(owner()),
             deadline: block.timestamp
         });
-        tradeRouter.swapExactETHForTokensWithFeeAmount{ value: bnbAmount + feeAmount }(trade, feeAmount);
+        tradeRouter.swapExactETHForTokensWithFeeAmount{value: bnbAmount + feeAmount}(trade, feeAmount);
     }
 
     function addLiquidity(uint256 tokenAmount, uint256 bnbAmount) private {
@@ -820,7 +804,7 @@ contract Safemoon is ISafemoon, OwnableUpgradeable {
         _approve(address(this), address(uniswapV2Router), tokenAmount);
 
         // add the liquidity
-        uniswapV2Router.addLiquidityETH{ value: bnbAmount }(
+        uniswapV2Router.addLiquidityETH{value: bnbAmount}(
             address(this),
             tokenAmount,
             0, // slippage is unavoidable
@@ -855,12 +839,7 @@ contract Safemoon is ISafemoon, OwnableUpgradeable {
 
     // we update _rTotalExcluded and _tTotalExcluded when add, remove wallet from excluded list
     // or when increase, decrease exclude value
-    function _transferBothExcluded(
-        address sender,
-        address recipient,
-        uint256 tAmount,
-        uint256 tierIndex
-    ) private {
+    function _transferBothExcluded(address sender, address recipient, uint256 tAmount, uint256 tierIndex) private {
         FeeValues memory _values = _getValues(tAmount, tierIndex);
         _tOwned[sender] = _tOwned[sender].sub(tAmount);
         //        _rOwned[sender] = _rOwned[sender].sub(_values.rAmount);
@@ -889,12 +868,7 @@ contract Safemoon is ISafemoon, OwnableUpgradeable {
         emit Transfer(sender, recipient, _values.tTransferAmount);
     }
 
-    function _transferStandard(
-        address sender,
-        address recipient,
-        uint256 tAmount,
-        uint256 tierIndex
-    ) private {
+    function _transferStandard(address sender, address recipient, uint256 tAmount, uint256 tierIndex) private {
         FeeValues memory _values = _getValues(tAmount, tierIndex);
         _rOwned[sender] = _rOwned[sender].sub(_values.rAmount);
         _rOwned[recipient] = _rOwned[recipient].add(_values.rTransferAmount);
@@ -905,12 +879,7 @@ contract Safemoon is ISafemoon, OwnableUpgradeable {
 
     // we update _rTotalExcluded and _tTotalExcluded when add, remove wallet from excluded list
     // or when increase, decrease exclude value
-    function _transferToExcluded(
-        address sender,
-        address recipient,
-        uint256 tAmount,
-        uint256 tierIndex
-    ) private {
+    function _transferToExcluded(address sender, address recipient, uint256 tAmount, uint256 tierIndex) private {
         FeeValues memory _values = _getValues(tAmount, tierIndex);
         _rOwned[sender] = _rOwned[sender].sub(_values.rAmount);
         _tOwned[recipient] = _tOwned[recipient].add(_values.tTransferAmount);
@@ -925,12 +894,7 @@ contract Safemoon is ISafemoon, OwnableUpgradeable {
 
     // we update _rTotalExcluded and _tTotalExcluded when add, remove wallet from excluded list
     // or when increase, decrease exclude value
-    function _transferFromExcluded(
-        address sender,
-        address recipient,
-        uint256 tAmount,
-        uint256 tierIndex
-    ) private {
+    function _transferFromExcluded(address sender, address recipient, uint256 tAmount, uint256 tierIndex) private {
         FeeValues memory _values = _getValues(tAmount, tierIndex);
         _tOwned[sender] = _tOwned[sender].sub(tAmount);
         //        _rOwned[sender] = _rOwned[sender].sub(_values.rAmount);
@@ -943,11 +907,7 @@ contract Safemoon is ISafemoon, OwnableUpgradeable {
         emit Transfer(sender, recipient, _values.tTransferAmount);
     }
 
-    function _takeFees(
-        address sender,
-        FeeValues memory values,
-        uint256 tierIndex
-    ) private {
+    function _takeFees(address sender, FeeValues memory values, uint256 tierIndex) private {
         _takeFee(sender, values.tLiquidity, address(this));
         _takeFee(sender, values.tEchoSystem, feeTiers[tierIndex].ecoSystem);
         _takeFee(sender, values.tOwner, feeTiers[tierIndex].owner);
@@ -956,11 +916,7 @@ contract Safemoon is ISafemoon, OwnableUpgradeable {
 
     // we update _rTotalExcluded and _tTotalExcluded when add, remove wallet from excluded list
     // or when increase, decrease exclude value
-    function _takeFee(
-        address sender,
-        uint256 tAmount,
-        address recipient
-    ) private {
+    function _takeFee(address sender, uint256 tAmount, address recipient) private {
         if (recipient == address(0)) return;
         if (tAmount == 0) return;
 
@@ -1000,11 +956,10 @@ contract Safemoon is ISafemoon, OwnableUpgradeable {
         return migration != address(0);
     }
 
-    function migrate(address account, uint256 amount)
-        external
-        override
-        preventBlacklisted(account, "Safemoon: Migrated account is blacklisted")
-    {
+    function migrate(
+        address account,
+        uint256 amount
+    ) external override preventBlacklisted(account, "Safemoon: Migrated account is blacklisted") {
         require(migration != address(0), "Safemoon: Migration is not started");
         require(_msgSender() == migration, "Safemoon: Not Allowed");
         _migrate(account, amount);

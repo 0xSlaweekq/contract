@@ -49,7 +49,10 @@
       "name": "avalanche"
     },
     {
-      "dex": ["0x1b02da8cb0d097eb8d57a175b88c7d8b47997506", "0xb9239af0697c8efb42cba3568424b06753c6da71"],
+      "dex": [
+        "0x1b02da8cb0d097eb8d57a175b88c7d8b47997506",
+        "0xb9239af0697c8efb42cba3568424b06753c6da71"
+      ],
       "id": 40,
       "name": "telos"
     },
@@ -104,7 +107,10 @@
       "name": "okx"
     },
     {
-      "dex": ["0x2cb45edb4517d5947afde3beabf95a582506858b", "0xa3a1ef5ae6561572023363862e238afa84c72ef5"],
+      "dex": [
+        "0x2cb45edb4517d5947afde3beabf95a582506858b",
+        "0xa3a1ef5ae6561572023363862e238afa84c72ef5"
+      ],
       "id": 1313161554,
       "name": "aurora"
     },
@@ -129,7 +135,10 @@
       "name": "cronos"
     },
     {
-      "dex": ["0x8a340F39A468C2FcBFFf2122446a9A0745A313Ad", "0xEa3CB4Ba9d1fD6fb19Df1380958d5649bD3e7C50"],
+      "dex": [
+        "0x8a340F39A468C2FcBFFf2122446a9A0745A313Ad",
+        "0xEa3CB4Ba9d1fD6fb19Df1380958d5649bD3e7C50"
+      ],
       "id": 2222,
       "name": "kava"
     },

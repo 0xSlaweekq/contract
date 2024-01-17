@@ -45,15 +45,7 @@ interface ISafeSwapTradeRouter {
         address[] memory _path,
         uint256 _amountIn,
         address _address
-    )
-        external
-        view
-        returns (
-            uint256 totalBNBFee,
-            uint256 dexFee,
-            uint256 tokenAFee,
-            uint256 tokenBFee
-        );
+    ) external view returns (uint256 totalBNBFee, uint256 dexFee, uint256 tokenAFee, uint256 tokenBFee);
 
     function getSwapFees(uint256 amountIn, address[] memory path) external view returns (uint256 _fees);
 }

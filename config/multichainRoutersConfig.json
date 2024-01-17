@@ -80,7 +80,10 @@
       "name": "arbitrum"
     },
     {
-      "anyRouters": ["0x922d641a426dcffaef11680e5358f34d97d112e1", "0x2c78f1b70ccf63cdee49f9233e9faa99d43aa07e"],
+      "anyRouters": [
+        "0x922d641a426dcffaef11680e5358f34d97d112e1",
+        "0x2c78f1b70ccf63cdee49f9233e9faa99d43aa07e"
+      ],
       "id": 122,
       "name": "fuse"
     },
@@ -94,7 +97,10 @@
       "name": "moonriver"
     },
     {
-      "anyRouters": ["0xabd380327fe66724ffda91a87c772fb8d00be488", "0x64d5baf5ac030e2b7c435add967f787ae94d0205"],
+      "anyRouters": [
+        "0xabd380327fe66724ffda91a87c772fb8d00be488",
+        "0x64d5baf5ac030e2b7c435add967f787ae94d0205"
+      ],
       "id": 1284,
       "name": "moonbeam"
     },
@@ -108,7 +114,10 @@
       "name": "optimism"
     },
     {
-      "anyRouters": ["0xf390830df829cf22c53c8840554b98eafc5dcbc2", "0x86b3f23b6e90f5bbfac59b5b2661134ef8ffd255"],
+      "anyRouters": [
+        "0xf390830df829cf22c53c8840554b98eafc5dcbc2",
+        "0x86b3f23b6e90f5bbfac59b5b2661134ef8ffd255"
+      ],
       "id": 66,
       "name": "okx"
     },
@@ -155,7 +164,10 @@
       "name": "kava"
     },
     {
-      "anyRouters": ["0x639a647fbe20b6c8ac19e48e2de44ea792c62c5c", "0x65e66a61d0a8f1e686c2d6083ad611a10d84d97a"],
+      "anyRouters": [
+        "0x639a647fbe20b6c8ac19e48e2de44ea792c62c5c",
+        "0x65e66a61d0a8f1e686c2d6083ad611a10d84d97a"
+      ],
       "id": 32520,
       "name": "bitgert"
     },

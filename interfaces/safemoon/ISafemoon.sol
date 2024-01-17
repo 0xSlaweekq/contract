@@ -55,11 +55,7 @@ interface ISafemoon {
      *
      * Emits a {Transfer} event.
      */
-    function transferFrom(
-        address sender,
-        address recipient,
-        uint256 amount
-    ) external returns (bool);
+    function transferFrom(address sender, address recipient, uint256 amount) external returns (bool);
 
     /** @dev Creates `amount` tokens and assigns them to `account`, increasing
      * the total supply.

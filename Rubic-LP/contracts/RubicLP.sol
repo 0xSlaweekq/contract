@@ -2,10 +2,10 @@
 
 pragma solidity ^0.8.0;
 
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
-import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
-import "./SetParams.sol";
+import '@openzeppelin/contracts/token/ERC20/IERC20.sol';
+import '@openzeppelin/contracts/token/ERC721/ERC721.sol';
+import '@openzeppelin/contracts/utils/structs/EnumerableSet.sol';
+import './SetParams.sol';
 
 contract RubicLP is ERC721, SetParams {
     using EnumerableSet for EnumerableSet.UintSet;
@@ -14,7 +14,7 @@ contract RubicLP is ERC721, SetParams {
     IERC20 public immutable USDC;
     IERC20 public immutable BRBC;
 
-    constructor(address usdcAddress, address brbcAddress) ERC721("Rubic LP Token", "RLP") {
+    constructor(address usdcAddress, address brbcAddress) ERC721('Rubic LP Token', 'RLP') {
         USDC = IERC20(usdcAddress);
         BRBC = IERC20(brbcAddress);
     }
@@ -50,7 +50,7 @@ contract RubicLP is ERC721, SetParams {
     /// @dev Prevents using unstaked tokens
     /// @param _tokenId the id of a token
     modifier isInStake(uint256 _tokenId) {
-        require(tokensLP[_tokenId].isStaked, "Stake requested for withdraw");
+        require(tokensLP[_tokenId].isStaked, 'Stake requested for withdraw');
         _;
     }
 
@@ -102,31 +102,31 @@ contract RubicLP is ERC721, SetParams {
     // ERC721 override functions
 
     function approve(address, uint256) public virtual override {
-        revert("Approve forbidden");
+        revert('Approve forbidden');
     }
 
     function getApproved(uint256) public view virtual override returns (address operator) {
-        revert("Approve forbidden");
+        revert('Approve forbidden');
     }
 
     function setApprovalForAll(address, bool) public virtual override {
-        revert("Approve forbidden");
+        revert('Approve forbidden');
     }
 
     function isApprovedForAll(address, address) public view virtual override returns (bool flag) {
-        revert("Approve forbidden");
+        revert('Approve forbidden');
     }
 
     function transferFrom(address, address, uint256) public virtual override {
-        revert("transferFrom forbidden");
+        revert('transferFrom forbidden');
     }
 
     function safeTransferFrom(address, address, uint256) public virtual override {
-        revert("transferFrom forbidden");
+        revert('transferFrom forbidden');
     }
 
     function safeTransferFrom(address, address, uint256, bytes memory) public virtual override {
-        revert("transferFrom forbidden");
+        revert('transferFrom forbidden');
     }
 
     function supportsInterface(bytes4 interfaceId) public view virtual override(ERC721, AccessControl) returns (bool) {

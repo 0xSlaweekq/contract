@@ -1,5 +1,5 @@
-// //SPDX-License-Identifier: MIT
-// pragma solidity ^0.8.0;
+//SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
 // import '@openzeppelin/contracts/utils/Address.sol';
 // import '@openzeppelin/contracts/utils/Counters.sol';
 // import '@openzeppelin/contracts/utils/Strings.sol';
@@ -54,7 +54,6 @@
 //   // function supportsInterface(bytes4 interfaceId) public view virtual override(ERC721, ERC721Enumerable) returns (bool) {
 //   //   return super.supportsInterface(interfaceId);
 //   // }
-
 
 //   function tokenURI(uint256 tokenId) public view override(ERC721, ERC721URIStorage) returns (string memory) {
 //     return ERC721URIStorage.tokenURI(tokenId);

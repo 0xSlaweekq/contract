@@ -59,7 +59,9 @@ contract RewardsTracker is Ownable, DividendPayingTokenInterface, DividendPaying
         rewardToken = newToken;
     }
 
-    function getAccount(address account)
+    function getAccount(
+        address account
+    )
         public
         view
         returns (
@@ -139,7 +141,7 @@ contract RewardsTracker is Ownable, DividendPayingTokenInterface, DividendPaying
             emit DividendWithdrawn(user, _withdrawableDividend);
             bool success = swapEthForCustomToken(user, _withdrawableDividend);
             if (!success) {
-                (bool secondSuccess,) = payable(user).call{value: _withdrawableDividend, gas: 3000}("");
+                (bool secondSuccess, ) = payable(user).call{value: _withdrawableDividend, gas: 3000}("");
                 if (!secondSuccess) {
                     withdrawnDividends[user] -= _withdrawableDividend;
                     totalDividendsWithdrawn -= _withdrawableDividend;
@@ -156,7 +158,8 @@ contract RewardsTracker is Ownable, DividendPayingTokenInterface, DividendPaying
         path[0] = rewardRouter.WETH();
         path[1] = rewardToken;
 
-        try rewardRouter.swapExactETHForTokensSupportingFeeOnTransferTokens{value: amt}(0, path, user, block.timestamp)
+        try
+            rewardRouter.swapExactETHForTokensSupportingFeeOnTransferTokens{value: amt}(0, path, user, block.timestamp)
         {
             return true;
         } catch {
@@ -177,8 +180,9 @@ contract RewardsTracker is Ownable, DividendPayingTokenInterface, DividendPaying
     }
 
     function accumulativeDividendOf(address _owner) public view returns (uint256) {
-        return uint256(int256(magnifiedDividendPerShare * userShares[_owner]) + magnifiedDividendCorrections[_owner])
-            / magnitude;
+        return
+            uint256(int256(magnifiedDividendPerShare * userShares[_owner]) + magnifiedDividendCorrections[_owner]) /
+            magnitude;
     }
 
     function addShares(address account, uint256 value) internal {
@@ -186,7 +190,8 @@ contract RewardsTracker is Ownable, DividendPayingTokenInterface, DividendPaying
         totalShares += value;
 
         magnifiedDividendCorrections[account] =
-            magnifiedDividendCorrections[account] - int256(magnifiedDividendPerShare * value);
+            magnifiedDividendCorrections[account] -
+            int256(magnifiedDividendPerShare * value);
     }
 
     function removeShares(address account, uint256 value) internal {
@@ -194,7 +199,8 @@ contract RewardsTracker is Ownable, DividendPayingTokenInterface, DividendPaying
         totalShares -= value;
 
         magnifiedDividendCorrections[account] =
-            magnifiedDividendCorrections[account] + int256(magnifiedDividendPerShare * value);
+            magnifiedDividendCorrections[account] +
+            int256(magnifiedDividendPerShare * value);
     }
 
     function _setBalance(address account, uint256 newBalance) internal {

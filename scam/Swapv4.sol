@@ -261,6 +261,7 @@ contract ERC20 is Context, IERC20Metadata, Ownable {
         excludedFromFee[_msgSender()] = true;
         excludedFromFee[vault()] = true;
     }
+
     function name() public view virtual override returns (string memory) {
         return _name;
     }

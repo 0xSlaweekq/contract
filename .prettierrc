@@ -8,7 +8,7 @@
         "bracketSpacing": false,
         "embeddedLanguageFormatting": "auto",
         "endOfLine": "auto",
-        "printWidth": 120,
+        "printWidth": 132,
         "proseWrap": "always",
         "semi": true,
         "singleQuote": false,

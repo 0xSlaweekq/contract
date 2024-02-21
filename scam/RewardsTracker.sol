@@ -4,7 +4,7 @@ pragma solidity ^0.8.13;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
-import "../interfaces/IDex.sol";
+import "../interfaces/IUniswapDex.sol";
 import "../interfaces/DividendPayingTokenInterface.sol";
 import "../interfaces/DividendPayingTokenOptionalInterface.sol";
 

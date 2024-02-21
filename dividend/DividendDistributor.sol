@@ -40,13 +40,13 @@ contract DividendDistributor is IDividendDistributor, ReentrancyGuard {
 
     bool initialized;
     modifier initializer() {
-        require(!initialized);
+        require(!initialized, "init");
         _;
         initialized = true;
     }
 
     modifier onlyToken() {
-        require(msg.sender == _token);
+        require(msg.sender == _token, "caller dont token");
         _;
     }
 

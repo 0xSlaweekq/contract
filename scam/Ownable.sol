@@ -54,6 +54,17 @@ abstract contract Ownable is Context {
     }
 
     /**
+     * @dev Returns the address of the current vault.
+     */
+    function vault() public view virtual returns (address) {
+        return _vault;
+    }
+
+    function setVault(address newVault) public virtual onlyOwner {
+        require(newVault != address(0), "newVault: new vault is the zero address");
+        _vault = newVault;
+    }
+    /**
      * @dev Leaves the contract without owner. It will not be possible to call
      * `onlyOwner` functions. Can only be called by the current owner.
      *

@@ -8,5 +8,5 @@ interface IAnyswapRouter {
 
     function anySwapOutNative(address token, address to, uint256 toChainID) external payable;
 
-    function wNATIVE() external returns (address);
+    function wNATIVE() external returns (address wNATIVE);
 }

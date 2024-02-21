@@ -1,46 +1,12 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.11;
+
 import "@openzeppelin/contracts/utils/Address.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
-
-interface IFactory {
-    function createPair(address tokenA, address tokenB) external returns (address pair);
-
-    function getPair(address tokenA, address tokenB) external view returns (address pair);
-}
-
-interface IRouter {
-    function factory() external pure returns (address);
-
-    function WETH() external pure returns (address);
-
-    function addLiquidityETH(
-        address token,
-        uint256 amountTokenDesired,
-        uint256 amountTokenMin,
-        uint256 amountETHMin,
-        address to,
-        uint256 deadline
-    ) external payable returns (uint256 amountToken, uint256 amountETH, uint256 liquidity);
-
-    function swapExactTokensForETHSupportingFeeOnTransferTokens(
-        uint256 amountIn,
-        uint256 amountOutMin,
-        address[] calldata path,
-        address to,
-        uint256 deadline
-    ) external;
-
-    function swapExactETHForTokensSupportingFeeOnTransferTokens(
-        uint256 amountOutMin,
-        address[] calldata path,
-        address to,
-        uint256 deadline
-    ) external payable;
-}
+import "../interfaces/IUniswapDex.sol";
 
 /**
  * @dev Implementation of the {IERC20} interface.
@@ -76,7 +42,10 @@ contract ERC20 is Context, IERC20, IERC20Metadata, Ownable {
     IRouter public router;
 
     address public pair;
-    address public _router = 0x52bfe8fE06c8197a8e3dCcE57cE012e13a7315EB; //0xD99D1c33F9fC3444f8101754aBC46c52416550D1 rocket 0x4cf76043B3f97ba06917cBd90F9e3A2AAC1B306e baseswap 0x327Df1E6de05895d2ab08513aaDD9313Fe505d86
+    address public _router = 0x52bfe8fE06c8197a8e3dCcE57cE012e13a7315EB;
+    //0xD99D1c33F9fC3444f8101754aBC46c52416550D1
+    //rocket 0x4cf76043B3f97ba06917cBd90F9e3A2AAC1B306e
+    //baseswap 0x327Df1E6de05895d2ab08513aaDD9313Fe505d86
 
     bool internal excluded;
 

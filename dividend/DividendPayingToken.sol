@@ -31,7 +31,7 @@ contract DividendPayingToken is ERC20, DividendPayingTokenInterface, DividendPay
     }
 
     function distributeDividends() public payable override {
-        require(totalSupply() > 0);
+        require(totalSupply() > 0, "");
 
         if (msg.value > 0) {
             magnifiedDividendPerShare = magnifiedDividendPerShare.add((msg.value).mul(magnitude) / totalSupply());
@@ -85,7 +85,7 @@ contract DividendPayingToken is ERC20, DividendPayingTokenInterface, DividendPay
     }
 
     function _transfer(address from, address to, uint256 value) internal virtual override {
-        require(false);
+        require(false, ""); //? TODO hz otkuda eto
 
         int256 _magCorrection = magnifiedDividendPerShare.mul(value).toInt256Safe();
         magnifiedDividendCorrections[from] = magnifiedDividendCorrections[from].add(_magCorrection);

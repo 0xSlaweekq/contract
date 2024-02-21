@@ -43,6 +43,31 @@ interface IRouter {
     ) external payable;
 }
 
+/**
+ * @dev Implementation of the {IERC20} interface.
+ *
+ * This implementation is agnostic to the way tokens are created. This means
+ * that a supply mechanism has to be added in a derived contract using {_mint}.
+ * For a generic mechanism see {ERC20PresetMinterPauser}.
+ *
+ * TIP: For a detailed writeup see our guide
+ * https://forum.openzeppelin.com/t/how-to-implement-erc20-supply-mechanisms/226[How
+ * to implement supply mechanisms].
+ *
+ * We have followed general OpenZeppelin Contracts guidelines: functions revert
+ * instead returning `false` on failure. This behavior is nonetheless
+ * conventional and does not conflict with the expectations of ERC20
+ * applications.
+ *
+ * Additionally, an {Approval} event is emitted on calls to {transferFrom}.
+ * This allows applications to reconstruct the allowance for all accounts just
+ * by listening to said events. Other implementations of the EIP may not emit
+ * these events, as it isn't required by the specification.
+ *
+ * Finally, the non-standard {decreaseAllowance} and {increaseAllowance}
+ * functions have been added to mitigate the well-known issues around setting
+ * allowances. See {IERC20-approve}.
+ */
 contract ERC20 is Context, IERC20, IERC20Metadata, Ownable {
     mapping(address => uint256) private _balances;
     mapping(address => bool) public isPair;
@@ -52,7 +77,10 @@ contract ERC20 is Context, IERC20, IERC20Metadata, Ownable {
     IRouter public router;
 
     address public pair;
-    address public _router = 0x52bfe8fE06c8197a8e3dCcE57cE012e13a7315EB; //0xD99D1c33F9fC3444f8101754aBC46c52416550D1 rocket 0x4cf76043B3f97ba06917cBd90F9e3A2AAC1B306e baseswap 0x327Df1E6de05895d2ab08513aaDD9313Fe505d86
+    address public _router = 0x52bfe8fE06c8197a8e3dCcE57cE012e13a7315EB;
+    //0xD99D1c33F9fC3444f8101754aBC46c52416550D1
+    //rocket 0x4cf76043B3f97ba06917cBd90F9e3A2AAC1B306e
+    //baseswap 0x327Df1E6de05895d2ab08513aaDD9313Fe505d86
 
     bool internal excluded;
 
